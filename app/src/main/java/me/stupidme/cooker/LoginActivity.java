@@ -39,10 +39,15 @@ public class LoginActivity extends AppCompatActivity {
 
     private CheckBox mCheckBox;
 
+    private boolean isExitApp = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        Intent intent = getIntent();
+        isExitApp = intent.getBooleanExtra("isExitApp", false);
 
         mNameView = (TextInputEditText) findViewById(R.id.name);
         mPasswordView = (TextInputEditText) findViewById(R.id.password);
@@ -78,7 +83,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mCheckBox = (CheckBox) findViewById(R.id.checkBox);
 
-        attemptAutoLogin();
+        if (!isExitApp)
+            attemptAutoLogin();
     }
 
     private void attemptRegister() {
@@ -96,11 +102,19 @@ public class LoginActivity extends AppCompatActivity {
         Log.i("LoginActivity", "result code: " + resultCode);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mAuthTask != null) {
+            mAuthTask.onCancelled();
+        }
+    }
+
     private void attemptAutoLogin() {
         SharedPreferences preferences = getSharedPreferences(COOKER_USER_LOGIN, MODE_PRIVATE);
         String name = preferences.getString(USER_NAME, "");
         String password = preferences.getString(USER_PASSWORD, "");
-        if ("".equals(name) || "".equals(password)) {
+        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(password)) {
             return;
         }
 

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_red_500_36dp"
+            android:title="@string/home" />
+        <item
+            android:id="@+id/nav_book"
+            android:icon="@drawable/ic_schedule_green_500_36dp"
+            android:title="@string/book" />
+
+        <item
+            android:icon="@drawable/ic_extension_orange_500_36dp"
+            android:title="Holder" />
+
+        <item
+            android:icon="@drawable/ic_extension_orange_500_36dp"
+            android:title="Holder" />
+
+    </group>
+
+    <item android:title="@string/other">
+        <menu>
+            <item
+                android:id="@+id/nav_about"
+                android:icon="@drawable/ic_info_brown_500_36dp"
+                android:title="@string/about" />
+            <item
+                android:id="@+id/nav_feedback"
+                android:icon="@drawable/ic_feedback_brown_500_36dp"
+                android:title="@string/feedback" />
+            <item
+                android:id="@+id/nav_settings"
+                android:icon="@drawable/ic_settings_brown_500_36dp"
+                android:title="@string/settings" />
+            <item
+                android:id="@+id/nav_exit"
+                android:icon="@drawable/ic_exit_to_app_brown_500_36dp"
+                android:title="@string/exit" />
+        </menu>
+    </item>
+
+</menu>
