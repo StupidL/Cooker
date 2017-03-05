@@ -1,4 +1,4 @@
-package me.stupidme.cooker;
+package me.stupidme.cooker.view;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -17,6 +17,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Toast;
+
+import me.stupidme.cooker.R;
 
 
 /**

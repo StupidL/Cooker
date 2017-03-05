@@ -1,4 +1,4 @@
-package me.stupidme.cooker;
+package me.stupidme.cooker.view;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -12,6 +12,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import me.stupidme.cooker.R;
 
 /**
  * Created by StupidL on 2017/3/4.
