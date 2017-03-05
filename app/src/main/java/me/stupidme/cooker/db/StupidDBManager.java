@@ -11,7 +11,7 @@ import java.lang.ref.WeakReference;
 
 public class StupidDBManager {
 
-    private static StupidDBManager sInstance;
+    private static volatile StupidDBManager sInstance;
 
     private static WeakReference<Context> mContextWeakRef;
 
@@ -25,7 +25,7 @@ public class StupidDBManager {
         if (mContextWeakRef.get() != null) {
             mDataBase = new StupidDBHelper(mContextWeakRef.get()).getWritableDatabase();
         } else {
-            throw new NullPointerException("Context is null. Create Database failed.");
+            throw new RuntimeException("Context is null. Create Database failed.");
         }
     }
 
