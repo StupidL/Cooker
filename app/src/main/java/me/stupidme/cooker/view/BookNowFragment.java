@@ -53,7 +53,7 @@ public class BookNowFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view =  inflater.inflate(R.layout.fragment_book_now, container, false);
+        View view =  inflater.inflate(R.layout.fragment_book, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.book_recycler_view);
         initRecyclerView();
         return view;

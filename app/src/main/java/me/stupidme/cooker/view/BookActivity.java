@@ -1,6 +1,7 @@
 package me.stupidme.cooker.view;
 
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +26,8 @@ public class BookActivity extends AppCompatActivity {
 
     private BookPagerAdapter mAdapter;
 
+    private TabLayout mTabLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +50,9 @@ public class BookActivity extends AppCompatActivity {
         mAdapter = new BookPagerAdapter(getSupportFragmentManager(), list);
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mAdapter);
+
+        mTabLayout = (TabLayout) findViewById(R.id.book_tablayout);
+        mTabLayout.setupWithViewPager(mViewPager);
     }
 
 

@@ -71,7 +71,8 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.nav_book:
-
+                Intent i = new Intent(MainActivity.this, BookActivity.class);
+                startActivity(i);
                 break;
             case R.id.nav_about:
 
