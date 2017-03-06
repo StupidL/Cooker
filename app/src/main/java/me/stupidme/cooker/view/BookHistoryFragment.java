@@ -60,6 +60,7 @@ public class BookHistoryFragment extends Fragment {
     }
 
     private void initRecyclerView(){
+        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
