@@ -1,7 +1,8 @@
 package me.stupidme.cooker.view;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,8 +10,10 @@ import android.view.ViewGroup;
 import me.stupidme.cooker.R;
 
 /**
- * A placeholder fragment containing a simple view.
+ * Created by StupidL on 2017/3/6.
+ * 增加预定界面的片段
  */
+
 public class BookAddFragment extends Fragment {
 
     public BookAddFragment() {
@@ -20,6 +23,7 @@ public class BookAddFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.i("BookAddFragment", "Fragment onCreateView()");
         return inflater.inflate(R.layout.fragment_book_add, container, false);
     }
 }

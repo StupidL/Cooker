@@ -9,8 +9,10 @@ import android.view.ViewGroup;
 import me.stupidme.cooker.R;
 
 /**
- * A placeholder fragment containing a simple view.
+ * Created by StupidL on 2017/3/6.
+ * 增加电饭锅界面的片段
  */
+
 public class CookerAddFragment extends Fragment {
 
     public CookerAddFragment() {
