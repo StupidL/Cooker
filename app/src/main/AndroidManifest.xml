@@ -23,15 +23,21 @@
             android:label="@string/title_activity_register"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.MainActivity"
+            android:name=".view.CookerActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.BookActivity"
             android:label="@string/title_activity_book"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.CookerAddActivity"
+            android:label="@string/title_activity_cooker_add"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.BookAddActivity"
+            android:label="@string/title_activity_book_add"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

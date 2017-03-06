@@ -142,9 +142,6 @@ public class LoginActivity extends AppCompatActivity {
 
         mNameView.setError(null);
         mPasswordView.setError(null);
-//
-//        String name = mNameView.getText().toString();
-//        String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -258,7 +255,7 @@ public class LoginActivity extends AppCompatActivity {
             if (success) {
 
                 Toast.makeText(LoginActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                startActivity(new Intent(LoginActivity.this, CookerActivity.class));
                 LoginActivity.this.finish();
 
             } else {

@@ -32,5 +32,7 @@
     <string name="settings">Settings</string>
     <string name="exit">Exit</string>
     <string name="title_activity_book">Book</string>
+    <string name="title_activity_cooker_add">CookerAddActivity</string>
+    <string name="title_activity_book_add">BookAddActivity</string>
 
 </resources>
