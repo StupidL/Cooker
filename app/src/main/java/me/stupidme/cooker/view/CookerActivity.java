@@ -21,8 +21,10 @@ import me.stupidme.cooker.R;
 public class CookerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final int REQUEST_CODE_BOOK = 0x02;
     private static final int REQUEST_CODE_ADD_COOKER = 0x03;
     private static final int REQUEST_CODE_ADD_BOOK = 0x04;
+    private static final int REQUEST_CODE_ABOUT = 0x05;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,10 +98,10 @@ public class CookerActivity extends AppCompatActivity
                 break;
             case R.id.nav_book:
                 Intent i = new Intent(CookerActivity.this, BookActivity.class);
-                startActivity(i);
+                startActivityForResult(i, REQUEST_CODE_BOOK);
                 break;
             case R.id.nav_about:
-
+                startActivityForResult(new Intent(CookerActivity.this, AboutActivity.class), REQUEST_CODE_ABOUT);
                 break;
             case R.id.nav_feedback:
 

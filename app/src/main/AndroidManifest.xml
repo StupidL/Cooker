@@ -37,6 +37,10 @@
         <activity
             android:name=".view.BookAddActivity"
             android:label="@string/title_activity_book_add"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.AboutActivity"
+            android:label="@string/title_activity_about"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
