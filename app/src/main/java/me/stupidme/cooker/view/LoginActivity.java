@@ -85,8 +85,20 @@ public class LoginActivity extends AppCompatActivity {
 
         mCheckBox = (CheckBox) findViewById(R.id.checkBox);
 
-        if (!isExitApp)
+        if (isExitApp) {
+            setNameAndPassword();
+        } else {
             attemptAutoLogin();
+        }
+
+    }
+
+    private void setNameAndPassword() {
+        SharedPreferences preferences = getSharedPreferences(COOKER_USER_LOGIN, MODE_PRIVATE);
+        String name = preferences.getString(USER_NAME, "");
+        String password = preferences.getString(USER_PASSWORD, "");
+        mNameView.setText(name);
+        mPasswordView.setText(password);
     }
 
     private void attemptRegister() {
@@ -246,6 +258,8 @@ public class LoginActivity extends AppCompatActivity {
             if (success) {
 
                 Toast.makeText(LoginActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                LoginActivity.this.finish();
 
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
