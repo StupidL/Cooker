@@ -17,6 +17,7 @@ import java.util.List;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.CookerBean;
+import me.stupidme.cooker.presenter.CookerPresenter;
 import me.stupidme.cooker.widget.CookerRecyclerAdapter;
 import me.stupidme.cooker.widget.SpaceItemDecoration;
 
@@ -25,13 +26,15 @@ import me.stupidme.cooker.widget.SpaceItemDecoration;
  * CookerFragment展示的是用户所有的电饭锅的信息
  */
 
-public class CookerFragment extends Fragment {
+public class CookerFragment extends Fragment implements ICookerFragmentView, CookerObserver {
 
     private RecyclerView mRecyclerView;
 
     private List<CookerBean> mDataSet;
 
     private CookerRecyclerAdapter mAdapter;
+
+    private CookerPresenter mPresenter;
 
     public CookerFragment() {
         // Required empty public constructor
@@ -49,8 +52,17 @@ public class CookerFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mDataSet = new ArrayList<>();
         mAdapter = new CookerRecyclerAdapter(mDataSet);
+        mPresenter = CookerPresenter.getInstance(this);
     }
 
+    /**
+     * 初始化控件
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -60,6 +72,20 @@ public class CookerFragment extends Fragment {
         return view;
     }
 
+    /**
+     * 控件创建之后，从数据库加载电饭锅数据
+     *
+     * @param view
+     * @param bundle
+     */
+    @Override
+    public void onViewCreated(View view, Bundle bundle) {
+        mPresenter.onLoadFromDataBase();
+    }
+
+    /**
+     * 初始化RecyclerView
+     */
     private void initRecyclerView() {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
@@ -97,8 +123,9 @@ public class CookerFragment extends Fragment {
                     @Override
                     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                         int position = viewHolder.getAdapterPosition();
-                        mDataSet.remove(position);
-                        mAdapter.notifyItemRemoved(position);
+//                        mDataSet.remove(position);
+//                        mAdapter.notifyItemRemoved(position);
+                        mPresenter.onDeleteCooker(mDataSet.get(position));
                     }
                 };
 
@@ -117,4 +144,57 @@ public class CookerFragment extends Fragment {
         super.onDetach();
     }
 
+    /**
+     * 界面上更新该电饭锅的信息
+     *
+     * @param bean     更新后的电饭锅
+     * @param position 电饭锅位置
+     */
+    @Override
+    public void updateStatusToView(int position, CookerBean bean) {
+
+    }
+
+    /**
+     * 从界面中移除该项目
+     *
+     * @param bean 电饭锅
+     */
+    @Override
+    public void removeItem(CookerBean bean) {
+        mDataSet.remove(bean);
+        mAdapter.notifyItemRemoved(mDataSet.indexOf(bean));
+    }
+
+    /**
+     * 在界面的列表第一项插入该电饭锅信息
+     *
+     * @param bean 电饭锅
+     */
+    @Override
+    public void insertItem(CookerBean bean) {
+        mDataSet.add(0, bean);
+        mAdapter.notifyItemInserted(0);
+    }
+
+    /**
+     * 从数据库中加载所有的电饭锅信息
+     *
+     * @param list 电饭锅列表
+     */
+    @Override
+    public void loadCookersFromDataBase(List<CookerBean> list) {
+        mDataSet = list;
+        mAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 该电饭锅的状态更新后，本观察者收到通知，并且通过mPresenter更新界面和数据库
+     *
+     * @param bean 电饭锅
+     */
+    @Override
+    public void notifyObserver(int position, CookerBean bean) {
+        mPresenter.onUpdateStatus(position, bean);
+    }
 }
