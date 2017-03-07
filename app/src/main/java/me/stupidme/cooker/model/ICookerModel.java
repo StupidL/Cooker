@@ -32,6 +32,6 @@ public interface ICookerModel {
      *
      * @param bean 电饭锅
      */
-    CookerBean updateStatusToDataBase(CookerBean bean);
+    void updateStatusToDataBase(CookerBean bean);
 
 }

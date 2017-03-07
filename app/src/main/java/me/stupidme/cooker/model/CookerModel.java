@@ -1,7 +1,8 @@
 package me.stupidme.cooker.model;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import me.stupidme.cooker.db.StupidDBManager;
 
 /**
  * Created by StupidL on 2017/3/7.
@@ -11,8 +12,10 @@ public class CookerModel implements ICookerModel {
 
     private static CookerModel sInstance;
 
-    private CookerModel() {
+    private StupidDBManager mManager;
 
+    private CookerModel() {
+        mManager = StupidDBManager.getInstance();
     }
 
     public static CookerModel getInstance() {
@@ -23,25 +26,21 @@ public class CookerModel implements ICookerModel {
 
     @Override
     public void deleteFromDataBase(CookerBean bean) {
-
+        mManager.deleteCooker(bean);
     }
 
     @Override
     public void insertToDataBase(CookerBean bean) {
-
+        mManager.insertCooker(bean);
     }
 
     @Override
     public List<CookerBean> loadCookersFromDataBase() {
-        List<CookerBean> list = new ArrayList<>();
-
-        return list;
+        return mManager.queryCookers();
     }
 
     @Override
-    public CookerBean updateStatusToDataBase(CookerBean bean) {
-        CookerBean b = new CookerBean();
-
-        return b;
+    public void updateStatusToDataBase(CookerBean bean) {
+        mManager.updateCooker(bean);
     }
 }
