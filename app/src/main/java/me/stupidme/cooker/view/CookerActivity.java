@@ -22,8 +22,8 @@ public class CookerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int REQUEST_CODE_BOOK = 0x02;
-    private static final int REQUEST_CODE_ADD_COOKER = 0x03;
-    private static final int REQUEST_CODE_ADD_BOOK = 0x04;
+//    private static final int REQUEST_CODE_ADD_COOKER = 0x03;
+//    private static final int REQUEST_CODE_ADD_BOOK = 0x04;
     private static final int REQUEST_CODE_ABOUT = 0x05;
 
     @Override
@@ -33,7 +33,7 @@ public class CookerActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        initFab();
+//        initFab();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -53,24 +53,24 @@ public class CookerActivity extends AppCompatActivity
         Log.i("CookerActivity", "Activity onCreate()");
     }
 
-    private void initFab() {
-        FloatingActionMenu menu = (FloatingActionMenu) findViewById(R.id.fab_menu);
-        FloatingActionButton fabCooker = (FloatingActionButton) findViewById(R.id.fab_cooker);
-        FloatingActionButton fabBook = (FloatingActionButton) findViewById(R.id.fab_book);
-        fabCooker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(CookerActivity.this, CookerAddActivity.class), REQUEST_CODE_ADD_COOKER);
-            }
-        });
-
-        fabBook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(CookerActivity.this, BookAddActivity.class), REQUEST_CODE_ADD_BOOK);
-            }
-        });
-    }
+//    private void initFab() {
+//        FloatingActionMenu menu = (FloatingActionMenu) findViewById(R.id.fab_menu);
+//        FloatingActionButton fabCooker = (FloatingActionButton) findViewById(R.id.fab_cooker);
+//        FloatingActionButton fabBook = (FloatingActionButton) findViewById(R.id.fab_book);
+//        fabCooker.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startActivityForResult(new Intent(CookerActivity.this, CookerAddActivity.class), REQUEST_CODE_ADD_COOKER);
+//            }
+//        });
+//
+//        fabBook.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startActivityForResult(new Intent(CookerActivity.this, BookAddActivity.class), REQUEST_CODE_ADD_BOOK);
+//            }
+//        });
+//    }
 
     @Override
     public void onBackPressed() {

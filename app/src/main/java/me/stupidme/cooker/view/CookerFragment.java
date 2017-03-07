@@ -1,6 +1,7 @@
 package me.stupidme.cooker.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -10,6 +11,9 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +31,9 @@ import me.stupidme.cooker.widget.SpaceItemDecoration;
  */
 
 public class CookerFragment extends Fragment implements ICookerFragmentView, CookerObserver {
+
+    private static final int REQUEST_CODE_ADD_COOKER = 0x03;
+    private static final int REQUEST_CODE_ADD_BOOK = 0x04;
 
     private RecyclerView mRecyclerView;
 
@@ -69,6 +76,26 @@ public class CookerFragment extends Fragment implements ICookerFragmentView, Coo
         View view = inflater.inflate(R.layout.fragment_cooker, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         initRecyclerView();
+
+        // init fab
+        FloatingActionMenu menu = (FloatingActionMenu) view.findViewById(R.id.fab_menu);
+        FloatingActionButton fabCooker = (FloatingActionButton) view.findViewById(R.id.fab_cooker);
+        FloatingActionButton fabBook = (FloatingActionButton) view.findViewById(R.id.fab_book);
+        fabCooker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(new Intent(getActivity(), CookerAddActivity.class),
+                        REQUEST_CODE_ADD_COOKER);
+            }
+        });
+
+        fabBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(new Intent(getActivity(), BookAddActivity.class),
+                        REQUEST_CODE_ADD_BOOK);
+            }
+        });
         return view;
     }
 
