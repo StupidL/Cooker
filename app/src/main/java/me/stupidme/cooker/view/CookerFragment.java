@@ -18,8 +18,10 @@ import com.github.clans.fab.FloatingActionMenu;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import me.stupidme.cooker.R;
+import me.stupidme.cooker.db.StupidDBHelper;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.presenter.CookerPresenter;
 import me.stupidme.cooker.widget.CookerRecyclerAdapter;
@@ -30,7 +32,8 @@ import me.stupidme.cooker.widget.SpaceItemDecoration;
  * CookerFragment展示的是用户所有的电饭锅的信息
  */
 
-public class CookerFragment extends Fragment implements ICookerFragmentView, CookerObserver {
+public class CookerFragment extends Fragment implements ICookerFragmentView, CookerObserver,
+        CookerDialog.CookerAddListener {
 
     private static final int REQUEST_CODE_ADD_COOKER = 0x03;
     private static final int REQUEST_CODE_ADD_BOOK = 0x04;
@@ -42,6 +45,8 @@ public class CookerFragment extends Fragment implements ICookerFragmentView, Coo
     private CookerRecyclerAdapter mAdapter;
 
     private CookerPresenter mPresenter;
+
+    private CookerDialog mDialog;
 
     public CookerFragment() {
         // Required empty public constructor
@@ -84,8 +89,14 @@ public class CookerFragment extends Fragment implements ICookerFragmentView, Coo
         fabCooker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(getActivity(), CookerAddActivity.class),
-                        REQUEST_CODE_ADD_COOKER);
+//                startActivityForResult(new Intent(getActivity(), CookerAddActivity.class),
+//                        REQUEST_CODE_ADD_COOKER);
+
+                if (mDialog == null) {
+                    mDialog = new CookerDialog(getActivity(), CookerFragment.this);
+                }
+                mDialog.setTitle(R.string.title_dialog_cooker);
+                mDialog.show();
             }
         });
 
@@ -223,5 +234,23 @@ public class CookerFragment extends Fragment implements ICookerFragmentView, Coo
     @Override
     public void notifyObserver(int position, CookerBean bean) {
         mPresenter.onUpdateStatus(position, bean);
+    }
+
+    /**
+     * 通过dialog添加一个电饭锅信息
+     *
+     * @param map 存放电饭锅信息的map
+     */
+    @Override
+    public void onSave(Map<String, String> map) {
+        String name = map.get(CookerDialog.COOKER_NAME_KEY);
+        String loc = map.get(CookerDialog.COOKER_LOCATION_KEY);
+
+        CookerBean cooker = new CookerBean();
+        cooker.setName(name);
+        cooker.setLocation(loc);
+        cooker.setStatus(StupidDBHelper.COOKER_STATUS_FREE);
+
+        mPresenter.onInsertCooker(cooker);
     }
 }
