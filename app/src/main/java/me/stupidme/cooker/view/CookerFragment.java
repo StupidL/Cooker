@@ -83,7 +83,7 @@ public class CookerFragment extends Fragment implements ICookerFragmentView, Coo
         initRecyclerView();
 
         // init fab
-        FloatingActionMenu menu = (FloatingActionMenu) view.findViewById(R.id.fab_menu);
+        final FloatingActionMenu menu = (FloatingActionMenu) view.findViewById(R.id.fab_menu);
         FloatingActionButton fabCooker = (FloatingActionButton) view.findViewById(R.id.fab_cooker);
         FloatingActionButton fabBook = (FloatingActionButton) view.findViewById(R.id.fab_book);
         fabCooker.setOnClickListener(new View.OnClickListener() {
@@ -97,6 +97,7 @@ public class CookerFragment extends Fragment implements ICookerFragmentView, Coo
                 }
                 mDialog.setTitle(R.string.title_dialog_cooker);
                 mDialog.show();
+                menu.close(true);
             }
         });
 
@@ -105,6 +106,7 @@ public class CookerFragment extends Fragment implements ICookerFragmentView, Coo
             public void onClick(View v) {
                 startActivityForResult(new Intent(getActivity(), BookAddActivity.class),
                         REQUEST_CODE_ADD_BOOK);
+                menu.close(true);
             }
         });
         return view;
