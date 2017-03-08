@@ -1,5 +1,7 @@
 package me.stupidme.cooker.view;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,12 +13,22 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.R;
+import me.stupidme.cooker.db.StupidDBHelper;
 import me.stupidme.cooker.model.BookBean;
+import me.stupidme.cooker.retrofit.CookerRetrofit;
+import me.stupidme.cooker.retrofit.CookerService;
 import me.stupidme.cooker.widget.BookPagerAdapter;
 
 /**
@@ -26,6 +38,10 @@ import me.stupidme.cooker.widget.BookPagerAdapter;
 public class BookActivity extends AppCompatActivity {
 
     private static List<OnRefreshBookInfoListener> mListenerList = new ArrayList<>();
+
+    private CookerService mService;
+
+    private ProgressDialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +67,8 @@ public class BookActivity extends AppCompatActivity {
         BookNowFragment2 nowFragment2 = BookNowFragment2.newInstance();
         mListenerList.add(nowFragment2);
 
-        list.add(nowFragment2);
-        list.add(historyFragment2);
+        list.add(0, nowFragment2);
+        list.add(1, historyFragment2);
 
         BookPagerAdapter mAdapter = new BookPagerAdapter(getSupportFragmentManager(), list);
         ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
@@ -61,14 +77,16 @@ public class BookActivity extends AppCompatActivity {
         TabLayout mTabLayout = (TabLayout) findViewById(R.id.book_tablayout);
         mTabLayout.setupWithViewPager(mViewPager);
 
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                mHandler.sendEmptyMessage(0xaa);
-            }
+        Runnable runnable = () -> {
+            mHandler.sendEmptyMessage(0xaa);
+            mDialog.dismiss();
         };
 
         mHandler.postDelayed(runnable, 5000);
+
+        mService = CookerRetrofit.getInstance().getCookerService();
+
+        initProgressDialog();
     }
 
     private static Handler mHandler = new Handler() {
@@ -96,6 +114,16 @@ public class BookActivity extends AppCompatActivity {
         }
     };
 
+    private void initProgressDialog() {
+        mDialog = new ProgressDialog(BookActivity.this);
+        mDialog.setTitle(getResources().getString(R.string.title_book_activity_progress));
+        mDialog.setMessage(getResources().getString(R.string.message_book_activity_dialog));
+        mDialog.setCancelable(false);
+        mDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "CANCEL",
+                (dialog, which) -> mDialog.dismiss());
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -107,11 +135,61 @@ public class BookActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_refresh) {
+            doRefresh();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void doRefresh() {
+
+        mDialog.show();
+
+        Map<String, String> map = new HashMap<>();
+
+        mService.getAllBooksInfo(map)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<BookBean>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(List<BookBean> value) {
+                        List<BookBean> mBookingList = new ArrayList<>();
+                        List<BookBean> mHistoryList = new ArrayList<>();
+                        for (BookBean bookBean : value) {
+                            if (StupidDBHelper.BOOK_STATUS_BOOKING.equals(bookBean.getDeviceStatus())) {
+                                mBookingList.add(bookBean);
+                            } else if (StupidDBHelper.BOOK_STATUS_FINISHED.equals(bookBean.getDeviceStatus())) {
+                                mHistoryList.add(bookBean);
+                            }
+                        }
+
+                        mListenerList.get(0).onRefresh(mBookingList);
+                        mListenerList.get(1).onRefresh(mHistoryList);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (mDialog.isShowing())
+                            mDialog.dismiss();
+                        showToastMessage(e.toString());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        if (mDialog.isShowing())
+                            mDialog.dismiss();
+                    }
+                });
+    }
+
+    private void showToastMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     /**

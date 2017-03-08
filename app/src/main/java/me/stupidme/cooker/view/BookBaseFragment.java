@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,24 +26,25 @@ import me.stupidme.cooker.widget.SpaceItemDecoration;
 
 public abstract class BookBaseFragment extends Fragment implements BookActivity.OnRefreshBookInfoListener {
 
+    /**
+     * RecyclerView控件，用来展示各个预约信息
+     */
     protected RecyclerView mRecyclerView;
 
+    /**
+     * 预约信息集合
+     */
     protected List<BookBean> mDataSet;
 
+    /**
+     * RecyclerView适配器
+     */
     protected BookRecyclerAdapter mAdapter;
 
+    /**
+     * 网络服务
+     */
     protected CookerService mService;
-
-//    public BookBaseFragment() {
-//        // Required empty public constructor
-//    }
-//
-//    public static BookBaseFragment newInstance() {
-//        BookNowFragment fragment = new BookNowFragment();
-//        Bundle args = new Bundle();
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,66 +66,33 @@ public abstract class BookBaseFragment extends Fragment implements BookActivity.
         initRecyclerView();
         return view;
     }
-//
-//    protected abstract boolean onRecyclerItemMove(RecyclerView recyclerView,
-//                                                  RecyclerView.ViewHolder viewHolder,
-//                                                  RecyclerView.ViewHolder target);
-//
-//    protected abstract void onRecyclerItemSwiped(RecyclerView.ViewHolder viewHolder, int direction);
-//
+
+    /**
+     * 为RecyclerView设置Item回调，子类必须实现该抽象方法，以达到各自想要的效果
+     */
     protected abstract void setItemTouchHelperCallback();
 
+    /**
+     * 初始化RecyclerView
+     */
     private void initRecyclerView() {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(manager);
-        mRecyclerView.addItemDecoration(new SpaceItemDecoration(20));
+        mRecyclerView.addItemDecoration(new SpaceItemDecoration(100));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         setItemTouchHelperCallback();
 
-//        ItemTouchHelper.Callback callback =
-//                new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,
-//                        ItemTouchHelper.LEFT) {
-//                    @Override
-//                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
-//                                          RecyclerView.ViewHolder target) {
-//
-//                        int fromPos = viewHolder.getAdapterPosition();
-//                        int toPos = target.getAdapterPosition();
-//                        if (fromPos < toPos) {
-//                            //分别把中间所有的item的位置重新交换
-//                            for (int i = fromPos; i < toPos; i++) {
-//                                Collections.swap(mAdapter.getDataSet(), i, i + 1);
-//                            }
-//                        } else {
-//                            for (int i = fromPos; i > toPos; i--) {
-//                                Collections.swap(mAdapter.getDataSet(), i, i - 1);
-//                            }
-//                        }
-//
-//                        mAdapter.notifyItemMoved(fromPos, toPos);
-//
-//                        return true;
-//                        return onRecyclerItemMove(recyclerView, viewHolder, target);
-//                    }
-//
-//                    @Override
-//                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-//                        int position = viewHolder.getAdapterPosition();
-//                        mDataSet.remove(position);
-//                        mAdapter.notifyItemRemoved(position);
-//                        onRecyclerItemSwiped(viewHolder, direction);
-//                    }
-//                };
-//
-//        ItemTouchHelper helper = new ItemTouchHelper(callback);
-//        helper.attachToRecyclerView(mRecyclerView);
-
     }
 
+    /**
+     * 回调监听。当有新数据来到时，刷新界面
+     *
+     * @param list 数据集合
+     */
     @Override
     public void onRefresh(List<BookBean> list) {
         if (mDataSet == null)

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="snackbar_text_book_history" type="id">Are you sure to delete it?</item>
+</resources>

@@ -1,10 +1,14 @@
 package me.stupidme.cooker.view;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
 import java.util.Collections;
+
+import me.stupidme.cooker.R;
+import me.stupidme.cooker.model.BookBean;
 
 /**
  * Created by StupidL on 2017/3/8.
@@ -53,8 +57,20 @@ public class BookNowFragment2 extends BookBaseFragment {
                     @Override
                     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                         int position = viewHolder.getAdapterPosition();
+                        BookBean bookBean = mDataSet.get(position);
                         mDataSet.remove(position);
                         mAdapter.notifyItemRemoved(position);
+
+                        Snackbar.make(viewHolder.itemView,
+                                getResources().getString(R.string.snackbar_text_book_now),
+                                Snackbar.LENGTH_LONG)
+                                .setAction("CANCEL", v -> {
+                                    mDataSet.add(position, bookBean);
+                                    mAdapter.notifyItemInserted(position);
+                                }).show();
+
+                        //TODO cancel this book on server
+
                     }
                 };
 

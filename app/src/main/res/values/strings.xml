@@ -127,5 +127,9 @@
     <string name="title_dialog_cooker">CREATE A COOKER</string>
     <string name="dialog_cooker_name">Cooker name</string>
     <string name="dialog_cooker_location">Cooker location</string>
+    <string name="title_book_activity_progress">FETCHING DATA</string>
+    <string name="message_book_activity_dialog">This may be take a while, \\nplease wait a few seconds...</string>
+    <string name="snackbar_text_book_history">Are you sure to delete it ?</string>
+    <string name="snackbar_text_book_now">Are you sure to cancel this book ?</string>
 
 </resources>
