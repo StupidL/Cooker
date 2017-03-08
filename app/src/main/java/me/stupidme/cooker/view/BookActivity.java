@@ -1,6 +1,8 @@
 package me.stupidme.cooker.view;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.stupidme.cooker.R;
+import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.widget.BookPagerAdapter;
 
 /**
@@ -22,11 +25,7 @@ import me.stupidme.cooker.widget.BookPagerAdapter;
 
 public class BookActivity extends AppCompatActivity {
 
-    private ViewPager mViewPager;
-
-    private BookPagerAdapter mAdapter;
-
-    private TabLayout mTabLayout;
+    private static List<OnRefreshBookInfoListener> mListenerList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,15 +44,57 @@ public class BookActivity extends AppCompatActivity {
         });
 
         List<Fragment> list = new ArrayList<>();
-        list.add(BookNowFragment.newInstance());
-        list.add(BookHistoryFragment.newInstance());
-        mAdapter = new BookPagerAdapter(getSupportFragmentManager(), list);
-        mViewPager = (ViewPager) findViewById(R.id.container);
+
+        BookHistoryFragment2 historyFragment2 = BookHistoryFragment2.newInstance();
+        mListenerList.add(historyFragment2);
+
+        BookNowFragment2 nowFragment2 = BookNowFragment2.newInstance();
+        mListenerList.add(nowFragment2);
+
+        list.add(nowFragment2);
+        list.add(historyFragment2);
+
+        BookPagerAdapter mAdapter = new BookPagerAdapter(getSupportFragmentManager(), list);
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mAdapter);
 
-        mTabLayout = (TabLayout) findViewById(R.id.book_tablayout);
+        TabLayout mTabLayout = (TabLayout) findViewById(R.id.book_tablayout);
         mTabLayout.setupWithViewPager(mViewPager);
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                mHandler.sendEmptyMessage(0xaa);
+            }
+        };
+
+        mHandler.postDelayed(runnable, 5000);
     }
+
+    private static Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message message) {
+            if (message.what == 0xaa) {
+                List<BookBean> list = new ArrayList<>();
+                for (int i = 0; i < 10; i++) {
+                    BookBean bookBean = new BookBean();
+                    bookBean.setDeviceId(i);
+                    bookBean.setDeviceName("Book" + i);
+                    bookBean.setDevicePlace("Place" + i);
+                    bookBean.setDeviceStatus("free");
+                    bookBean.setPeopleCount(i);
+                    bookBean.setRiceWeight(500 + i);
+                    bookBean.setTaste("soft");
+                    bookBean.setTime("17:30");
+                    list.add(bookBean);
+                }
+
+                for (OnRefreshBookInfoListener listener : mListenerList) {
+                    listener.onRefresh(list);
+                }
+            }
+        }
+    };
 
 
     @Override
@@ -73,4 +114,10 @@ public class BookActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * 数据更新监听器
+     */
+    interface OnRefreshBookInfoListener {
+        void onRefresh(List<BookBean> list);
+    }
 }

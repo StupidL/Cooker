@@ -2,8 +2,72 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="300dp"
+    android:layout_height="wrap_content"
     app:cardCornerRadius="3dp"
     app:cardElevation="5dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/book_id"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:gravity="center_vertical|start"
+            android:text="ID" />
+
+        <TextView
+            android:id="@+id/book_name"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:gravity="center_vertical|start"
+            android:text="Name" />
+
+        <TextView
+            android:id="@+id/book_weight"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:gravity="center_vertical|start"
+            android:text="Weight" />
+
+        <TextView
+            android:id="@+id/book_place"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:gravity="center_vertical|start"
+            android:text="Place" />
+
+        <TextView
+            android:id="@+id/book_people_count"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:gravity="center_vertical|start"
+            android:text="Count" />
+
+        <TextView
+            android:id="@+id/book_status"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:gravity="center_vertical|start"
+            android:text="Status" />
+
+        <TextView
+            android:id="@+id/book_taste"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:gravity="center_vertical|start"
+            android:text="Taste" />
+
+        <TextView
+            android:id="@+id/book_time"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:gravity="center_vertical|start"
+            android:text="Time" />
+    </LinearLayout>
+
 
 </android.support.v7.widget.CardView>

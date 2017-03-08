@@ -7,6 +7,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,7 @@ import me.stupidme.cooker.widget.SpaceItemDecoration;
  * Created by StupidL on 2017/3/5
  */
 
-public class BookHistoryFragment extends Fragment {
+public class BookHistoryFragment extends Fragment implements BookActivity.OnRefreshBookInfoListener {
 
     private RecyclerView mRecyclerView;
 
@@ -48,6 +49,8 @@ public class BookHistoryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mDataSet = new ArrayList<>();
         mAdapter = new BookRecyclerAdapter(mDataSet);
+
+        Log.v(getClass().getCanonicalName(), "onCreate()");
     }
 
     @Override
@@ -56,10 +59,13 @@ public class BookHistoryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_book, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.book_recycler_view);
         initRecyclerView();
+
+        Log.v(getClass().getCanonicalName(), "onCreateView()");
+
         return view;
     }
 
-    private void initRecyclerView(){
+    private void initRecyclerView() {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
@@ -104,6 +110,16 @@ public class BookHistoryFragment extends Fragment {
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(mRecyclerView);
 
+        Log.v(getClass().getCanonicalName(), "initRecyclerView()");
     }
 
+    @Override
+    public void onRefresh(List<BookBean> list) {
+        mDataSet.clear();
+        mDataSet.addAll(list);
+
+        mAdapter.notifyDataSetChanged();
+        Log.v(getClass().getCanonicalName(), "onRefresh()");
+        Log.v(getClass().getCanonicalName(), "list size: " + list.size());
+    }
 }
