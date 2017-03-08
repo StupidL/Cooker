@@ -58,9 +58,9 @@ public class StupidDBHelper extends SQLiteOpenHelper {
     public static final String BOOK_STATUS_FINISHED = "finished";
 
     // 预约记录建表语句
-    private static final String CREATE_TABLE_BOOK_RECORD = "CREATED TABLE "
+    private static final String CREATE_TABLE_BOOK_RECORD = "CREATE TABLE "
             + BOOK_RECORD_TABLE_NAME + "( "
-            + BOOK_ID + " INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, "
+            + BOOK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
             + BOOK_CREATED_TIME + " INTEGER, "
             + BOOK_UPDATED_TIME + " INTEGER, "
             + BOOK_COOKER_NAME + " VARCHAR(10), "
@@ -94,7 +94,7 @@ public class StupidDBHelper extends SQLiteOpenHelper {
     // 电饭锅信息建表语句
     private static final String CREATE_TABLE_COOKER_INFO = "CREATE TABLE "
             + COOKER_INFO_TABLE_NAME + " ("
-            + COOKER_ID + " INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, "
+            + COOKER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
             + COOKER_NAME + " VARCHAR(10), "
             + COOKER_LOCATION + " VARCHAR(20), "
             + COOKER_STATUS + " VARCHAR(10) "

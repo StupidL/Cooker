@@ -118,7 +118,7 @@ public class CookerFragment extends Fragment implements ICookerFragmentView, Coo
      */
     @Override
     public void onViewCreated(View view, Bundle bundle) {
-        mPresenter.onLoadFromDataBase();
+//        mPresenter.onLoadFromDataBase();
     }
 
     /**
