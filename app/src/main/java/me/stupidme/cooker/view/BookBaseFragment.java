@@ -15,8 +15,6 @@ import java.util.List;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
-import me.stupidme.cooker.retrofit.CookerRetrofit;
-import me.stupidme.cooker.retrofit.CookerService;
 import me.stupidme.cooker.widget.BookRecyclerAdapter;
 import me.stupidme.cooker.widget.SpaceItemDecoration;
 
@@ -41,10 +39,6 @@ public abstract class BookBaseFragment extends Fragment implements BookActivity.
      */
     protected BookRecyclerAdapter mAdapter;
 
-    /**
-     * 网络服务
-     */
-    protected CookerService mService;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,7 +47,6 @@ public abstract class BookBaseFragment extends Fragment implements BookActivity.
             mDataSet = new ArrayList<>();
         if (mAdapter == null)
             mAdapter = new BookRecyclerAdapter(mDataSet);
-        mService = CookerRetrofit.getInstance().getCookerService();
 
         Log.v(getClass().getCanonicalName(), "onCreate()");
     }
@@ -103,5 +96,6 @@ public abstract class BookBaseFragment extends Fragment implements BookActivity.
         mDataSet.addAll(list);
         mAdapter.notifyDataSetChanged();
         Log.v(getClass().getCanonicalName(), "onRefresh()");
+        Log.v(getClass().getCanonicalName(), "List Size: " + list.size());
     }
 }

@@ -131,5 +131,6 @@
     <string name="message_book_activity_dialog">This may be take a while, \\nplease wait a few seconds...</string>
     <string name="snackbar_text_book_history">Are you sure to delete it ?</string>
     <string name="snackbar_text_book_now">Are you sure to cancel this book ?</string>
+    <string name="toast_book_activity_local_no_data">No data in local, fetch from server please!</string>
 
 </resources>
