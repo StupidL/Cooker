@@ -26,7 +26,7 @@ public class CookerRecyclerAdapter extends RecyclerView.Adapter<CookerRecyclerAd
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cooker, parent);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cooker, parent, false);
         return new ViewHolder(view);
     }
 

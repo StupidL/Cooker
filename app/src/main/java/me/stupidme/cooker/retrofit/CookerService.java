@@ -49,7 +49,7 @@ public interface CookerService {
      * @return 设备信息列表
      */
     @GET("/user/devices")
-    Observable<List<CookerBean>> getAllDevices(@QueryMap Map options);
+    Observable<List<CookerBean>> getAllDevices(@QueryMap Map<String,String> options);
 
     /**
      * 获取具体设备的信息
@@ -103,7 +103,7 @@ public interface CookerService {
      * @return 预约列表
      */
     @GET("/user/books")
-    Observable<List<BookBean>> getAllBooksInfo(@QueryMap Map options);
+    Observable<List<BookBean>> getAllBooksInfo(@QueryMap Map<String,String> options);
 
     /**
      * 更新预约信息

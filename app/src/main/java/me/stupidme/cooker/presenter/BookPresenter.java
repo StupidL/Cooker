@@ -17,9 +17,9 @@ public class BookPresenter implements IBookPresenter {
 
     private IBookModel mModel;
 
-    public BookPresenter(IBookAddView view){
+    public BookPresenter(IBookAddView view) {
         mView = view;
-        mModel = new BookModel();
+        mModel = BookModel.getInstance();
     }
 
     @Override

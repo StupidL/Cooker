@@ -31,16 +31,16 @@ public class CookerActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
 
-        CookerFragment2 cookerFragment = CookerFragment2.newInstance();
+        CookerFragment2 cookerFragment2 = CookerFragment2.newInstance();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, cookerFragment)
+                .replace(R.id.fragment_container, cookerFragment2)
                 .commit();
 
         Log.i("CookerActivity", "Activity onCreate()");
@@ -61,8 +61,6 @@ public class CookerActivity extends AppCompatActivity
         return false;
     }
 
-
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();

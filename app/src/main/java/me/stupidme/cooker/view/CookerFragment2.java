@@ -3,12 +3,15 @@ package me.stupidme.cooker.view;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +19,7 @@ import android.view.ViewGroup;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,10 +50,10 @@ public class CookerFragment2 extends Fragment implements CookerDialog.CookerAddL
     private RecyclerView mRecyclerView;
 
     //存放所有的设备信息
-    private List<CookerBean> mDataSet;
+    private static List<CookerBean> mDataSet;
 
     //适配器
-    private CookerRecyclerAdapter mAdapter;
+    private static CookerRecyclerAdapter mAdapter;
 
     //添加一个设备的对话框
     private CookerDialog mCookerDialog;
@@ -62,6 +66,30 @@ public class CookerFragment2 extends Fragment implements CookerDialog.CookerAddL
 
     //本地数据库服务
     private CookerModel mModel;
+
+    private CookerHandler mHandler = new CookerHandler(CookerFragment2.this);
+
+    private static final int MESSAGE_WHAT_LOAD_LOCAL_DATA_FINISHED = 0xb1;
+
+    private static List<CookerBean> mLocalList;
+
+    private Runnable testLocalDataRunnable = () -> {
+        //从本地数据库加载
+//        mLocalList = mModel.loadCookersFromDataBase();
+
+        //模拟加载
+        if (mLocalList == null)
+            mLocalList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            CookerBean cooker = new CookerBean();
+            cooker.setName("Cooker" + i);
+            cooker.setLocation("Location" + i);
+            cooker.setStatus("free");
+            mLocalList.add(cooker);
+        }
+
+        mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_WHAT_LOAD_LOCAL_DATA_FINISHED));
+    };
 
     public CookerFragment2() {
 
@@ -82,6 +110,8 @@ public class CookerFragment2 extends Fragment implements CookerDialog.CookerAddL
         mService = CookerRetrofit.getInstance().getCookerService();
         mModel = CookerModel.getInstance();
         initProgressDialog();
+
+        Log.v("CookerFragment2", "onCreated()");
     }
 
     @Override
@@ -110,8 +140,18 @@ public class CookerFragment2 extends Fragment implements CookerDialog.CookerAddL
                     REQUEST_CODE_ADD_BOOK);
             menu.close(true);
         });
+
+        Log.v("CookerFragment2", "onCreateView()");
+
         return view;
     }
+
+    @Override
+    public void onViewCreated(View view, Bundle bundle) {
+        new Thread(testLocalDataRunnable).start();
+        Log.v("CookerFragment2", "onViewCreated()");
+    }
+
 
     @Override
     public void onSave(Map<String, String> map) {
@@ -122,31 +162,32 @@ public class CookerFragment2 extends Fragment implements CookerDialog.CookerAddL
         //TODO 将map转化为CookerBean对象
 
         //将新设备传到服务器
-        mService.postNewDevice(cooker)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<CookerBean>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(CookerBean value) {
-                        mModel.insertToDataBase(value);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mProgressDialog.dismiss();
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        mProgressDialog.dismiss();
-                    }
-                });
+//        mService.postNewDevice(cooker)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Observer<CookerBean>() {
+//                    @Override
+//                    public void onSubscribe(Disposable d) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onNext(CookerBean value) {
+//                        mModel.insertToDataBase(value);
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        mProgressDialog.dismiss();
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//                        mProgressDialog.dismiss();
+//                    }
+//                });
     }
+
 
     /**
      * 加载对话框，不能取消
@@ -167,7 +208,7 @@ public class CookerFragment2 extends Fragment implements CookerDialog.CookerAddL
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(manager);
-        mRecyclerView.addItemDecoration(new SpaceItemDecoration(20));
+        mRecyclerView.addItemDecoration(new SpaceItemDecoration(40));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         ItemTouchHelper.Callback callback =
@@ -217,5 +258,33 @@ public class CookerFragment2 extends Fragment implements CookerDialog.CookerAddL
 
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(mRecyclerView);
+    }
+
+    private static class CookerHandler extends Handler {
+
+        WeakReference<Fragment> weakReference;
+
+        CookerHandler(Fragment fragment) {
+            weakReference = new WeakReference<>(fragment);
+        }
+
+        @Override
+        public void handleMessage(Message message) {
+            Fragment f = weakReference.get();
+            if (f != null) {
+                handleAllMessage(message);
+            }
+        }
+
+        private void handleAllMessage(Message message) {
+            switch (message.what) {
+                case MESSAGE_WHAT_LOAD_LOCAL_DATA_FINISHED:
+                    mDataSet.clear();
+                    mDataSet.addAll(mLocalList);
+                    mAdapter.notifyDataSetChanged();
+                    Log.v("CookerHandler", "Message what: " + message.what);
+                    break;
+            }
+        }
     }
 }
