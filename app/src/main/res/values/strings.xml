@@ -134,5 +134,8 @@
     <string name="toast_book_activity_local_no_data">No data in local, fetch from server please!</string>
     <string name="title_book_add_activity_progress">PUSH TO SERVER</string>
     <string name="message_book_add_activity_dialog">This may take a while, please wait a few senconds...</string>
+    <string name="snackbar_text_cooker_fragment">Are you sure to delete this cooker?</string>
+    <string name="title_cooker_fragment_progress">PUSH DATA TO SERVER</string>
+    <string name="message_cooker_fragment_dialog">This may take a while, please wait a few seconds...</string>
 
 </resources>

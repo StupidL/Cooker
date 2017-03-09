@@ -5,7 +5,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 
 import java.util.HashMap;
@@ -27,9 +26,13 @@ public class CookerDialog extends Dialog {
 
     private Context mContext;
 
+    //Cooker的名字
     private TextInputEditText mName;
+    //Cooker的位置
     private TextInputEditText mLocation;
+    //保存信息
     private Button mOk;
+    //取消
     private Button mCancel;
 
     public CookerDialog(@NonNull Context context, CookerAddListener listener) {
@@ -45,36 +48,31 @@ public class CookerDialog extends Dialog {
         mOk = (Button) findViewById(R.id.cooker_ok);
         mCancel = (Button) findViewById(R.id.cooker_cancel);
 
-        mCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
+        mCancel.setOnClickListener(v -> dismiss());
+
+        mOk.setOnClickListener(v -> {
+
+            String name = mName.getText().toString();
+            String location = mLocation.getText().toString();
+
+            if (TextUtils.isEmpty(name)) {
+                mName.setError(mContext.getString(R.string.error_field_required));
+                return;
             }
-        });
-
-        mOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                String name = mName.getText().toString();
-                String location = mLocation.getText().toString();
-
-                if (TextUtils.isEmpty(name)) {
-                    mName.setError(mContext.getString(R.string.error_field_required));
-                    return;
-                }
-                if (TextUtils.isEmpty(location)) {
-                    mLocation.setError(mContext.getString(R.string.error_field_required));
-                    return;
-                }
-                Map<String, String> map = new HashMap<>();
-                map.put(COOKER_NAME_KEY, name);
-                map.put(COOKER_LOCATION_KEY, location);
-                mListener.onSave(map);
+            if (TextUtils.isEmpty(location)) {
+                mLocation.setError(mContext.getString(R.string.error_field_required));
+                return;
             }
+            Map<String, String> map = new HashMap<>();
+            map.put(COOKER_NAME_KEY, name);
+            map.put(COOKER_LOCATION_KEY, location);
+            mListener.onSave(map);
         });
     }
 
+    /**
+     * 回调接口
+     */
     public interface CookerAddListener {
         void onSave(Map<String, String> map);
     }
