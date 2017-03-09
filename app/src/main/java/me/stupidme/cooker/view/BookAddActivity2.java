@@ -77,7 +77,7 @@ public class BookAddActivity2 extends AppCompatActivity {
 
         BookBean book = new BookBean();
 
-        mService.postNewBook(book)
+        mService.rxPostNewBook(book)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<BookBean>() {

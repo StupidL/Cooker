@@ -137,5 +137,6 @@
     <string name="snackbar_text_cooker_fragment">Are you sure to delete this cooker?</string>
     <string name="title_cooker_fragment_progress">PUSH DATA TO SERVER</string>
     <string name="message_cooker_fragment_dialog">This may take a while, please wait a few seconds...</string>
+    <string name="menu_cooker_fragment_refresh">REFRESH</string>
 
 </resources>

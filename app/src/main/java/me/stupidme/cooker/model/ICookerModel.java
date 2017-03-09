@@ -13,25 +13,32 @@ public interface ICookerModel {
      *
      * @param bean 电饭锅
      */
-    void deleteFromDataBase(CookerBean bean);
+    void deleteCooker(CookerBean bean);
 
     /**
      * 插入关于电饭锅的记录到数据库
      *
      * @param bean 电饭锅
      */
-    void insertToDataBase(CookerBean bean);
+    void insertCooker(CookerBean bean);
 
     /**
      * 从数据库取出所有电饭锅信息
      */
-    List<CookerBean> loadCookersFromDataBase();
+    List<CookerBean> queryCookers();
 
     /**
-     * 从网络上获取电饭锅信息并且更新状态到界面和数据库
+     * 更新状态到数据库
      *
      * @param bean 电饭锅
      */
-    void updateStatusToDataBase(CookerBean bean);
+    void updateCooker(CookerBean bean);
+
+    /**
+     * 批量更新状态到数据库
+     *
+     * @param list 电饭锅列表
+     */
+    void updateCookers(List<CookerBean> list);
 
 }

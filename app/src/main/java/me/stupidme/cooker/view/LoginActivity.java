@@ -19,6 +19,7 @@ import android.widget.CheckBox;
 import android.widget.Toast;
 
 import me.stupidme.cooker.R;
+import me.stupidme.cooker.view.cooker.CookerActivity;
 
 
 /**

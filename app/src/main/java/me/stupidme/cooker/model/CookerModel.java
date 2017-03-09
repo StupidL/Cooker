@@ -25,22 +25,22 @@ public class CookerModel implements ICookerModel {
     }
 
     @Override
-    public void deleteFromDataBase(CookerBean bean) {
+    public void deleteCooker(CookerBean bean) {
         mManager.deleteCooker(bean);
     }
 
     @Override
-    public void insertToDataBase(CookerBean bean) {
+    public void insertCooker(CookerBean bean) {
         mManager.insertCooker(bean);
     }
 
     @Override
-    public List<CookerBean> loadCookersFromDataBase() {
+    public List<CookerBean> queryCookers() {
         return mManager.queryCookers();
     }
 
     @Override
-    public void updateStatusToDataBase(CookerBean bean) {
+    public void updateCooker(CookerBean bean) {
         mManager.updateCooker(bean);
     }
 }

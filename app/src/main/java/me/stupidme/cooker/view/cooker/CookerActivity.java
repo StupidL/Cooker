@@ -1,4 +1,4 @@
-package me.stupidme.cooker.view;
+package me.stupidme.cooker.view.cooker;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +14,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import me.stupidme.cooker.R;
+import me.stupidme.cooker.view.AboutActivity;
+import me.stupidme.cooker.view.BookActivity;
+import me.stupidme.cooker.view.CookerFragment2;
+import me.stupidme.cooker.view.LoginActivity;
 
 public class CookerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -58,7 +62,13 @@ public class CookerActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        return false;
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return item.getItemId() != R.id.cooker_fragment_refresh;
     }
 
     @Override

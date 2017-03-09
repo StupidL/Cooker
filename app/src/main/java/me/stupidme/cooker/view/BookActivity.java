@@ -233,7 +233,7 @@ public class BookActivity extends AppCompatActivity {
         //真实的网络请求
         Map<String, String> map = new HashMap<>();
 
-        mService.getAllBooksInfo(map)
+        mService.rxGetAllBooksInfo(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<BookBean>>() {

@@ -1,16 +1,22 @@
-package me.stupidme.cooker.view;
+package me.stupidme.cooker.view.cooker;
 
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -24,6 +30,8 @@ import me.stupidme.cooker.R;
 import me.stupidme.cooker.db.StupidDBHelper;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.presenter.CookerPresenter;
+import me.stupidme.cooker.view.BookAddActivity;
+import me.stupidme.cooker.view.CookerDialog;
 import me.stupidme.cooker.widget.CookerRecyclerAdapter;
 import me.stupidme.cooker.widget.SpaceItemDecoration;
 
@@ -32,21 +40,27 @@ import me.stupidme.cooker.widget.SpaceItemDecoration;
  * CookerFragment展示的是用户所有的电饭锅的信息
  */
 
-public class CookerFragment extends Fragment implements ICookerFragmentView, CookerObserver,
-        CookerDialog.CookerAddListener {
+public class CookerFragment extends Fragment implements ICookerView, CookerDialog.CookerAddListener {
 
-    private static final int REQUEST_CODE_ADD_COOKER = 0x03;
+    //请求码，启动添加预约界面
     private static final int REQUEST_CODE_ADD_BOOK = 0x04;
 
+    //RecyclerView控件，展示所有的Cooker设备信息
     private RecyclerView mRecyclerView;
 
+    //存放所有设备信息的集合
     private List<CookerBean> mDataSet;
 
+    //RecyclerView的适配器，决定每一个子项目的行为和外观
     private CookerRecyclerAdapter mAdapter;
 
+    //Presenter，控制网络请求和数据库读写
     private CookerPresenter mPresenter;
 
+    //对话框，在添加设备的时候会显示
     private CookerDialog mDialog;
+
+    private ProgressDialog mProgressDialog;
 
     public CookerFragment() {
         // Required empty public constructor
@@ -62,19 +76,18 @@ public class CookerFragment extends Fragment implements ICookerFragmentView, Coo
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
         mDataSet = new ArrayList<>();
         mAdapter = new CookerRecyclerAdapter(mDataSet);
         mPresenter = CookerPresenter.getInstance(this);
+
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setTitle(getResources().getString(R.string.title_cooker_fragment_progress));
+        mProgressDialog.setMessage(getResources().getString(R.string.message_cooker_fragment_dialog));
+        mProgressDialog.setCancelable(false);
     }
 
-    /**
-     * 初始化控件
-     *
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -97,22 +110,37 @@ public class CookerFragment extends Fragment implements ICookerFragmentView, Coo
         });
 
         fabBook.setOnClickListener(v -> {
-            startActivityForResult(new Intent(getActivity(), BookAddActivity.class),
-                    REQUEST_CODE_ADD_BOOK);
+            startActivityForResult(new Intent(getActivity(), BookAddActivity.class), REQUEST_CODE_ADD_BOOK);
             menu.close(true);
         });
+
         return view;
     }
 
-    /**
-     * 控件创建之后，从数据库加载电饭锅数据
-     *
-     * @param view
-     * @param bundle
-     */
     @Override
     public void onViewCreated(View view, Bundle bundle) {
+        mPresenter.queryCookersFromDB();
+    }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.cooker_fragment_refresh) {
+
+            Map<String, String> map = new ArrayMap<>();
+
+            //TODO inflate map
+
+
+            mPresenter.queryCookersFromServer(map);
+
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -155,79 +183,25 @@ public class CookerFragment extends Fragment implements ICookerFragmentView, Coo
                     @Override
                     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                         int position = viewHolder.getAdapterPosition();
-//                        mDataSet.remove(position);
-//                        mAdapter.notifyItemRemoved(position);
-                        mPresenter.onDeleteCooker(mDataSet.get(position));
+                        CookerBean bean = mDataSet.get(position);
+                        mDataSet.remove(position);
+                        mAdapter.notifyItemRemoved(position);
+
+                        Snackbar.make(viewHolder.itemView,
+                                getString(R.string.snackbar_text_cooker_fragment),
+                                500)
+                                .setAction("DELETE", v -> {
+                                    mPresenter.deleteCooker(bean);
+                                });
+
+                        mDataSet.add(position, bean);
+                        mAdapter.notifyItemInserted(position);
                     }
                 };
 
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(mRecyclerView);
 
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
-    /**
-     * 界面上更新该电饭锅的信息
-     *
-     * @param bean     更新后的电饭锅
-     * @param position 电饭锅位置
-     */
-    @Override
-    public void updateStatusToView(int position, CookerBean bean) {
-
-    }
-
-    /**
-     * 从界面中移除该项目
-     *
-     * @param bean 电饭锅
-     */
-    @Override
-    public void removeItem(CookerBean bean) {
-        mDataSet.remove(bean);
-        mAdapter.notifyItemRemoved(mDataSet.indexOf(bean));
-    }
-
-    /**
-     * 在界面的列表第一项插入该电饭锅信息
-     *
-     * @param bean 电饭锅
-     */
-    @Override
-    public void insertItem(CookerBean bean) {
-        mDataSet.add(0, bean);
-        mAdapter.notifyItemInserted(0);
-    }
-
-    /**
-     * 从数据库中加载所有的电饭锅信息
-     *
-     * @param list 电饭锅列表
-     */
-    @Override
-    public void loadCookersFromDataBase(List<CookerBean> list) {
-        mDataSet = list;
-        mAdapter.notifyDataSetChanged();
-    }
-
-    /**
-     * 该电饭锅的状态更新后，本观察者收到通知，并且通过mPresenter更新界面和数据库
-     *
-     * @param bean 电饭锅
-     */
-    @Override
-    public void notifyObserver(int position, CookerBean bean) {
-        mPresenter.onUpdateStatus(position, bean);
     }
 
     /**
@@ -245,6 +219,56 @@ public class CookerFragment extends Fragment implements ICookerFragmentView, Coo
         cooker.setLocation(loc);
         cooker.setStatus(StupidDBHelper.COOKER_STATUS_FREE);
 
-        mPresenter.onInsertCooker(cooker);
+        mPresenter.insertCooker(cooker);
+    }
+
+    @Override
+    public void showProgressDialog(boolean show) {
+        if (show) {
+            if (!mProgressDialog.isShowing())
+                mProgressDialog.show();
+        } else {
+            if (mProgressDialog.isShowing())
+                mProgressDialog.dismiss();
+        }
+    }
+
+    @Override
+    public void removeCooker(CookerBean cooker) {
+        int position = mDataSet.indexOf(cooker);
+        mDataSet.remove(cooker);
+        mAdapter.notifyItemRemoved(position);
+    }
+
+    @Override
+    public void insertCooker(CookerBean cooker) {
+        mDataSet.add(0, cooker);
+        mAdapter.notifyItemInserted(0);
+    }
+
+    @Override
+    public void insertCookers(List<CookerBean> list) {
+        mDataSet.clear();
+        mDataSet.addAll(list);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void updateCooker(int position, CookerBean cooker) {
+        mDataSet.remove(position);
+        mDataSet.add(position, cooker);
+        mAdapter.notifyItemChanged(position);
+    }
+
+    @Override
+    public void updateCookers(List<CookerBean> list) {
+        mDataSet.clear();
+        mDataSet.addAll(list);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void showMessage(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 }

@@ -75,7 +75,7 @@ public class CookerFragment2 extends Fragment implements CookerDialog.CookerAddL
 
     private Runnable testLocalDataRunnable = () -> {
         //从本地数据库加载
-//        mLocalList = mModel.loadCookersFromDataBase();
+//        mLocalList = mModel.queryCookers();
 
         //模拟加载
         if (mLocalList == null)
@@ -173,7 +173,7 @@ public class CookerFragment2 extends Fragment implements CookerDialog.CookerAddL
 //
 //                    @Override
 //                    public void onNext(CookerBean value) {
-//                        mModel.insertToDataBase(value);
+//                        mModel.insertCooker(value);
 //                    }
 //
 //                    @Override
