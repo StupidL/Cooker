@@ -8,6 +8,17 @@ import java.util.List;
 
 public class BookModel implements IBookModel {
 
+    private static BookModel sInstance;
+
+    private BookModel() {
+    }
+
+    public static BookModel getInstance() {
+        if (sInstance == null)
+            sInstance = new BookModel();
+        return sInstance;
+    }
+
     @Override
     public void addBookToDataBase(BookBean bookBean) {
 
