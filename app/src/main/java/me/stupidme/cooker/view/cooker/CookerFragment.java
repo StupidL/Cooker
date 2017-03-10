@@ -1,19 +1,16 @@
 package me.stupidme.cooker.view.cooker;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.ArrayMap;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -31,7 +28,6 @@ import me.stupidme.cooker.db.StupidDBHelper;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.presenter.CookerPresenter;
 import me.stupidme.cooker.view.BookAddActivity;
-import me.stupidme.cooker.view.CookerDialog;
 import me.stupidme.cooker.widget.CookerRecyclerAdapter;
 import me.stupidme.cooker.widget.SpaceItemDecoration;
 
@@ -60,7 +56,8 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
     //对话框，在添加设备的时候会显示
     private CookerDialog mDialog;
 
-    private ProgressDialog mProgressDialog;
+    //下拉刷新控件
+    private SwipeRefreshLayout mSwipeLayout;
 
     public CookerFragment() {
         // Required empty public constructor
@@ -82,16 +79,22 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         mAdapter = new CookerRecyclerAdapter(mDataSet);
         mPresenter = CookerPresenter.getInstance(this);
 
-        mProgressDialog = new ProgressDialog(getActivity());
-        mProgressDialog.setTitle(getResources().getString(R.string.title_cooker_fragment_progress));
-        mProgressDialog.setMessage(getResources().getString(R.string.message_cooker_fragment_dialog));
-        mProgressDialog.setCancelable(false);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cooker, container, false);
+        mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.cooker_swipe_layout);
+        mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Map<String, String> map = new ArrayMap<>();
+
+                mPresenter.queryCookersFromServer(map);
+            }
+        });
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         initRecyclerView();
 
@@ -122,27 +125,6 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         mPresenter.queryCookersFromDB();
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.cooker_fragment_refresh) {
-
-            Map<String, String> map = new ArrayMap<>();
-
-            //TODO inflate map
-
-
-            mPresenter.queryCookersFromServer(map);
-
-            return true;
-        }
-        return false;
-    }
-
     /**
      * 初始化RecyclerView
      */
@@ -152,7 +134,7 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(manager);
-        mRecyclerView.addItemDecoration(new SpaceItemDecoration(20));
+        mRecyclerView.addItemDecoration(new SpaceItemDecoration(40));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         ItemTouchHelper.Callback callback =
@@ -189,10 +171,10 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
 
                         Snackbar.make(viewHolder.itemView,
                                 getString(R.string.snackbar_text_cooker_fragment),
-                                500)
+                                1000)
                                 .setAction("DELETE", v -> {
                                     mPresenter.deleteCooker(bean);
-                                });
+                                }).show();
 
                         mDataSet.add(position, bean);
                         mAdapter.notifyItemInserted(position);
@@ -223,13 +205,13 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
     }
 
     @Override
-    public void showProgressDialog(boolean show) {
+    public void setRefreshing(boolean show) {
         if (show) {
-            if (!mProgressDialog.isShowing())
-                mProgressDialog.show();
+            if (!mSwipeLayout.isRefreshing())
+                mSwipeLayout.setRefreshing(true);
         } else {
-            if (mProgressDialog.isShowing())
-                mProgressDialog.dismiss();
+            if (mSwipeLayout.isRefreshing())
+                mSwipeLayout.setRefreshing(false);
         }
     }
 

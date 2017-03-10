@@ -51,9 +51,6 @@ public class CookerPresenter implements ICookerPresenter {
         Log.v(TAG, "++++++CookerPresenter deleteCooker()++++++");
         Log.v(TAG, "args: CookerBean = " + bean.toString());
 
-        //显示对话框
-        mView.showProgressDialog(true);
-
         //同步至服务器
         mService.rxDeleteDevice(bean)
                 .subscribeOn(Schedulers.io())
@@ -73,7 +70,7 @@ public class CookerPresenter implements ICookerPresenter {
                     @Override
                     public void onError(Throwable e) {
                         mView.showMessage(e.toString());
-                        mView.showProgressDialog(false);
+                        mView.setRefreshing(false);
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
@@ -83,8 +80,7 @@ public class CookerPresenter implements ICookerPresenter {
                         mView.removeCooker(bean);
                         //数据库删除该设备
                         mModel.deleteCooker(bean);
-                        mView.showProgressDialog(false);
-                        mView.showMessage("Success!");
+                        mView.setRefreshing(false);
                         Log.i(TAG, "onComplete: ");
                     }
                 });
@@ -95,10 +91,6 @@ public class CookerPresenter implements ICookerPresenter {
 
         Log.v(TAG, "++++++CookerPresenter insertCooker()++++++");
         Log.v(TAG, "args: CookerBean = " + bean.toString());
-
-
-        //显示对话框
-        mView.showProgressDialog(true);
 
         //同步至服务器
         mService.rxPostNewDevice(bean)
@@ -119,7 +111,7 @@ public class CookerPresenter implements ICookerPresenter {
                     @Override
                     public void onError(Throwable e) {
                         mView.showMessage(e.toString());
-                        mView.showProgressDialog(false);
+                        mView.setRefreshing(false);
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
@@ -127,8 +119,8 @@ public class CookerPresenter implements ICookerPresenter {
                     public void onComplete() {
                         mModel.insertCooker(bean);
                         mView.insertCooker(bean);
-                        mView.showProgressDialog(false);
-                        mView.showMessage("Success!");
+                        mView.setRefreshing(false);
+                        Log.i(TAG, "onComplete: ");
                     }
                 });
     }
@@ -136,10 +128,21 @@ public class CookerPresenter implements ICookerPresenter {
     @Override
     public void queryCookersFromDB() {
 
-        Log.v(TAG, "++++++CookerPresenter deleteCooker()++++++");
-        Log.v(TAG, "args: null ");
+        //just a test
+        List<CookerBean> list = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            CookerBean cooker = new CookerBean();
+            cooker.setName("Cooker" + i);
+            cooker.setLocation("Place" + i);
+            cooker.setStatus(i % 2 == 0 ? "free" : "booking");
+            list.add(cooker);
+        }
+        mView.insertCookers(list);
 
-        mView.insertCookers(mModel.queryCookers());
+//        Log.v(TAG, "++++++CookerPresenter deleteCooker()++++++");
+//        Log.v(TAG, "args: null ");
+//
+//        mView.insertCookers(mModel.queryCookers());
     }
 
     @Override
@@ -147,9 +150,6 @@ public class CookerPresenter implements ICookerPresenter {
 
         Log.v(TAG, "++++++CookerPresenter updateCooker()++++++");
         Log.v(TAG, "args: CookerBean = " + bean.toString());
-
-        //显示对话框
-        mView.showProgressDialog(true);
 
         //同步至服务器
         mService.rxUpdateDevice(bean)               //创建Observable对象
@@ -170,7 +170,7 @@ public class CookerPresenter implements ICookerPresenter {
                     @Override
                     public void onError(Throwable e) {
                         mView.showMessage(e.toString());
-                        mView.showProgressDialog(false);
+                        mView.setRefreshing(false);
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
@@ -178,8 +178,8 @@ public class CookerPresenter implements ICookerPresenter {
                     public void onComplete() {
                         mView.updateCooker(position, bean);
                         mModel.updateCooker(bean);
-                        mView.showProgressDialog(false);
-                        mView.showMessage("Success!");
+                        mView.setRefreshing(false);
+                        Log.i(TAG, "onComplete: ");
                     }
                 });
 
@@ -191,7 +191,7 @@ public class CookerPresenter implements ICookerPresenter {
         Log.v(TAG, "++++++CookerPresenter queryCookersFromServer()++++++");
         Log.v(TAG, "args: Map = " + map.toString());
 
-        mView.showProgressDialog(true);
+        mView.setRefreshing(true);
         mService.rxGetAllDevices(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -214,7 +214,7 @@ public class CookerPresenter implements ICookerPresenter {
                     @Override
                     public void onError(Throwable e) {
                         mView.showMessage(e.toString());
-                        mView.showProgressDialog(false);
+                        mView.setRefreshing(false);
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
@@ -222,8 +222,8 @@ public class CookerPresenter implements ICookerPresenter {
                     public void onComplete() {
                         mView.updateCookers(list);
                         mModel.updateCookers(list);
-                        mView.showProgressDialog(false);
-                        mView.showMessage("Success!");
+                        mView.setRefreshing(false);
+                        Log.i(TAG, "onComplete: ");
                     }
                 });
     }

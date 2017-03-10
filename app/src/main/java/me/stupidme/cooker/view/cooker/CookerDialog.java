@@ -1,4 +1,4 @@
-package me.stupidme.cooker.view;
+package me.stupidme.cooker.view.cooker;
 
 import android.app.Dialog;
 import android.content.Context;

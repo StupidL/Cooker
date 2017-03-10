@@ -10,7 +10,7 @@ import me.stupidme.cooker.model.CookerBean;
 
 public interface ICookerView {
 
-    void showProgressDialog(boolean show);
+    void setRefreshing(boolean show);
 
     void removeCooker(CookerBean cooker);
 

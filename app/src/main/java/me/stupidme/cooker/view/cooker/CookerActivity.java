@@ -10,14 +10,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.view.AboutActivity;
-import me.stupidme.cooker.view.book.BookActivity;
-import me.stupidme.cooker.view.CookerFragment2;
 import me.stupidme.cooker.view.LoginActivity;
+import me.stupidme.cooker.view.book.BookActivity;
 
 public class CookerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -42,10 +40,10 @@ public class CookerActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
 
-//        CookerFragment2 cookerFragment2 = CookerFragment2.newInstance();
-//        getSupportFragmentManager().beginTransaction()
-//                .replace(R.id.fragment_container, cookerFragment2)
-//                .commit();
+        CookerFragment cookerFragment = CookerFragment.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, cookerFragment)
+                .commit();
 
         Log.i("CookerActivity", "Activity onCreate()");
     }
@@ -58,17 +56,6 @@ public class CookerActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return item.getItemId() != R.id.cooker_fragment_refresh;
     }
 
     @Override
