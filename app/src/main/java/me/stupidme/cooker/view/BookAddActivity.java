@@ -54,7 +54,7 @@ public class BookAddActivity extends AppCompatActivity implements IBookAddView {
         mRiceWeight = (EditText) findViewById(R.id.book_et_rice);
         mCookTime = (EditText) findViewById(R.id.book_et_time);
 
-        mPresenter = new BookPresenter(this);
+//        mPresenter = new BookPresenter(this);
 
         Log.i("BookAddActivity", "Activity onCreate()");
     }

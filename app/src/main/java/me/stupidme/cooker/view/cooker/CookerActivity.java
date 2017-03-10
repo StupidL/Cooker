@@ -15,7 +15,7 @@ import android.view.MenuItem;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.view.AboutActivity;
-import me.stupidme.cooker.view.BookActivity;
+import me.stupidme.cooker.view.book.BookActivity;
 import me.stupidme.cooker.view.CookerFragment2;
 import me.stupidme.cooker.view.LoginActivity;
 
@@ -42,10 +42,10 @@ public class CookerActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
 
-        CookerFragment2 cookerFragment2 = CookerFragment2.newInstance();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, cookerFragment2)
-                .commit();
+//        CookerFragment2 cookerFragment2 = CookerFragment2.newInstance();
+//        getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.fragment_container, cookerFragment2)
+//                .commit();
 
         Log.i("CookerActivity", "Activity onCreate()");
     }

@@ -128,15 +128,17 @@
     <string name="dialog_cooker_name">Cooker name</string>
     <string name="dialog_cooker_location">Cooker location</string>
     <string name="title_book_activity_progress">FETCHING DATA</string>
-    <string name="message_book_activity_dialog">This may be take a while, \\nplease wait a few seconds...</string>
+    <string name="message_book_activity_dialog">This may be take a while, please wait a few seconds…</string>
     <string name="snackbar_text_book_history">Are you sure to delete it ?</string>
     <string name="snackbar_text_book_now">Are you sure to cancel this book ?</string>
     <string name="toast_book_activity_local_no_data">No data in local, fetch from server please!</string>
     <string name="title_book_add_activity_progress">PUSH TO SERVER</string>
-    <string name="message_book_add_activity_dialog">This may take a while, please wait a few senconds...</string>
+    <string name="message_book_add_activity_dialog">This may take a while, please wait a few senconds…</string>
     <string name="snackbar_text_cooker_fragment">Are you sure to delete this cooker?</string>
     <string name="title_cooker_fragment_progress">PUSH DATA TO SERVER</string>
-    <string name="message_cooker_fragment_dialog">This may take a while, please wait a few seconds...</string>
+    <string name="message_cooker_fragment_dialog">This may take a while, please wait a few seconds…</string>
     <string name="menu_cooker_fragment_refresh">REFRESH</string>
+    <string name="title_book_fragment_progress">FETCH DATA FROM SERVER</string>
+    <string name="message_book_fragment_dialog">This may take a while, please wait a few seconds…</string>
 
 </resources>

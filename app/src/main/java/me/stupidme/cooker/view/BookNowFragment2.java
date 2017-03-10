@@ -9,6 +9,7 @@ import java.util.Collections;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
+import me.stupidme.cooker.view.book.BookBaseFragment;
 
 /**
  * Created by StupidL on 2017/3/8.

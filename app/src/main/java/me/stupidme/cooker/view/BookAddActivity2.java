@@ -88,7 +88,7 @@ public class BookAddActivity2 extends AppCompatActivity {
 
                     @Override
                     public void onNext(BookBean value) {
-                        mModel.addBookToDataBase(value);
+
                     }
 
                     @Override

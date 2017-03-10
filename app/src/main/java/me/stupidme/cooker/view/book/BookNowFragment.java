@@ -1,4 +1,5 @@
-package me.stupidme.cooker.view;
+package me.stupidme.cooker.view.book;
+
 
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -9,32 +10,29 @@ import java.util.Collections;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
-import me.stupidme.cooker.view.book.BookBaseFragment;
 
 /**
- * Created by StupidL on 2017/3/8.
+ * Created by StupidL on 2017/3/5
  */
 
-public class BookHistoryFragment2 extends BookBaseFragment {
+public class BookNowFragment extends BookBaseFragment {
 
-    public BookHistoryFragment2() {
-
+    public BookNowFragment() {
+        // Required empty public constructor
     }
 
-    public static BookHistoryFragment2 newInstance() {
-        BookHistoryFragment2 fragment2 = new BookHistoryFragment2();
-        Bundle bundle = new Bundle();
-        fragment2.setArguments(bundle);
-        return fragment2;
+    public static BookNowFragment newInstance() {
+        BookNowFragment fragment = new BookNowFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
     }
-
 
     @Override
     protected void setItemTouchHelperCallback() {
-
         ItemTouchHelper.Callback callback =
                 new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,
-                        ItemTouchHelper.LEFT) {
+                        ItemTouchHelper.RIGHT) {
                     @Override
                     public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
                                           RecyclerView.ViewHolder target) {
@@ -60,23 +58,21 @@ public class BookHistoryFragment2 extends BookBaseFragment {
                     @Override
                     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                         int position = viewHolder.getAdapterPosition();
-                        BookBean bookBean = mDataSet.get(position);
+                        BookBean bean = mDataSet.get(position);
                         mDataSet.remove(position);
                         mAdapter.notifyItemRemoved(position);
 
                         Snackbar.make(viewHolder.itemView,
-                                getResources().getString(R.string.snackbar_text_book_history),
-                                Snackbar.LENGTH_LONG)
-                                .setAction("CANCEL", v -> {
-                                    mDataSet.add(position, bookBean);
-                                    mAdapter.notifyItemInserted(position);
+                                getString(R.string.snackbar_text_cooker_fragment),
+                                1000)
+                                .setAction("DELETE", v -> {
+                                    mPresenter.deleteBook(bean);
                                 }).show();
 
-                        //TODO delete this item on server
-
+                        mDataSet.add(position, bean);
+                        mAdapter.notifyItemInserted(position);
                     }
                 };
-
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(mRecyclerView);
     }

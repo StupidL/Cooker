@@ -43,4 +43,9 @@ public class CookerModel implements ICookerModel {
     public void updateCooker(CookerBean bean) {
         mManager.updateCooker(bean);
     }
+
+    @Override
+    public void updateCookers(List<CookerBean> list) {
+        list.forEach(this::updateCooker);
+    }
 }

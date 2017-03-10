@@ -20,12 +20,22 @@ public class BookModel implements IBookModel {
     }
 
     @Override
-    public void addBookToDataBase(BookBean bookBean) {
+    public void insertBook(BookBean book) {
 
     }
 
     @Override
-    public List<String> getAllCookersName() {
+    public void insertBooks(List<BookBean> list) {
+
+    }
+
+    @Override
+    public void updateBook(BookBean book) {
+
+    }
+
+    @Override
+    public List<BookBean> queryBooks() {
         return null;
     }
 }

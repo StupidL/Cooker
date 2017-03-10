@@ -1,6 +1,6 @@
 package me.stupidme.cooker.presenter;
 
-import java.util.List;
+import java.util.Map;
 
 import me.stupidme.cooker.model.BookBean;
 
@@ -11,17 +11,28 @@ import me.stupidme.cooker.model.BookBean;
 public interface IBookPresenter {
 
     /**
-     * 数据库增加一个预约记录，并且需要上传服务器
+     * 插入一条预约信息，本地数据库和服务器均要插入
      *
-     * @param bookBean 预约记录
+     * @param book 预约
      */
-    void addBook(BookBean bookBean);
+    void insertBook(BookBean book);
 
     /**
-     * 得到所有电饭锅的名称，以提供选择
+     * 删除一个预约，本地数据库和服务器均要删除
      *
-     * @return 电饭锅名称列表
+     * @param book 预约
      */
-    List<String> getCookersName();
+    void deleteBook(BookBean book);
 
+    /**
+     * 从本地数据库查找所有预约信息，在界面第一次加载的时候使用
+     */
+    void queryBooksFromDB();
+
+    /**
+     * 从服务器同步最新的预约信息，同时要更新本地数据库和界面
+     *
+     * @param map 查询参数
+     */
+    void queryBooksFromServer(Map<String, String> map);
 }
