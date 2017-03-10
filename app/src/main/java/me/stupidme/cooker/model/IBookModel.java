@@ -30,10 +30,24 @@ public interface IBookModel {
     void updateBook(BookBean book);
 
     /**
+     * 批量更新。可以删除所有数据再插入
+     *
+     * @param list 预约列表
+     */
+    void updateBooks(List<BookBean> list);
+
+    /**
      * 从本地数据库查询所有的预约信息
      *
      * @return 预约信息列表
      */
     List<BookBean> queryBooks();
+
+    /**
+     * 删除本地数据库某条预约记录
+     *
+     * @param book 预约
+     */
+    void deleteBook(BookBean book);
 
 }

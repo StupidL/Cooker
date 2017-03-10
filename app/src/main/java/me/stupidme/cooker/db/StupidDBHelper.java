@@ -39,11 +39,17 @@ public class StupidDBHelper extends SQLiteOpenHelper {
     // 预约设置的人数
     public static final String BOOK_PEOPLE_COUNT = "peopleCount";
 
+    //米量
+    public static final String BOOK_RICE_WEIGHT = "riceCount";
+
     // 预约设置的口味，可以设置为 “偏软”、 “偏硬”
     public static final String BOOK_TASTE = "taste";
 
     // 预约的当前状态， 可以设置为 “预约中”、 “已完成”
     public static final String BOOK_STATUS = "status";
+
+    // 设定的时间
+    public static final String BOOK_TIME = "time";
 
     // 偏软口味
     public static final String BOOK_TASTE_SOFT = "soft";
@@ -66,6 +72,7 @@ public class StupidDBHelper extends SQLiteOpenHelper {
             + BOOK_COOKER_NAME + " VARCHAR(10), "
             + BOOK_COOKER_LOCATION + " VARCHAR(10), "
             + BOOK_PEOPLE_COUNT + " INT(2), "
+            + BOOK_RICE_WEIGHT + " INTEGER, "
             + BOOK_TASTE + " VARCHAR(4), "
             + BOOK_STATUS + " VARCHAR(10) "
             + ")";

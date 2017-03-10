@@ -169,6 +169,9 @@ public interface CookerService {
     @DELETE("/user/books/{id}")
     Observable<BookBean> rxDeleteBook(@Path("id") int bookId);
 
+    @DELETE("/user/books/")
+    Observable<BookBean> rxDeleteBook(@Body BookBean book);
+
     @DELETE("/user/books/{id}")
     Call<BookBean> retrofitDeleteBook(@Path("id") int bookId);
 

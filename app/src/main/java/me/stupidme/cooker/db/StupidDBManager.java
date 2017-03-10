@@ -10,6 +10,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.CookerBean;
 
 /**
@@ -120,4 +121,65 @@ public class StupidDBManager {
         return list;
     }
 
+    /**
+     * 插入一个预约信息,要防止数据重复！！！
+     *
+     * @param bean 预约信息
+     */
+    public void insertBook(BookBean bean) {
+//        ContentValues values = new ContentValues();
+//        values.put(StupidDBHelper.BOOK_ID, bean.getDeviceId());
+//        values.put(StupidDBHelper.BOOK_COOKER_NAME, bean.getDeviceName());
+//        values.put(StupidDBHelper.BOOK_COOKER_LOCATION, bean.getDevicePlace());
+//        values.put(StupidDBHelper.BOOK_PEOPLE_COUNT, bean.getPeopleCount());
+//        values.put(StupidDBHelper.BOOK_RICE_WEIGHT, bean.getRiceWeight());
+//        values.put(StupidDBHelper.BOOK_STATUS, bean.getDeviceStatus());
+//        values.put(StupidDBHelper.BOOK_TIME, bean.getTime());
+//        mDataBase.insert(StupidDBHelper.BOOK_RECORD_TABLE_NAME, null, values);
+    }
+
+    /**
+     * 批量插入预约信息。为防止重复，可以先清空表再插入，也可以replace插入
+     *
+     * @param list 预约信息列表
+     */
+    public void insertBooks(List<BookBean> list) {
+
+    }
+
+    /**
+     * 删除一个预约信息
+     *
+     * @param bean 预约信息
+     */
+    public void deleteBook(BookBean bean) {
+
+    }
+
+    /**
+     * 更新一个预约信息
+     *
+     * @param bean 预约信息
+     */
+    public void updateBook(BookBean bean) {
+
+    }
+
+    /**
+     * 批量更新预约信息
+     *
+     * @param list 预约信息列表
+     */
+    public void updateBooks(List<BookBean> list) {
+
+    }
+
+    /**
+     * 查询所有预约信息
+     *
+     * @return 预约信息列表
+     */
+    public List<BookBean> queryBooks() {
+        return new ArrayList<>();
+    }
 }

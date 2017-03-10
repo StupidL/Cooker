@@ -9,8 +9,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import java.lang.ref.WeakReference;
@@ -18,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.stupidme.cooker.R;
-import me.stupidme.cooker.widget.BookPagerAdapter;
 
 /**
  * Created by StupidL on 2017/3/5
@@ -68,18 +65,6 @@ public class BookActivity extends AppCompatActivity {
         mTabLayout.setupWithViewPager(mViewPager);
 
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_book, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return item.getItemId() != R.id.book_fragment_refresh;
-    }
-
 
     @Override
     public void onDestroy() {

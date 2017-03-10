@@ -11,12 +11,12 @@ import me.stupidme.cooker.model.BookBean;
 public interface IBookView {
 
     /**
-     * 控制dialog的显示与否。
+     * 控制刷新控件的显示与否。
      * 当进行网络请求的时候为true。网络请求结束或者错误的时候为false。
      *
      * @param show 是否显示
      */
-    void showProgressDialog(boolean show);
+    void setRefreshing(boolean show);
 
     /**
      * 界面上移除一个项目

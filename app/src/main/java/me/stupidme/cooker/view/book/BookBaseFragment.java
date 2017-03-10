@@ -1,17 +1,14 @@
 package me.stupidme.cooker.view.book;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.ArrayMap;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -23,7 +20,6 @@ import java.util.Map;
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.presenter.BookPresenter;
-import me.stupidme.cooker.widget.BookRecyclerAdapter;
 import me.stupidme.cooker.widget.SpaceItemDecoration;
 
 /**
@@ -52,25 +48,20 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
      */
     protected BookPresenter mPresenter;
 
-    /**
-     * 进度条。进行网络请求的时候显示
-     */
-    protected ProgressDialog mProgressDialog;
+
+    private SwipeRefreshLayout mSwipeLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDataSet = new ArrayList<>();
-        mAdapter = new BookRecyclerAdapter(mDataSet);
-        mPresenter = BookPresenter.getInstance(this);
+        if (mDataSet == null)
+            mDataSet = new ArrayList<>();
+        if (mAdapter == null)
+            mAdapter = new BookRecyclerAdapter(mDataSet);
+        mPresenter = new BookPresenter(this);
 
-        mProgressDialog = new ProgressDialog(getActivity());
-        mProgressDialog.setTitle(getResources().getString(R.string.title_book_fragment_progress));
-        mProgressDialog.setMessage(getResources().getString(R.string.message_book_fragment_dialog));
-        mProgressDialog.setCancelable(false);
         Log.v(getClass().getCanonicalName(), "onCreate()");
 
-        mPresenter.queryBooksFromDB();
         Log.v(getClass().getCanonicalName(), "DataSet Size: " + mDataSet.size());
     }
 
@@ -78,6 +69,13 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_book, container, false);
+        mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.book_fragment_swipe_layout);
+        mSwipeLayout.setOnRefreshListener(() -> {
+            Map<String, String> map = new ArrayMap<>();
+
+            mPresenter.queryBooksFromServer(map);
+
+        });
         mRecyclerView = (RecyclerView) view.findViewById(R.id.book_recycler_view);
         initRecyclerView();
 
@@ -88,33 +86,8 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
 
     @Override
     public void onViewCreated(View view, Bundle bundle) {
-//        mPresenter.queryBooksFromDB();
+        mPresenter.queryBooksFromDB();
         Log.v(getClass().getCanonicalName(), "onViewCreated()");
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        Log.v(getClass().getCanonicalName(), "onCreateOptionsMenu()");
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        Log.v(getClass().getCanonicalName(), "onOptionsItemSelected()");
-
-        if (item.getItemId() == R.id.book_fragment_refresh) {
-
-            Map<String, String> map = new ArrayMap<>();
-
-            //TODO inflate map
-
-
-            mPresenter.queryBooksFromServer(map);
-
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -125,7 +98,7 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
     /**
      * 初始化RecyclerView
      */
-    private void initRecyclerView() {
+    protected void initRecyclerView() {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
@@ -140,13 +113,13 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
     }
 
     @Override
-    public void showProgressDialog(boolean show) {
+    public void setRefreshing(boolean show) {
         if (show) {
-            if (!mProgressDialog.isShowing())
-                mProgressDialog.show();
+            if (!mSwipeLayout.isRefreshing())
+                mSwipeLayout.setRefreshing(true);
         } else {
-            if (mProgressDialog.isShowing())
-                mProgressDialog.dismiss();
+            if (mSwipeLayout.isRefreshing())
+                mSwipeLayout.setRefreshing(false);
         }
     }
 
@@ -165,9 +138,14 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
 
     @Override
     public void insertBooks(List<BookBean> list) {
-//        mDataSet.clear();
+        if (mDataSet == null)
+            mDataSet = new ArrayList<>();
+        mDataSet.clear();
         mDataSet.addAll(list);
+        if (mAdapter == null)
+            mAdapter = new BookRecyclerAdapter(mDataSet);
         mAdapter.notifyDataSetChanged();
+        Log.v(getClass().getCanonicalName(), "insert List Size: " + list.size());
     }
 
     @Override

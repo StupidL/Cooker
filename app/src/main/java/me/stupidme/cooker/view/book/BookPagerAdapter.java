@@ -1,4 +1,4 @@
-package me.stupidme.cooker.widget;
+package me.stupidme.cooker.view.book;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
