@@ -28,8 +28,7 @@ import me.stupidme.cooker.db.StupidDBHelper;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.presenter.CookerPresenter;
 import me.stupidme.cooker.view.BookAddActivity;
-import me.stupidme.cooker.widget.CookerRecyclerAdapter;
-import me.stupidme.cooker.widget.SpaceItemDecoration;
+import me.stupidme.cooker.view.SpaceItemDecoration;
 
 /**
  * Created by StupidL on 2017/3/5

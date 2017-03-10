@@ -1,4 +1,4 @@
-package me.stupidme.cooker.widget;
+package me.stupidme.cooker.view.cooker;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

@@ -20,7 +20,7 @@ import java.util.Map;
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.presenter.BookPresenter;
-import me.stupidme.cooker.widget.SpaceItemDecoration;
+import me.stupidme.cooker.view.SpaceItemDecoration;
 
 /**
  * Created by StupidL on 2017/3/8.
