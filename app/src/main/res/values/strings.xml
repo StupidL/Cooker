@@ -140,5 +140,6 @@
     <string name="menu_cooker_fragment_refresh">REFRESH</string>
     <string name="title_book_fragment_progress">FETCH DATA FROM SERVER</string>
     <string name="message_book_fragment_dialog">This may take a while, please wait a few seconds…</string>
+    <string name="title_activity_test">TestActivity</string>
 
 </resources>

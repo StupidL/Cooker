@@ -2,9 +2,13 @@ package me.stupidme.cooker.view.book;
 
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.Collections;
 
@@ -26,6 +30,18 @@ public class BookHistoryFragment extends BookBaseFragment {
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        if (view != null) {
+            mFab = (FloatingActionButton) view.findViewById(R.id.fab);
+            mFab.setVisibility(View.GONE);
+        }
+        return view;
     }
 
     @Override

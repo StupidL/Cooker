@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import java.util.List;
+
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.presenter.BookPresenter;
 
@@ -54,8 +56,6 @@ public class BookAddActivity extends AppCompatActivity implements IBookAddView {
         mRiceWeight = (EditText) findViewById(R.id.book_et_rice);
         mCookTime = (EditText) findViewById(R.id.book_et_time);
 
-//        mPresenter = new BookPresenter(this);
-
         Log.i("BookAddActivity", "Activity onCreate()");
     }
 
@@ -79,12 +79,17 @@ public class BookAddActivity extends AppCompatActivity implements IBookAddView {
     }
 
     @Override
-    public void addBookSuccess() {
+    public void updateNameSpinner(List<String> names) {
 
     }
 
     @Override
-    public void addBokFailed() {
+    public void showMessage(String message) {
+
+    }
+
+    @Override
+    public void showProgressDialog(boolean show) {
 
     }
 }

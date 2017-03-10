@@ -1,6 +1,7 @@
 package me.stupidme.cooker.view.book;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.ArrayMap;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -48,8 +49,15 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
      */
     protected BookPresenter mPresenter;
 
-
+    /**
+     * 下拉刷新控件
+     */
     private SwipeRefreshLayout mSwipeLayout;
+
+    /**
+     * 添加预约悬浮按钮
+     */
+    protected FloatingActionButton mFab;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

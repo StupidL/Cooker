@@ -1,18 +1,16 @@
 package me.stupidme.cooker.view;
 
+import java.util.List;
+
 /**
  * Created by StupidL on 2017/3/8.
  */
 
 public interface IBookAddView {
 
-    /**
-     * 添加预约成功
-     */
-    void addBookSuccess();
+    void updateNameSpinner(List<String> names);
 
-    /**
-     * 添加预约失败
-     */
-    void addBokFailed();
+    void showMessage(String message);
+
+    void showProgressDialog(boolean show);
 }
