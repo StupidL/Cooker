@@ -4,13 +4,14 @@ package me.stupidme.cooker.view.book;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,9 @@ import me.stupidme.cooker.model.BookBean;
  * Created by StupidL on 2017/3/5
  */
 
-public class BookNowFragment extends BookBaseFragment implements BookDialog.BookDialogListener{
+public class BookNowFragment extends BookBaseFragment implements BookDialog.BookDialogListener {
+
+    private BookDialog mDialog;
 
     public BookNowFragment() {
         // Required empty public constructor
@@ -36,6 +39,13 @@ public class BookNowFragment extends BookBaseFragment implements BookDialog.Book
     }
 
     @Override
+    public void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+
+        mDialog = new BookDialog(getActivity(), this);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -43,12 +53,7 @@ public class BookNowFragment extends BookBaseFragment implements BookDialog.Book
         if (view != null) {
             mFab = (FloatingActionButton) view.findViewById(R.id.fab);
 
-            mFab.setOnClickListener(v -> {
-                new AlertDialog.Builder(getActivity())
-                        .setTitle("Hello")
-                        .setMessage("This is a dialog for test")
-                        .show();
-            });
+            mFab.setOnClickListener(v -> mDialog.show());
         }
         return view;
     }
@@ -104,11 +109,15 @@ public class BookNowFragment extends BookBaseFragment implements BookDialog.Book
 
     @Override
     public void onSave(Map<String, String> map) {
-
+        Log.v("BookNowFragment", "onSave()");
     }
 
     @Override
     public List<String> getCookerNames() {
-        return null;
+        List<String> list = new ArrayList<>();
+        list.add("CookerA");
+        list.add("CookerB");
+        list.add("CookerC");
+        return list;
     }
 }
