@@ -1,7 +1,7 @@
 package me.stupidme.cooker.view.cooker;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.ArrayMap;
@@ -15,9 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +24,6 @@ import me.stupidme.cooker.R;
 import me.stupidme.cooker.db.StupidDBHelper;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.presenter.CookerPresenter;
-import me.stupidme.cooker.view.BookAddActivity;
 import me.stupidme.cooker.view.SpaceItemDecoration;
 
 /**
@@ -36,9 +32,6 @@ import me.stupidme.cooker.view.SpaceItemDecoration;
  */
 
 public class CookerFragment extends Fragment implements ICookerView, CookerDialog.CookerAddListener {
-
-    //请求码，启动添加预约界面
-    private static final int REQUEST_CODE_ADD_BOOK = 0x04;
 
     //RecyclerView控件，展示所有的Cooker设备信息
     private RecyclerView mRecyclerView;
@@ -85,35 +78,22 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cooker, container, false);
         mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.cooker_swipe_layout);
-        mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                Map<String, String> map = new ArrayMap<>();
+        mSwipeLayout.setOnRefreshListener(() -> {
+            Map<String, String> map = new ArrayMap<>();
 
-                mPresenter.queryCookersFromServer(map);
-            }
+            mPresenter.queryCookersFromServer(map);
         });
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         initRecyclerView();
 
-        // init fab
-        final FloatingActionMenu menu = (FloatingActionMenu) view.findViewById(R.id.fab_menu);
-        FloatingActionButton fabCooker = (FloatingActionButton) view.findViewById(R.id.fab_cooker);
-        FloatingActionButton fabBook = (FloatingActionButton) view.findViewById(R.id.fab_book);
-        fabCooker.setOnClickListener(v -> {
-
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnClickListener(v -> {
             if (mDialog == null) {
                 mDialog = new CookerDialog(getActivity(), CookerFragment.this);
             }
             mDialog.setTitle(R.string.title_dialog_cooker);
             mDialog.show();
-            menu.close(true);
-        });
-
-        fabBook.setOnClickListener(v -> {
-            startActivityForResult(new Intent(getActivity(), BookAddActivity.class), REQUEST_CODE_ADD_BOOK);
-            menu.close(true);
         });
 
         return view;
