@@ -1,4 +1,4 @@
-package me.stupidme.cooker.view;
+package me.stupidme.cooker.view.login;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -43,12 +43,9 @@ public class RegisterActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setResult(RESULT_OK);
-                finish();
-            }
+        toolbar.setNavigationOnClickListener(v -> {
+            setResult(RESULT_OK);
+            finish();
         });
 
         mProgressView = findViewById(R.id.register_progress);
@@ -58,12 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
         mPasswordRepeatView = (TextInputEditText) findViewById(R.id.password_repeat);
 
         Button button = (Button) findViewById(R.id.register_finish);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                attemptRegister();
-            }
-        });
+        button.setOnClickListener(v -> attemptRegister());
     }
 
     @Override

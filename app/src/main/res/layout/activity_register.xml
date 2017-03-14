@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:gravity="center_horizontal"
-    tools:context="me.stupidme.cooker.view.RegisterActivity">
+    tools:context="me.stupidme.cooker.view.login.RegisterActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

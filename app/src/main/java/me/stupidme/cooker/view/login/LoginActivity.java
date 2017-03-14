@@ -1,4 +1,4 @@
-package me.stupidme.cooker.view;
+package me.stupidme.cooker.view.login;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -25,7 +25,6 @@ import me.stupidme.cooker.view.cooker.CookerActivity;
  * Created by StupidL on 2017/3/4.
  */
 public class LoginActivity extends AppCompatActivity {
-
 
     private static final int REQUEST_REGISTER = 0x01;
     private static final String COOKER_USER_LOGIN = "UserLoginInfo";

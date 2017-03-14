@@ -6,7 +6,7 @@ import java.util.Map;
 import io.reactivex.Observable;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.CookerBean;
-import me.stupidme.cooker.model.User;
+import me.stupidme.cooker.model.UserBean;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -32,22 +32,22 @@ public interface CookerService {
      * @return 用户信息
      */
     @GET("/user/login")
-    Observable<User> rxLogin(@Query("username") String name, @Query("password") String password);
+    Observable<UserBean> rxLogin(@Query("username") String name, @Query("password") String password);
 
     @GET("/user/login")
-    Call<User> retrofitLogin(@Query("username") String name, @Query("password") String password);
+    Call<UserBean> retrofitLogin(@Query("username") String name, @Query("password") String password);
 
     /**
-     * 注册。使用POST请求，<code>User</code>会被Gson转化为JSON，作为POST请求的BODY
+     * 注册。使用POST请求，<code>UserBean</code>会被Gson转化为JSON，作为POST请求的BODY
      *
      * @param user 用户信息
      * @return 用户信息
      */
     @POST("/user/register")
-    Observable<User> rxRegister(@Body User user);
+    Observable<UserBean> rxRegister(@Body UserBean user);
 
     @POST("/user/register")
-    Call<User> retrofitRegister(@Body User user);
+    Call<UserBean> retrofitRegister(@Body UserBean user);
 
     /**
      * 获取用户所有的设备信息。

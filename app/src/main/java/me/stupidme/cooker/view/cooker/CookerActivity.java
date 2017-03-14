@@ -14,7 +14,7 @@ import android.view.MenuItem;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.view.AboutActivity;
-import me.stupidme.cooker.view.LoginActivity;
+import me.stupidme.cooker.view.login.LoginActivity;
 import me.stupidme.cooker.view.book.BookActivity;
 
 public class CookerActivity extends AppCompatActivity
