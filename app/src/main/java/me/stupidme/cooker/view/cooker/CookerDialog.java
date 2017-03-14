@@ -49,35 +49,27 @@ public class CookerDialog extends Dialog {
         mOk = (Button) findViewById(R.id.cooker_ok);
         mCancel = (Button) findViewById(R.id.cooker_cancel);
 
-        mOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        mOk.setOnClickListener(v -> {
 
-                String name = mName.getText().toString();
-                String location = mLocation.getText().toString();
+            String name = mName.getText().toString();
+            String location = mLocation.getText().toString();
 
-                if (TextUtils.isEmpty(name)) {
-                    mName.setError(mContext.getString(R.string.error_field_required));
-                    return;
-                }
-                if (TextUtils.isEmpty(location)) {
-                    mLocation.setError(mContext.getString(R.string.error_field_required));
-                    return;
-                }
-                Map<String, String> map = new HashMap<>();
-                map.put(COOKER_NAME_KEY, name);
-                map.put(COOKER_LOCATION_KEY, location);
-                mListener.onSave(map);
-
+            if (TextUtils.isEmpty(name)) {
+                mName.setError(mContext.getString(R.string.error_field_required));
+                return;
             }
+            if (TextUtils.isEmpty(location)) {
+                mLocation.setError(mContext.getString(R.string.error_field_required));
+                return;
+            }
+            Map<String, String> map = new HashMap<>();
+            map.put(COOKER_NAME_KEY, name);
+            map.put(COOKER_LOCATION_KEY, location);
+            mListener.onSave(map);
+
         });
 
-        mCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        mCancel.setOnClickListener(v -> dismiss());
 
     }
 

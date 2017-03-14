@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Toast;
@@ -40,9 +39,10 @@ public class LoginActivity extends AppCompatActivity {
     private View mProgressView;
     private View mLoginFormView;
 
+    /**
+     * 记住密码，默认选择
+     */
     private CheckBox mCheckBox;
-
-    private boolean isExitApp = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +50,9 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         Intent intent = getIntent();
-        isExitApp = intent.getBooleanExtra("isExitApp", false);
+
+        //是否是从主界面推出app，如果是，则不自动登陆，否则，自动登录
+        boolean isExitApp = intent.getBooleanExtra("isExitApp", false);
 
         mNameView = (TextInputEditText) findViewById(R.id.name);
         mPasswordView = (TextInputEditText) findViewById(R.id.password);
@@ -66,23 +68,16 @@ public class LoginActivity extends AppCompatActivity {
 //        });
 
         Button mSignInButton = (Button) findViewById(R.id.sign_in);
-        mSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin(mNameView.getText().toString(), mPasswordView.getText().toString());
-            }
-        });
+        mSignInButton.setOnClickListener(view -> attemptLogin(
+                mNameView.getText().toString(),
+                mPasswordView.getText().toString())
+        );
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
         Button mSignUpButton = (Button) findViewById(R.id.sign_up);
-        mSignUpButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                attemptRegister();
-            }
-        });
+        mSignUpButton.setOnClickListener(v -> attemptRegister());
 
         mCheckBox = (CheckBox) findViewById(R.id.checkBox);
 
@@ -94,6 +89,9 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * 设置用户名和密码，从SharedPreference获取数据
+     */
     private void setNameAndPassword() {
         SharedPreferences preferences = getSharedPreferences(COOKER_USER_LOGIN, MODE_PRIVATE);
         String name = preferences.getString(USER_NAME, "");
@@ -102,6 +100,9 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordView.setText(password);
     }
 
+    /**
+     * 跳转到注册界面
+     */
     private void attemptRegister() {
         Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivityForResult(intent, REQUEST_REGISTER);
@@ -125,6 +126,9 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 自动登录
+     */
     private void attemptAutoLogin() {
         SharedPreferences preferences = getSharedPreferences(COOKER_USER_LOGIN, MODE_PRIVATE);
         String name = preferences.getString(USER_NAME, "");
@@ -136,6 +140,12 @@ public class LoginActivity extends AppCompatActivity {
         attemptLogin(name, password);
     }
 
+    /**
+     * 登陆
+     *
+     * @param name     用户名
+     * @param password 密码
+     */
     private void attemptLogin(String name, String password) {
         if (mAuthTask != null) {
             return;
@@ -175,14 +185,32 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 检查用户名是否有效
+     *
+     * @param name 用户名
+     * @return true则有效，否则无效
+     */
     private boolean isNameValid(String name) {
         return !name.isEmpty();
     }
 
+    /**
+     * 检查密码是否有效
+     *
+     * @param password 密码
+     * @return true则有效，否则无效
+     */
     private boolean isPasswordValid(String password) {
         return password.length() > 4;
     }
 
+    /**
+     * 保存用户名和密码
+     *
+     * @param name     用户名
+     * @param password 密码
+     */
     private void savePassword(String name, String password) {
         SharedPreferences preferences = getSharedPreferences(COOKER_USER_LOGIN, MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
@@ -224,6 +252,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * 通过异步任务登陆
+     */
     private class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mName;

@@ -81,6 +81,7 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         mSwipeLayout.setOnRefreshListener(() -> {
             Map<String, String> map = new ArrayMap<>();
 
+            //向服务器请求数据，请求参数放在map中
             mPresenter.queryCookersFromServer(map);
         });
 
@@ -150,10 +151,8 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
 
                         Snackbar.make(viewHolder.itemView,
                                 getString(R.string.snackbar_text_cooker_fragment),
-                                1000)
-                                .setAction("DELETE", v -> {
-                                    mPresenter.deleteCooker(bean);
-                                }).show();
+                                Snackbar.LENGTH_LONG)
+                                .setAction("DELETE", v -> mPresenter.deleteCooker(bean)).show();
 
                         mDataSet.add(position, bean);
                         mAdapter.notifyItemInserted(position);
@@ -183,6 +182,11 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         mPresenter.insertCooker(cooker);
     }
 
+    /**
+     * 控制刷新控件的显示
+     *
+     * @param show true则显示， false则不显示
+     */
     @Override
     public void setRefreshing(boolean show) {
         if (show) {
@@ -194,6 +198,11 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         }
     }
 
+    /**
+     * 界面上移除一个电饭锅设备
+     *
+     * @param cooker 要删除的设备
+     */
     @Override
     public void removeCooker(CookerBean cooker) {
         int position = mDataSet.indexOf(cooker);
@@ -201,19 +210,36 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         mAdapter.notifyItemRemoved(position);
     }
 
+    /**
+     * 界面上新增一个电饭锅设备
+     *
+     * @param cooker 要插入的设备
+     */
     @Override
     public void insertCooker(CookerBean cooker) {
         mDataSet.add(0, cooker);
         mAdapter.notifyItemInserted(0);
     }
 
+    /**
+     * 界面上插入批量电饭锅设备，因为这个方法在数据库查询的时候调用，
+     * 所以应该先清除已有的设备信息，然后再添加，避免数据重复
+     *
+     * @param list 设备信息列表
+     */
     @Override
-    public void insertCookers(List<CookerBean> list) {
+    public void insertCookersFromDB(List<CookerBean> list) {
         mDataSet.clear();
         mDataSet.addAll(list);
         mAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * 界面上更新一个设备信息
+     *
+     * @param position 再列表中的位置
+     * @param cooker   设备信息
+     */
     @Override
     public void updateCooker(int position, CookerBean cooker) {
         mDataSet.remove(position);
@@ -221,13 +247,24 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         mAdapter.notifyItemChanged(position);
     }
 
+    /**
+     * 批量更新设备信息，在从服务器获取数据的时候调用，
+     * 应该先清除已有的数据，然后再添加，避免数据重复
+     *
+     * @param list 设备信息列表
+     */
     @Override
-    public void updateCookers(List<CookerBean> list) {
+    public void updateCookersFromServer(List<CookerBean> list) {
         mDataSet.clear();
         mDataSet.addAll(list);
         mAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * 在界面显示Toast信息
+     *
+     * @param message 要显示的信息
+     */
     @Override
     public void showMessage(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();

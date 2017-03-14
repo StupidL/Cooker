@@ -120,6 +120,11 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
         Log.v(getClass().getCanonicalName(), "initRecyclerView()");
     }
 
+    /**
+     * 刷新控件显示与否
+     *
+     * @param show true则显示，false则不显示
+     */
     @Override
     public void setRefreshing(boolean show) {
         if (show) {
@@ -131,6 +136,11 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
         }
     }
 
+    /**
+     * 界面上移除一个预定
+     *
+     * @param book 要移除的预约项目
+     */
     @Override
     public void removeBook(BookBean book) {
         int position = mDataSet.indexOf(book);
@@ -138,12 +148,23 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
         mAdapter.notifyItemRemoved(position);
     }
 
+    /**
+     * 界面上要插入一个预约信息
+     *
+     * @param book 要插入的项目
+     */
     @Override
     public void insertBook(BookBean book) {
         mDataSet.add(0, book);
         mAdapter.notifyItemInserted(0);
     }
 
+    /**
+     * 批量插入预约信息，在从数据库获取数据的时候调用，
+     * 要先清空已有的信息，再全部加入，避免数据重复
+     *
+     * @param list 项目列表
+     */
     @Override
     public void insertBooks(List<BookBean> list) {
         if (mDataSet == null)
@@ -156,6 +177,12 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
         Log.v(getClass().getCanonicalName(), "insert List Size: " + list.size());
     }
 
+    /**
+     * 更新某个具体的预约信息
+     *
+     * @param position 预约项在适配器的位置
+     * @param book     更新后的预约项
+     */
     @Override
     public void updateBook(int position, BookBean book) {
         mDataSet.remove(position);
@@ -163,6 +190,12 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
         mAdapter.notifyItemInserted(position);
     }
 
+    /**
+     * 批量更新预约信息，再从服务器获取数据的时候调用，
+     * 要先清空列表，再加入，避免数据重复
+     *
+     * @param list 项目列表
+     */
     @Override
     public void updateBooks(List<BookBean> list) {
         mDataSet.clear();
@@ -170,6 +203,11 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
         mAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * 弹出Toast信息
+     *
+     * @param message 信息内容
+     */
     @Override
     public void showMessage(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();

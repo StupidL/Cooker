@@ -137,12 +137,12 @@ public class CookerPresenter implements ICookerPresenter {
             cooker.setStatus(i % 2 == 0 ? "free" : "booking");
             list.add(cooker);
         }
-        mView.insertCookers(list);
+        mView.insertCookersFromDB(list);
 
 //        Log.v(TAG, "++++++CookerPresenter deleteCooker()++++++");
 //        Log.v(TAG, "args: null ");
 //
-//        mView.insertCookers(mModel.queryCookers());
+//        mView.insertCookersFromDB(mModel.queryCookers());
     }
 
     @Override
@@ -220,7 +220,7 @@ public class CookerPresenter implements ICookerPresenter {
 
                     @Override
                     public void onComplete() {
-                        mView.updateCookers(list);
+                        mView.updateCookersFromServer(list);
                         mModel.updateCookers(list);
                         mView.setRefreshing(false);
                         Log.i(TAG, "onComplete: ");
