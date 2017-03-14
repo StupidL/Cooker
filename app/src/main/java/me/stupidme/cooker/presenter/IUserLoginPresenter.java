@@ -11,6 +11,12 @@ public interface IUserLoginPresenter {
      *
      * @param name     用户名
      * @param password 密码
+     * @param remember 是否记住密码
      */
-    void login(String name, String password);
+    void login(String name, String password, boolean remember);
+
+    /**
+     * 自动登录
+     */
+    void attemptAutoLogin();
 }

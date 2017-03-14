@@ -7,16 +7,22 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import me.stupidme.cooker.R;
+import me.stupidme.cooker.presenter.IUserRegisterPresenter;
+import me.stupidme.cooker.presenter.UserRegisterPresenter;
 
 /**
  * Created by StupidL on 2017/3/14.
  */
 
-public class RegisterFragment extends Fragment implements ILoginAndRegisterView {
+public class RegisterFragment extends Fragment implements IRegisterView {
+
+    private IUserRegisterPresenter mPresenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mPresenter = new UserRegisterPresenter(this);
 
     }
 

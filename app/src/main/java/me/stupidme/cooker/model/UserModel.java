@@ -1,5 +1,7 @@
 package me.stupidme.cooker.model;
 
+import android.content.SharedPreferences;
+
 /**
  * Created by StupidL on 2017/3/14.
  */

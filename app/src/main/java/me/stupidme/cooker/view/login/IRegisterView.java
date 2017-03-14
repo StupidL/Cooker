@@ -4,7 +4,7 @@ package me.stupidme.cooker.view.login;
  * Created by StupidL on 2017/3/14.
  */
 
-public interface ILoginAndRegisterView {
+public interface IRegisterView {
 
     /**
      * 弹出提示信息
