@@ -27,9 +27,9 @@ import me.stupidme.cooker.view.cooker.CookerActivity;
 public class LoginActivity extends AppCompatActivity {
 
     private static final int REQUEST_REGISTER = 0x01;
-    private static final String COOKER_USER_LOGIN = "UserLoginInfo";
-    private static final String USER_NAME = "name";
-    private static final String USER_PASSWORD = "password";
+    public static final String COOKER_USER_LOGIN = "UserLoginInfo";
+    public static final String USER_NAME = "name";
+    public static final String USER_PASSWORD = "password";
 
     private UserLoginTask mAuthTask = null;
 

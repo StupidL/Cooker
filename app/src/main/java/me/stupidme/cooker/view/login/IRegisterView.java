@@ -19,4 +19,9 @@ public interface IRegisterView {
      * @param show true则显示，否则不显示
      */
     void showProgress(boolean show);
+
+    /**
+     * 登陆成功回调
+     */
+    void loginSuccess();
 }
