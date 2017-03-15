@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -61,12 +62,15 @@ public class RegisterFragment extends Fragment implements IRegisterView {
         View view = inflater.inflate(R.layout.fragment_register, container, false);
         mRegisterFormView = (ScrollView) view.findViewById(R.id.register_form);
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        mProgressBar.setVisibility(View.GONE);
         mNameEditText = (TextInputEditText) view.findViewById(R.id.name);
         mPasswordEditText = (TextInputEditText) view.findViewById(R.id.password);
         mPasswordRepeatEditText = (TextInputEditText) view.findViewById(R.id.password_repeat);
         Button mRegisterButton = (Button) view.findViewById(R.id.register_finish);
 
         mRegisterButton.setOnClickListener(v -> {
+            hideSoftInputMethod();
+
             String name = mNameEditText.getText().toString();
             String password = mPasswordEditText.getText().toString();
             String password2 = mPasswordRepeatEditText.getText().toString();
@@ -126,6 +130,14 @@ public class RegisterFragment extends Fragment implements IRegisterView {
         intent.setAction(Constants.ACTION_REGISTER_SUCCESS);
         startActivity(intent);
         getActivity().finish();
+    }
+
+    /**
+     * 隐藏输入法
+     */
+    private void hideSoftInputMethod() {
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mRegisterFormView.getWindowToken(), 0);
     }
 
     /**

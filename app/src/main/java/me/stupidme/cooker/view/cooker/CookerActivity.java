@@ -14,8 +14,9 @@ import android.view.MenuItem;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.view.AboutActivity;
-import me.stupidme.cooker.view.login.LoginActivity;
 import me.stupidme.cooker.view.book.BookActivity;
+import me.stupidme.cooker.view.login.Constants;
+import me.stupidme.cooker.view.login.LoginActivity;
 
 public class CookerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -80,7 +81,7 @@ public class CookerActivity extends AppCompatActivity
                 break;
             case R.id.nav_exit:
                 Intent intent = new Intent(CookerActivity.this, LoginActivity.class);
-                intent.putExtra("isExitApp", true);
+                intent.setAction(Constants.ACTION_EXIT_ACCOUNT);
                 startActivity(intent);
                 CookerActivity.this.finish();
                 break;

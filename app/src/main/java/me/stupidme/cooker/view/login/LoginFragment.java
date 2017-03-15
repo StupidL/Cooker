@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
@@ -24,6 +25,9 @@ import me.stupidme.cooker.presenter.IUserLoginPresenter;
 import me.stupidme.cooker.presenter.UserLoginPresenter;
 import me.stupidme.cooker.view.cooker.CookerActivity;
 
+import static me.stupidme.cooker.view.login.Constants.USER_NAME;
+import static me.stupidme.cooker.view.login.Constants.USER_PASSWORD;
+
 /**
  * Created by StupidL on 2017/3/14.
  */
@@ -31,10 +35,6 @@ import me.stupidme.cooker.view.cooker.CookerActivity;
 public class LoginFragment extends Fragment implements ILoginView {
 
     private static final String TAG = "LoginFragment";
-
-    private static final String USER_INFO = "user_info";
-    private static final String USER_NAME = "user_name";
-    private static final String USER_PASSWORD = "user_password";
 
     private IUserLoginPresenter mPresenter;
 
@@ -48,13 +48,16 @@ public class LoginFragment extends Fragment implements ILoginView {
 
     private ScrollView mLoginFormView;
 
+    private static final String AUTO_LOGIN = "autoLogin";
+
     public LoginFragment() {
 
     }
 
-    public static LoginFragment newInstance() {
+    public static LoginFragment newInstance(boolean autoLogin) {
         LoginFragment fragment = new LoginFragment();
         Bundle args = new Bundle();
+        args.putBoolean(AUTO_LOGIN, autoLogin);
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,7 +66,12 @@ public class LoginFragment extends Fragment implements ILoginView {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPresenter = new UserLoginPresenter(this);
-        mPresenter.attemptAutoLogin();
+
+        Bundle bundle = getArguments();
+        boolean autoLogin = bundle.getBoolean(AUTO_LOGIN);
+
+        if (autoLogin)
+            mPresenter.attemptAutoLogin();
     }
 
     @Override
@@ -78,6 +86,8 @@ public class LoginFragment extends Fragment implements ILoginView {
         Button mRegisterButton = (Button) view.findViewById(R.id.register);
 
         mLoginButton.setOnClickListener(v -> {
+            hideSoftInputMethod();
+
             String name = mNameEditText.getText().toString();
             String password = mPasswordEditText.getText().toString();
 
@@ -87,11 +97,60 @@ public class LoginFragment extends Fragment implements ILoginView {
         });
 
         mRegisterButton.setOnClickListener(v -> {
+            hideSoftInputMethod();
+
             Intent intent = new Intent(getActivity(), RegisterActivity.class);
             startActivity(intent);
         });
 
         return view;
+    }
+
+    /**
+     * 记住密码
+     *
+     * @param user 用户
+     */
+    @Override
+    public void rememberUser(UserBean user) {
+        SharedPreferences preferences = getActivity().getSharedPreferences(Constants.COOKER_USER_LOGIN, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(USER_NAME, user.getName());
+        editor.putString(USER_PASSWORD, user.getPassword());
+        editor.apply();
+    }
+
+    /**
+     * 自动登录的时候调用
+     *
+     * @return 用户信息
+     */
+    @Override
+    public UserBean getUserInfo() {
+        SharedPreferences preferences = getActivity().getSharedPreferences(Constants.COOKER_USER_LOGIN, Context.MODE_PRIVATE);
+        String name = preferences.getString(USER_NAME, "");
+        String password = preferences.getString(USER_PASSWORD, "");
+        if (isNameAndPasswordValid(name, password))
+            return new UserBean(name, password);
+        return null;
+    }
+
+    /**
+     * 登陆成功时回调，进入主界面
+     */
+    @Override
+    public void loginSuccess() {
+        Intent intent = new Intent(getActivity(), CookerActivity.class);
+        startActivity(intent);
+        getActivity().finish();
+    }
+
+    /**
+     * 隐藏输入法
+     */
+    private void hideSoftInputMethod() {
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mLoginFormView.getWindowToken(), 0);
     }
 
     /**
@@ -185,42 +244,4 @@ public class LoginFragment extends Fragment implements ILoginView {
         });
     }
 
-    /**
-     * 记住密码
-     *
-     * @param user 用户
-     */
-    @Override
-    public void rememberUser(UserBean user) {
-        SharedPreferences preferences = getActivity().getSharedPreferences(USER_INFO, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(USER_NAME, user.getName());
-        editor.putString(USER_PASSWORD, user.getPassword());
-        editor.apply();
-    }
-
-    /**
-     * 自动登录的时候调用
-     *
-     * @return 用户信息
-     */
-    @Override
-    public UserBean getUserInfo() {
-        SharedPreferences preferences = getActivity().getSharedPreferences(USER_INFO, Context.MODE_PRIVATE);
-        String name = preferences.getString(USER_NAME, "");
-        String password = preferences.getString(USER_PASSWORD, "");
-        if (isNameAndPasswordValid(name, password))
-            return new UserBean(name, password);
-        return null;
-    }
-
-    /**
-     * 登陆成功时回调，进入主界面
-     */
-    @Override
-    public void loginSuccess() {
-        Intent intent = new Intent(getActivity(), CookerActivity.class);
-        startActivity(intent);
-        getActivity().finish();
-    }
 }
