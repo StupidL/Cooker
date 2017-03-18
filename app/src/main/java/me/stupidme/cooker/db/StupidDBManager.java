@@ -9,6 +9,10 @@ import android.util.Log;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.CookerBean;
@@ -25,6 +29,8 @@ public class StupidDBManager {
 
     private SQLiteDatabase mDataBase;
 
+    private ExecutorService mExecutor;
+
     public static void init(Context context) {
         mContextWeakRef = new WeakReference<>(context);
     }
@@ -32,6 +38,7 @@ public class StupidDBManager {
     private StupidDBManager() {
         if (mContextWeakRef.get() != null) {
             mDataBase = new StupidDBHelper(mContextWeakRef.get()).getWritableDatabase();
+            mExecutor = Executors.newCachedThreadPool();
         } else {
             throw new RuntimeException("Context is null. Create Database failed.");
         }
@@ -58,12 +65,14 @@ public class StupidDBManager {
      * @param bean 电饭锅
      */
     public void insertCooker(CookerBean bean) {
-        ContentValues values = new ContentValues();
-        values.put(StupidDBHelper.COOKER_NAME, bean.getName());
-        values.put(StupidDBHelper.COOKER_LOCATION, bean.getLocation());
-        values.put(StupidDBHelper.COOKER_STATUS, bean.getStatus());
-        mDataBase.insert(StupidDBHelper.COOKER_INFO_TABLE_NAME, null, values);
-        Log.v("StupidDBManager", "CookerBean inserted: \n" + bean.toString());
+        mExecutor.submit(() -> {
+            ContentValues values = new ContentValues();
+            values.put(StupidDBHelper.COOKER_NAME, bean.getName());
+            values.put(StupidDBHelper.COOKER_LOCATION, bean.getLocation());
+            values.put(StupidDBHelper.COOKER_STATUS, bean.getStatus());
+            mDataBase.insert(StupidDBHelper.COOKER_INFO_TABLE_NAME, null, values);
+            Log.v("StupidDBManager", "CookerBean inserted: \n" + bean.toString());
+        });
     }
 
     /**
@@ -72,11 +81,13 @@ public class StupidDBManager {
      * @param bean 电饭锅
      */
     public void deleteCooker(CookerBean bean) {
-        mDataBase.delete(StupidDBHelper.COOKER_INFO_TABLE_NAME,
-                StupidDBHelper.COOKER_NAME + " = ?",
-                new String[]{bean.getName()});
+        mExecutor.submit(() -> {
+            mDataBase.delete(StupidDBHelper.COOKER_INFO_TABLE_NAME,
+                    StupidDBHelper.COOKER_NAME + " = ?",
+                    new String[]{bean.getName()});
 
-        Log.v("StupidDBManager", " Delete a cooker: \n" + bean.toString());
+            Log.v("StupidDBManager", " Delete a cooker: \n" + bean.toString());
+        });
     }
 
     /**
@@ -85,15 +96,17 @@ public class StupidDBManager {
      * @param bean 电饭锅
      */
     public void updateCooker(CookerBean bean) {
-        ContentValues values = new ContentValues();
-        values.put(StupidDBHelper.COOKER_NAME, bean.getName());
-        values.put(StupidDBHelper.COOKER_LOCATION, bean.getLocation());
-        values.put(StupidDBHelper.COOKER_STATUS, bean.getStatus());
-        mDataBase.update(StupidDBHelper.COOKER_INFO_TABLE_NAME, values,
-                StupidDBHelper.COOKER_NAME + " =?",
-                new String[]{bean.getName()});
+        mExecutor.submit(() -> {
+            ContentValues values = new ContentValues();
+            values.put(StupidDBHelper.COOKER_NAME, bean.getName());
+            values.put(StupidDBHelper.COOKER_LOCATION, bean.getLocation());
+            values.put(StupidDBHelper.COOKER_STATUS, bean.getStatus());
+            mDataBase.update(StupidDBHelper.COOKER_INFO_TABLE_NAME, values,
+                    StupidDBHelper.COOKER_NAME + " =?",
+                    new String[]{bean.getName()});
 
-        Log.v("StupidDBManager", "Update a cooker: \n" + bean.toString());
+            Log.v("StupidDBManager", "Update a cooker: \n" + bean.toString());
+        });
     }
 
     /**
@@ -102,23 +115,34 @@ public class StupidDBManager {
      * @return 信息列表
      */
     public List<CookerBean> queryCookers() {
-        List<CookerBean> list = new ArrayList<>();
-        Cursor cursor = mDataBase.rawQuery("SELECT * FROM " + StupidDBHelper.COOKER_INFO_TABLE_NAME +
-                " WHERE " + StupidDBHelper.COOKER_ID + " >= ?", new String[]{"0"});
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            CookerBean cooker = new CookerBean();
-            cooker.setName(cursor.getString(cursor.getColumnIndex(StupidDBHelper.COOKER_NAME)));
-            cooker.setLocation(cursor.getString(cursor.getColumnIndex(StupidDBHelper.COOKER_LOCATION)));
-            cooker.setStatus(cursor.getString(cursor.getColumnIndex(StupidDBHelper.COOKER_STATUS)));
-            list.add(cooker);
-            cursor.moveToNext();
+        Future<List<CookerBean>> future = mExecutor.submit(() -> {
+
+            List<CookerBean> list = new ArrayList<>();
+            Cursor cursor = mDataBase.rawQuery("SELECT * FROM " + StupidDBHelper.COOKER_INFO_TABLE_NAME +
+                    " WHERE " + StupidDBHelper.COOKER_ID + " >= ?", new String[]{"0"});
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                CookerBean cooker = new CookerBean();
+                cooker.setName(cursor.getString(cursor.getColumnIndex(StupidDBHelper.COOKER_NAME)));
+                cooker.setLocation(cursor.getString(cursor.getColumnIndex(StupidDBHelper.COOKER_LOCATION)));
+                cooker.setStatus(cursor.getString(cursor.getColumnIndex(StupidDBHelper.COOKER_STATUS)));
+                list.add(cooker);
+                cursor.moveToNext();
+            }
+            cursor.close();
+
+            Log.v("StupidDBManager", " Cooker List Size: " + list.size());
+
+            return list;
+        });
+
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
         }
-        cursor.close();
 
-        Log.v("StupidDBManager", " Cooker List Size: " + list.size());
-
-        return list;
+        return null;
     }
 
     /**
@@ -182,4 +206,5 @@ public class StupidDBManager {
     public List<BookBean> queryBooks() {
         return new ArrayList<>();
     }
+
 }
