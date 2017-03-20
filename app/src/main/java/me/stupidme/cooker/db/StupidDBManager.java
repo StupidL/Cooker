@@ -67,9 +67,9 @@ public class StupidDBManager {
     public void insertCooker(CookerBean bean) {
         mExecutor.submit(() -> {
             ContentValues values = new ContentValues();
-            values.put(StupidDBHelper.COOKER_NAME, bean.getName());
-            values.put(StupidDBHelper.COOKER_LOCATION, bean.getLocation());
-            values.put(StupidDBHelper.COOKER_STATUS, bean.getStatus());
+            values.put(StupidDBHelper.COOKER_NAME, bean.getCookerName());
+            values.put(StupidDBHelper.COOKER_LOCATION, bean.getCookerLocation());
+            values.put(StupidDBHelper.COOKER_STATUS, bean.getCookerStatus());
             mDataBase.insert(StupidDBHelper.COOKER_INFO_TABLE_NAME, null, values);
             Log.v("StupidDBManager", "CookerBean inserted: \n" + bean.toString());
         });
@@ -84,7 +84,7 @@ public class StupidDBManager {
         mExecutor.submit(() -> {
             mDataBase.delete(StupidDBHelper.COOKER_INFO_TABLE_NAME,
                     StupidDBHelper.COOKER_NAME + " = ?",
-                    new String[]{bean.getName()});
+                    new String[]{bean.getCookerName()});
 
             Log.v("StupidDBManager", " Delete a cooker: \n" + bean.toString());
         });
@@ -98,12 +98,12 @@ public class StupidDBManager {
     public void updateCooker(CookerBean bean) {
         mExecutor.submit(() -> {
             ContentValues values = new ContentValues();
-            values.put(StupidDBHelper.COOKER_NAME, bean.getName());
-            values.put(StupidDBHelper.COOKER_LOCATION, bean.getLocation());
-            values.put(StupidDBHelper.COOKER_STATUS, bean.getStatus());
+            values.put(StupidDBHelper.COOKER_NAME, bean.getCookerName());
+            values.put(StupidDBHelper.COOKER_LOCATION, bean.getCookerLocation());
+            values.put(StupidDBHelper.COOKER_STATUS, bean.getCookerStatus());
             mDataBase.update(StupidDBHelper.COOKER_INFO_TABLE_NAME, values,
                     StupidDBHelper.COOKER_NAME + " =?",
-                    new String[]{bean.getName()});
+                    new String[]{bean.getCookerName()});
 
             Log.v("StupidDBManager", "Update a cooker: \n" + bean.toString());
         });
@@ -123,9 +123,9 @@ public class StupidDBManager {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 CookerBean cooker = new CookerBean();
-                cooker.setName(cursor.getString(cursor.getColumnIndex(StupidDBHelper.COOKER_NAME)));
-                cooker.setLocation(cursor.getString(cursor.getColumnIndex(StupidDBHelper.COOKER_LOCATION)));
-                cooker.setStatus(cursor.getString(cursor.getColumnIndex(StupidDBHelper.COOKER_STATUS)));
+                cooker.setCookerName(cursor.getString(cursor.getColumnIndex(StupidDBHelper.COOKER_NAME)));
+                cooker.setCookerLocation(cursor.getString(cursor.getColumnIndex(StupidDBHelper.COOKER_LOCATION)));
+                cooker.setCookerStatus(cursor.getString(cursor.getColumnIndex(StupidDBHelper.COOKER_STATUS)));
                 list.add(cooker);
                 cursor.moveToNext();
             }

@@ -135,7 +135,18 @@ public class DBManager implements IDBManager {
 
     @Override
     public Observable<List<BookBean>> queryBooks() {
-        return null;
+        return new Observable<List<BookBean>>() {
+            @Override
+            protected void subscribeActual(Observer<? super List<BookBean>> observer) {
+                List<BookBean> list = new ArrayList<>();
+
+                //TODO query operations
+
+
+                observer.onNext(list);
+                observer.onComplete();
+            }
+        }.subscribeOn(Schedulers.computation());
     }
 
     @Override
