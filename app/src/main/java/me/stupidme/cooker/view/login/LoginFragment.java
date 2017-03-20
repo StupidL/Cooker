@@ -115,7 +115,7 @@ public class LoginFragment extends Fragment implements ILoginView {
     public void rememberUser(UserBean user) {
         SharedPreferences preferences = getActivity().getSharedPreferences(Constants.COOKER_USER_LOGIN, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(USER_NAME, user.getName());
+        editor.putString(USER_NAME, user.getUserName());
         editor.putString(USER_PASSWORD, user.getPassword());
         editor.apply();
     }

@@ -19,6 +19,7 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import me.stupidme.cooker.R;
+import me.stupidme.cooker.model.UserBean;
 import me.stupidme.cooker.presenter.IUserRegisterPresenter;
 import me.stupidme.cooker.presenter.UserRegisterPresenter;
 
@@ -124,12 +125,22 @@ public class RegisterFragment extends Fragment implements IRegisterView {
      */
     @Override
     public void loginSuccess() {
-        saveToSharedPreference();
+//        saveToSharedPreference();
 
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         intent.setAction(Constants.ACTION_REGISTER_SUCCESS);
         startActivity(intent);
         getActivity().finish();
+    }
+
+    @Override
+    public void saveUserInfo(UserBean user) {
+        SharedPreferences preferences = getActivity().getSharedPreferences(Constants.COOKER_USER_LOGIN, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putLong(Constants.USER_ID, user.getUserId());
+        editor.putString(Constants.USER_NAME, user.getUserName());
+        editor.putString(Constants.USER_PASSWORD, user.getPassword());
+        editor.apply();
     }
 
     /**

@@ -6,6 +6,7 @@ package me.stupidme.cooker.view.login;
 
 public class Constants {
     static final String COOKER_USER_LOGIN = "UserLoginInfo";
+    static final String USER_ID = "id";
     static final String USER_NAME = "name";
     static final String USER_PASSWORD = "password";
 

@@ -1,5 +1,7 @@
 package me.stupidme.cooker.view.login;
 
+import me.stupidme.cooker.model.UserBean;
+
 /**
  * Created by StupidL on 2017/3/14.
  */
@@ -24,4 +26,11 @@ public interface IRegisterView {
      * 登陆成功回调
      */
     void loginSuccess();
+
+    /**
+     * 保存用户信息搭配SharedPreference
+     *
+     * @param user 用户信息
+     */
+    void saveUserInfo(UserBean user);
 }
