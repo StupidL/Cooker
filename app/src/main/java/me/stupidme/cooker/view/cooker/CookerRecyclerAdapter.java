@@ -32,9 +32,9 @@ public class CookerRecyclerAdapter extends RecyclerView.Adapter<CookerRecyclerAd
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.name.setText(mDataSet.get(position).getName());
-        holder.location.setText(mDataSet.get(position).getLocation());
-        holder.status.setText(mDataSet.get(position).getStatus());
+        holder.name.setText(mDataSet.get(position).getCookerName());
+        holder.location.setText(mDataSet.get(position).getCookerLocation());
+        holder.status.setText(mDataSet.get(position).getCookerStatus());
     }
 
     @Override

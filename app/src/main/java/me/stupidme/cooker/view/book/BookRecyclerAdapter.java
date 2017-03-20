@@ -31,13 +31,13 @@ public class BookRecyclerAdapter extends RecyclerView.Adapter<BookRecyclerAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.id.setText("ID: " + mDataSet.get(position).getDeviceId());
-        holder.name.setText("Name: " + mDataSet.get(position).getDeviceName());
-        holder.place.setText("Place: " + mDataSet.get(position).getDevicePlace());
+        holder.id.setText("ID: " + mDataSet.get(position).getCookerId());
+        holder.name.setText("Name: " + mDataSet.get(position).getCookerName());
+        holder.place.setText("Place: " + mDataSet.get(position).getCookerLocation());
         holder.count.setText("Count: " + mDataSet.get(position).getPeopleCount());
         holder.weight.setText("Weight: " + mDataSet.get(position).getRiceWeight());
         holder.taste.setText("Taste: " + mDataSet.get(position).getTaste());
-        holder.status.setText("Status: " + mDataSet.get(position).getDeviceStatus());
+        holder.status.setText("Status: " + mDataSet.get(position).getCookerStatus());
         holder.time.setText("TIme: " + mDataSet.get(position).getTime());
     }
 

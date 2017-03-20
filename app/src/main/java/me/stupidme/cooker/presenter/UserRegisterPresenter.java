@@ -2,6 +2,8 @@ package me.stupidme.cooker.presenter;
 
 import android.util.Log;
 
+import java.util.List;
+
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -11,6 +13,7 @@ import me.stupidme.cooker.model.UserBean;
 import me.stupidme.cooker.model.UserModel;
 import me.stupidme.cooker.retrofit.CookerRetrofit;
 import me.stupidme.cooker.retrofit.CookerService;
+import me.stupidme.cooker.retrofit.HttpResult;
 import me.stupidme.cooker.view.login.IRegisterView;
 
 /**
@@ -21,32 +24,33 @@ public class UserRegisterPresenter implements IUserRegisterPresenter {
 
     private static final String TAG = "UserRegisterPresenter";
 
-    private IUserModel mModel;
-
     private IRegisterView mView;
 
     private CookerService mService;
 
     public UserRegisterPresenter(IRegisterView view) {
         mView = view;
-        mModel = UserModel.getInstance();
         mService = CookerRetrofit.getInstance().getCookerService();
     }
 
     @Override
     public void register(String name, String password) {
         mView.showProgress(true);
-        mService.rxRegister(new UserBean(name, password))
+        mService.register(new UserBean(name, password))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<UserBean>() {
+                .subscribe(new Observer<HttpResult<List<UserBean>>>() {
+
+                    UserBean userBean;
+
                     @Override
                     public void onSubscribe(Disposable d) {
                         Log.v(TAG, "onSubscribe: " + d.toString());
                     }
 
                     @Override
-                    public void onNext(UserBean value) {
+                    public void onNext(HttpResult<List<UserBean>> value) {
+                        userBean = value.getData().get(0);
                         Log.v(TAG, "onNext: " + value.toString());
                     }
 
@@ -60,6 +64,7 @@ public class UserRegisterPresenter implements IUserRegisterPresenter {
                     @Override
                     public void onComplete() {
                         mView.loginSuccess();
+                        mView.saveUserInfo(userBean);
                         Log.v(TAG, "onComplete");
                     }
                 });

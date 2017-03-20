@@ -5,10 +5,10 @@ package me.stupidme.cooker.view.login;
  */
 
 public class Constants {
-    static final String COOKER_USER_LOGIN = "UserLoginInfo";
-    static final String USER_ID = "id";
-    static final String USER_NAME = "name";
-    static final String USER_PASSWORD = "password";
+    public static final String COOKER_USER_LOGIN = "UserLoginInfo";
+    public static final String USER_ID = "id";
+    public static final String USER_NAME = "name";
+    public static final String USER_PASSWORD = "password";
 
     static final String ACTION_REGISTER_SUCCESS = "me.stupidme.cooker.ACTION_REGISTER_SUCCESS";
     public static final String ACTION_EXIT_ACCOUNT = "me.stupidme.cooker.ACTION_EXIT_ACCOUNT";

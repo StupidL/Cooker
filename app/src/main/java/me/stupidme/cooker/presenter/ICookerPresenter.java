@@ -1,7 +1,5 @@
 package me.stupidme.cooker.presenter;
 
-import java.util.Map;
-
 import me.stupidme.cooker.model.CookerBean;
 
 /**
@@ -41,7 +39,7 @@ public interface ICookerPresenter {
     /**
      * 从服务器获取所有电饭锅信息
      *
-     * @param map 请求参数
+     * @param userId 用户ID
      */
-    void queryCookersFromServer(Map<String, String> map);
+    void queryCookersFromServer(long userId);
 }

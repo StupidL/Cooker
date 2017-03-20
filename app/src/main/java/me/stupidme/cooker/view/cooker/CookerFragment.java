@@ -1,10 +1,11 @@
 package me.stupidme.cooker.view.cooker;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.util.ArrayMap;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,6 +26,7 @@ import me.stupidme.cooker.db.StupidDBHelper;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.presenter.CookerPresenter;
 import me.stupidme.cooker.view.SpaceItemDecoration;
+import me.stupidme.cooker.view.login.Constants;
 
 /**
  * Created by StupidL on 2017/3/5
@@ -78,12 +80,8 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cooker, container, false);
         mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.cooker_swipe_layout);
-        mSwipeLayout.setOnRefreshListener(() -> {
-            Map<String, String> map = new ArrayMap<>();
 
-            //向服务器请求数据，请求参数放在map中
-            mPresenter.queryCookersFromServer(map);
-        });
+        mSwipeLayout.setOnRefreshListener(() -> mPresenter.queryCookersFromServer(this.getUserId()));
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         initRecyclerView();
@@ -175,9 +173,9 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         String loc = map.get(CookerDialog.COOKER_LOCATION_KEY);
 
         CookerBean cooker = new CookerBean();
-        cooker.setName(name);
-        cooker.setLocation(loc);
-        cooker.setStatus(StupidDBHelper.COOKER_STATUS_FREE);
+        cooker.setCookerName(name);
+        cooker.setCookerLocation(loc);
+        cooker.setCookerStatus(StupidDBHelper.COOKER_STATUS_FREE);
 
         mPresenter.insertCooker(cooker);
     }
@@ -268,5 +266,16 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
     @Override
     public void showMessage(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * 获取用户ID，网络请求需要用户ID
+     *
+     * @return 用户ID
+     */
+    @Override
+    public long getUserId() {
+        SharedPreferences preferences = getActivity().getSharedPreferences(Constants.COOKER_USER_LOGIN, Context.MODE_PRIVATE);
+        return preferences.getLong(Constants.USER_ID, 0L);
     }
 }

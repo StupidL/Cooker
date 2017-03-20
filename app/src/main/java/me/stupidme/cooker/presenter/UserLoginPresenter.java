@@ -2,6 +2,8 @@ package me.stupidme.cooker.presenter;
 
 import android.util.Log;
 
+import java.util.List;
+
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -11,6 +13,7 @@ import me.stupidme.cooker.model.UserBean;
 import me.stupidme.cooker.model.UserModel;
 import me.stupidme.cooker.retrofit.CookerRetrofit;
 import me.stupidme.cooker.retrofit.CookerService;
+import me.stupidme.cooker.retrofit.HttpResult;
 import me.stupidme.cooker.view.login.ILoginView;
 
 /**
@@ -36,17 +39,17 @@ public class UserLoginPresenter implements IUserLoginPresenter {
     @Override
     public void login(String name, String password, boolean remember) {
         mView.showProgress(true);
-        mService.rxLogin(name, password)
+        mService.login(name, password)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<UserBean>() {
+                .subscribe(new Observer<HttpResult<List<UserBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
                     @Override
-                    public void onNext(UserBean value) {
+                    public void onNext(HttpResult<List<UserBean>> value) {
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
@@ -59,10 +62,8 @@ public class UserLoginPresenter implements IUserLoginPresenter {
 
                     @Override
                     public void onComplete() {
-//                        mView.showProgress(false);
                         mView.showMessage("Success!");
                         if (remember) {
-//                            mModel.saveUser(new UserBean(name, password));
                             mView.rememberUser(new UserBean(name, password));
                         }
                         mView.loginSuccess();
@@ -73,21 +74,21 @@ public class UserLoginPresenter implements IUserLoginPresenter {
 
     @Override
     public void attemptAutoLogin() {
-        if (mView.getUserInfo() != null){
-            String name = mView.getUserInfo().getName();
+        if (mView.getUserInfo() != null) {
+            String name = mView.getUserInfo().getUserName();
             String password = mView.getUserInfo().getPassword();
 
-            mService.rxLogin(name,password)
+            mService.login(name, password)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<UserBean>() {
+                    .subscribe(new Observer<HttpResult<List<UserBean>>>() {
                         @Override
                         public void onSubscribe(Disposable d) {
                             Log.i(TAG, "onSubscribe: " + d.toString());
                         }
 
                         @Override
-                        public void onNext(UserBean value) {
+                        public void onNext(HttpResult<List<UserBean>> value) {
                             Log.i(TAG, "onNext: " + value.toString());
                         }
 

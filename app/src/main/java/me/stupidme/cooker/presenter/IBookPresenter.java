@@ -1,7 +1,5 @@
 package me.stupidme.cooker.presenter;
 
-import java.util.Map;
-
 import me.stupidme.cooker.model.BookBean;
 
 /**
@@ -32,7 +30,7 @@ public interface IBookPresenter {
     /**
      * 从服务器同步最新的预约信息，同时要更新本地数据库和界面
      *
-     * @param map 查询参数
+     * @param userId 用户ID
      */
-    void queryBooksFromServer(Map<String, String> map);
+    void queryBooksFromServer(long userId);
 }
