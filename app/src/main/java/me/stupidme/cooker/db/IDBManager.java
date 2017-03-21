@@ -26,7 +26,7 @@ public interface IDBManager {
 
     Observable<Boolean> updateCooker(CookerBean cooker);
 
-    Observable<Boolean> updateCookers();
+    Observable<Boolean> updateCookers(List<CookerBean> cookers);
 
     Observable<Boolean> insertBook(BookBean book);
 
