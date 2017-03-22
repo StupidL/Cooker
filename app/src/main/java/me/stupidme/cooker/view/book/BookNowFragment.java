@@ -108,6 +108,16 @@ public class BookNowFragment extends BookBaseFragment implements BookDialog.Book
     }
 
     @Override
+    public void insertBooks(List<BookBean> books) {
+        mDataSet.clear();
+        for (BookBean book : books) {
+            if ("booking".equals(book.getCookerStatus()))
+                mDataSet.add(book);
+        }
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
     public void onSave(Map<String, String> map) {
         Log.v("BookNowFragment", "onSave()");
     }

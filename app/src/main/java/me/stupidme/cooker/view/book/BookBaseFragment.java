@@ -110,7 +110,7 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(manager);
-        mRecyclerView.addItemDecoration(new SpaceItemDecoration(100));
+        mRecyclerView.addItemDecoration(new SpaceItemDecoration(0));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         setItemTouchHelperCallback();

@@ -139,7 +139,7 @@ public class BookPresenter implements IBookPresenter {
                             bookBean.setPeopleCount(i);
                             bookBean.setRiceWeight(500 + i);
                             bookBean.setTaste(i % 2 == 0 ? "soft" : "hard");
-                            bookBean.setCookerStatus("free");
+                            bookBean.setCookerStatus(i % 2 == 0 ? "free" : "booking");
                             bookBean.setTime("18:00");
                             list.add(bookBean);
                         }

@@ -38,7 +38,7 @@ public class BookRecyclerAdapter extends RecyclerView.Adapter<BookRecyclerAdapte
         holder.weight.setText("Weight: " + mDataSet.get(position).getRiceWeight());
         holder.taste.setText("Taste: " + mDataSet.get(position).getTaste());
         holder.status.setText("Status: " + mDataSet.get(position).getCookerStatus());
-        holder.time.setText("TIme: " + mDataSet.get(position).getTime());
+        holder.time.setText("Time: " + mDataSet.get(position).getTime());
     }
 
     @Override

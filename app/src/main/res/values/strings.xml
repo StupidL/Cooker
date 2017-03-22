@@ -143,4 +143,14 @@
     <string name="title_activity_test">TestActivity</string>
     <string name="dialog_book_empty_text">You have no cooker to choose.</string>
 
+    <string name="book_card_item_book_id">BookId</string>
+    <string name="book_card_item_cooker_id">CookerId</string>
+    <string name="book_card_item_cooker_name">CookerName</string>
+    <string name="book_card_item_time">Time</string>
+    <string name="book_card_item_rice_weight">Weight</string>
+    <string name="book_card_item_people_count">People</string>
+    <string name="book_card_item_cooker_location">Location</string>
+    <string name="book_card_item_cooker_status">Status</string>
+    <string name="book_card_item_book_taste">Taste</string>
+
 </resources>
