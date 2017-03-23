@@ -105,6 +105,17 @@ public class BookNowFragment extends BookBaseFragment implements BookDialog.Book
                 };
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(mRecyclerView);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 5) {
+                    mFab.hide();
+                } else {
+                    mFab.show();
+                }
+            }
+        });
     }
 
     @Override
