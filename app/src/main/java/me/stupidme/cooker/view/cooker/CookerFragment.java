@@ -53,6 +53,8 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
     //下拉刷新控件
     private SwipeRefreshLayout mSwipeLayout;
 
+    private FloatingActionButton mFab;
+
     public CookerFragment() {
         // Required empty public constructor
     }
@@ -86,8 +88,8 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         initRecyclerView();
 
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        fab.setOnClickListener(v -> {
+        mFab = (FloatingActionButton) view.findViewById(R.id.fab);
+        mFab.setOnClickListener(v -> {
             if (mDialog == null) {
                 mDialog = new CookerDialog(getActivity(), CookerFragment.this);
             }
@@ -112,7 +114,7 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(manager);
-        mRecyclerView.addItemDecoration(new SpaceItemDecoration(40));
+        mRecyclerView.addItemDecoration(new SpaceItemDecoration(0));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         ItemTouchHelper.Callback callback =
@@ -160,6 +162,18 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(mRecyclerView);
 
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 5) {
+                    mFab.hide();
+                } else {
+                    mFab.show();
+                }
+            }
+        });
     }
 
     /**

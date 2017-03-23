@@ -16,6 +16,30 @@
         </android.support.v7.widget.RecyclerView>
     </android.support.v4.widget.SwipeRefreshLayout>
 
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/cooker_empty"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:gravity="center">-->
+
+        <!--<ImageView-->
+            <!--android:id="@+id/cooker_empty_view"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="250dp"-->
+            <!--android:src="@drawable/cooker_empty2" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/cooker_empty_text"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@id/cooker_empty_view"-->
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:gravity="center_horizontal"-->
+            <!--android:text="You have no Cooker here."-->
+            <!--android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />-->
+    <!--</RelativeLayout>-->
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
