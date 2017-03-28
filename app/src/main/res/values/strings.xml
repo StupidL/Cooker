@@ -156,5 +156,11 @@
     <string name="remote_describe">No Activity</string>
     <string name="remote_detail">DETAIL</string>
     <string name="remote_remove">REMOVE</string>
+    <string name="title_status_activity">Status</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="status_button_home">Home</string>
+    <string name="status_button_exit">EXIT</string>
 
 </resources>

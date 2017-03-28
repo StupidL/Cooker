@@ -47,7 +47,8 @@
             android:name=".view.StatusActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
-            android:taskAffinity="" />
+            android:taskAffinity=""
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
