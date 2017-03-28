@@ -152,5 +152,9 @@
     <string name="book_card_item_cooker_location">Location</string>
     <string name="book_card_item_cooker_status">Status</string>
     <string name="book_card_item_book_taste">Taste</string>
+    <string name="remote_title">Cooker</string>
+    <string name="remote_describe">No Activity</string>
+    <string name="remote_detail">DETAIL</string>
+    <string name="remote_remove">REMOVE</string>
 
 </resources>
