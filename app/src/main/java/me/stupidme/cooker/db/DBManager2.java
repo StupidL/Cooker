@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -23,6 +24,11 @@ public class DBManager2 implements IDBManager2 {
     private static final String DELETE_BOOK_TABLE = "DELETE FROM book";
     private static final String RESET_BOOK_SEQUENCE = "UPDATE sqlite_sequence SET seq = 0 WHERE name = 'book'";
 
+    private static final String PREFIX_INSERT_BOOK = "REPLACE INTO book(bookId,cookerId," +
+            "cookerName,cookerLocation,cookerStatus,riceWeight,peopleCount,taste,time) VALUES(";
+
+    private static final String PREFIX_INSERT_COOKER = "REPLACE INTO cooker(cookerId," +
+            "cookerName,cookerLocation,cookerStatus) VALUES(";
     private static DBManager2 sInstance;
 
     private SQLiteDatabase mWritableDB;
@@ -53,31 +59,25 @@ public class DBManager2 implements IDBManager2 {
 
     @Override
     public boolean insertCooker(CookerBean cooker) {
-        ContentValues values = new ContentValues(4);
-        values.put("cookerId", cooker.getCookerId());
-        values.put("cookerName", cooker.getCookerName());
-        values.put("cookerLocation", cooker.getCookerLocation());
-        values.put("cookerStatus", cooker.getCookerStatus());
-        long r = mWritableDB.insert("cooker", null, values);
-        return r != -1;
+
+        String sql = PREFIX_INSERT_COOKER +
+                cooker.getCookerId() + ",'" + cooker.getCookerName() + "','" +
+                cooker.getCookerLocation() + "','" + cooker.getCookerStatus() + "')";
+
+        mWritableDB.execSQL(sql);
+
+        return true;
     }
 
     @Override
     public boolean insertCookers(List<CookerBean> cookers) {
         mWritableDB.beginTransaction();
-        long c = 0;
         for (CookerBean cooker : cookers) {
-            ContentValues values = new ContentValues(4);
-            values.put("cookerId", cooker.getCookerId());
-            values.put("cookerName", cooker.getCookerName());
-            values.put("cookerLocation", cooker.getCookerLocation());
-            values.put("cookerStatus", cooker.getCookerStatus());
-            c = mWritableDB.insertOrThrow("cooker", null, values);
-            if (c == -1)
-                break;
+            insertCooker(cooker);
         }
+        mWritableDB.setTransactionSuccessful();
         mWritableDB.endTransaction();
-        return c != -1;
+        return true;
     }
 
     @Override
@@ -162,44 +162,29 @@ public class DBManager2 implements IDBManager2 {
 
     @Override
     public boolean insertBook(BookBean book) {
-        ContentValues values = new ContentValues(9);
-        values.put("bookId", book.getBookId());
-        values.put("cookerId", book.getCookerId());
-        values.put("cookerName", book.getCookerName());
-        values.put("cookerLocation", book.getCookerLocation());
-        values.put("cookerStatus", book.getCookerStatus());
-        values.put("riceWeight", book.getRiceWeight());
-        values.put("peopleCount", book.getPeopleCount());
-        values.put("taste", book.getTaste());
-        values.put("time", book.getTime());
-        long r = mWritableDB.insert("book", null, values);
 
-        return r != -1;
+        String sql = PREFIX_INSERT_BOOK +
+                book.getBookId() + ", " + book.getCookerId() + ",'" + book.getCookerName() + "','" +
+                book.getCookerLocation() + "','" + book.getCookerStatus() + "'," +
+                book.getRiceWeight() + "," + book.getPeopleCount() + ",'" + book.getTaste() + "','" +
+                book.getTime() + "'" + ")";
+
+        mWritableDB.execSQL(sql);
+
+        return true;
     }
 
     @Override
     public boolean insertBooks(List<BookBean> books) {
         mWritableDB.beginTransaction();
-        long r = 0;
         for (BookBean book : books) {
-            ContentValues values = new ContentValues(9);
-            values.put("bookId", book.getBookId());
-            values.put("cookerId", book.getCookerId());
-            values.put("cookerName", book.getCookerName());
-            values.put("cookerLocation", book.getCookerLocation());
-            values.put("cookerStatus", book.getCookerStatus());
-            values.put("riceWeight", book.getRiceWeight());
-            values.put("peopleCount", book.getPeopleCount());
-            values.put("taste", book.getTaste());
-            values.put("time", book.getTime());
-            r = mWritableDB.insert("book", null, values);
-            if (r == -1) {
-                break;
-            }
+            insertBook(book);
         }
+        mWritableDB.setTransactionSuccessful();
         mWritableDB.endTransaction();
-        return r != -1;
+        return true;
     }
+
 
     @Override
     public boolean deleteBook(long bookId) {
@@ -216,8 +201,10 @@ public class DBManager2 implements IDBManager2 {
 
     @Override
     public BookBean queryBook(long bookId) {
-        Cursor cursor = mReadableDB.rawQuery("SELECT * FROM cooker WHERE bookId=?",
+        Cursor cursor = mReadableDB.rawQuery("SELECT * FROM book WHERE bookId=?",
                 new String[]{String.valueOf(bookId)});
+
+        Log.v("DBManager2", "cursor count : " + cursor.getCount());
         BookBean book = new BookBean();
         if (cursor.getCount() > 0) {
             cursor.moveToLast();
@@ -238,7 +225,8 @@ public class DBManager2 implements IDBManager2 {
     @Override
     public List<BookBean> queryBooks() {
         List<BookBean> list = new ArrayList<>();
-        Cursor cursor = mReadableDB.rawQuery("SELECT * FROM cooker", null);
+        Cursor cursor = mReadableDB.rawQuery("SELECT * FROM book", null);
+        Log.v("DBManager2", "cursor getCount = " + cursor.getCount());
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             BookBean book = new BookBean();
@@ -254,6 +242,7 @@ public class DBManager2 implements IDBManager2 {
             list.add(book);
             cursor.moveToNext();
         }
+        Log.v("DBManager2", "queryBooks success. List size: " + list.size());
         cursor.close();
         return list;
     }
@@ -271,7 +260,10 @@ public class DBManager2 implements IDBManager2 {
         values.put("taste", book.getTaste());
         values.put("time", book.getTime());
         int r = mWritableDB.update("book", values, "bookId=?",
-                new String[]{String.valueOf(book.getCookerId())});
+                new String[]{String.valueOf(book.getBookId())});
+
+        Log.v("DBManager2", "cookerName : " + book.getCookerName());
+        Log.v("DBManager2", "update return: " + r);
 
         return r > 0;
     }
@@ -298,6 +290,7 @@ public class DBManager2 implements IDBManager2 {
                 break;
             }
         }
+        mWritableDB.setTransactionSuccessful();
         mWritableDB.endTransaction();
         return r != -1;
     }

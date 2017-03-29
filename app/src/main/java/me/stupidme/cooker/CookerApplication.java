@@ -3,6 +3,7 @@ package me.stupidme.cooker;
 import android.app.Application;
 
 import me.stupidme.cooker.db.DBManager;
+import me.stupidme.cooker.db.DBManager2;
 import me.stupidme.cooker.db.StupidDBManager;
 import me.stupidme.cooker.retrofit.CookerRetrofit;
 
@@ -17,6 +18,7 @@ public class CookerApplication extends Application {
         super.onCreate();
         StupidDBManager.init(getApplicationContext());
         DBManager.init(getApplicationContext());
+        DBManager2.init(getApplicationContext());
         CookerRetrofit.init(getApplicationContext());
     }
 }
