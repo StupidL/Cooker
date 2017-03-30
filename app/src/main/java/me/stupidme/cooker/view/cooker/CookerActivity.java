@@ -18,6 +18,7 @@ import me.stupidme.cooker.view.AboutActivity;
 import me.stupidme.cooker.view.book.BookActivity;
 import me.stupidme.cooker.view.login.Constants;
 import me.stupidme.cooker.view.login.LoginActivity;
+import me.stupidme.cooker.view.settings.SettingsActivity;
 
 public class CookerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -85,7 +86,8 @@ public class CookerActivity extends AppCompatActivity
 
                 break;
             case R.id.nav_settings:
-
+                Intent settingsIntent = new Intent(CookerActivity.this, SettingsActivity.class);
+                startActivity(settingsIntent);
                 break;
             case R.id.nav_exit:
                 Intent intent = new Intent(CookerActivity.this, LoginActivity.class);
