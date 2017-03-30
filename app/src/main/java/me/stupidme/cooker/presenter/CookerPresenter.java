@@ -33,6 +33,8 @@ public class CookerPresenter implements ICookerPresenter {
 
     private CookerService mService;
 
+    private Long mUserId;
+
     private CookerPresenter(ICookerView view) {
         mView = view;
         mModel = CookerModel.getInstance();
@@ -46,14 +48,17 @@ public class CookerPresenter implements ICookerPresenter {
     }
 
     @Override
-    public void deleteCooker(CookerBean bean) {
+    public void deleteCooker(long cookerId) {
 
         Log.v(TAG, "++++++CookerPresenter deleteCooker()++++++");
-        Log.v(TAG, "args: CookerBean = " + bean.toString());
+        Log.v(TAG, "args: CookerBean id = " + cookerId);
 
-        //同步至服务器
-        mService.deleteCooker(mView.getUserId(), bean.getCookerId())
+        if (mUserId == null)
+            mUserId = mView.getUserId();
+
+        mService.deleteCooker(mUserId, cookerId)
                 .subscribeOn(Schedulers.io())
+                .doOnNext(listHttpResult -> mModel.deleteCooker(cookerId))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
@@ -63,7 +68,7 @@ public class CookerPresenter implements ICookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mView.showMessage(value.toString());
+                        mView.removeCooker(value.getData().get(0));
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
@@ -76,10 +81,44 @@ public class CookerPresenter implements ICookerPresenter {
 
                     @Override
                     public void onComplete() {
-                        //界面上移除该项目
-                        mView.removeCooker(bean);
-                        //数据库删除该设备
-                        mModel.deleteCooker(bean);
+                        mView.setRefreshing(false);
+                        Log.i(TAG, "onComplete: ");
+                    }
+                });
+    }
+
+    @Override
+    public void deleteCookers() {
+
+        if (mUserId == null)
+            mUserId = mView.getUserId();
+
+        mService.deleteCookers(mUserId)
+                .observeOn(Schedulers.io())
+                .doOnNext(listHttpResult -> mModel.deleteCookers())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.i(TAG, "onSubscribe: " + d.toString());
+                    }
+
+                    @Override
+                    public void onNext(HttpResult<List<CookerBean>> value) {
+                        for (CookerBean cookerBean : value.getData())
+                            mView.removeCooker(cookerBean);
+                        Log.i(TAG, "onNext: " + value.toString());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showMessage(e.toString());
+                        mView.setRefreshing(false);
+                        Log.i(TAG, "onError: " + e.toString());
+                    }
+
+                    @Override
+                    public void onComplete() {
                         mView.setRefreshing(false);
                         Log.i(TAG, "onComplete: ");
                     }
@@ -92,9 +131,12 @@ public class CookerPresenter implements ICookerPresenter {
         Log.v(TAG, "++++++CookerPresenter insertCooker()++++++");
         Log.v(TAG, "args: CookerBean = " + bean.toString());
 
-        //同步至服务器
-        mService.insertCooker(mView.getUserId(), bean)
+        if (mUserId == null)
+            mUserId = mView.getUserId();
+
+        mService.insertCooker(mUserId, bean)
                 .subscribeOn(Schedulers.io())
+                .doOnNext(listHttpResult -> mModel.insertCooker(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
@@ -104,7 +146,7 @@ public class CookerPresenter implements ICookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mView.showMessage(value.toString());
+                        mView.insertCooker(value.getData().get(0));
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
@@ -117,8 +159,6 @@ public class CookerPresenter implements ICookerPresenter {
 
                     @Override
                     public void onComplete() {
-                        mModel.insertCooker(bean);
-                        mView.insertCooker(bean);
                         mView.setRefreshing(false);
                         Log.i(TAG, "onComplete: ");
                     }
@@ -126,33 +166,19 @@ public class CookerPresenter implements ICookerPresenter {
     }
 
     @Override
+    public void insertCookers(List<CookerBean> cookers) {
+
+    }
+
+    @Override
+    public void queryCookerFromDB(long cookerId) {
+        mView.insertCooker(mModel.queryCooker(cookerId));
+    }
+
+    @Override
     public void queryCookersFromDB() {
-//
-//        DBManager.getInstance()
-//                .queryCookers()
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Observer<List<CookerBean>>() {
-//                    @Override
-//                    public void onSubscribe(Disposable d) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onNext(List<CookerBean> value) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//
-//
-//                    }
-//                });
+
+//        mView.insertCookersFromDB(mModel.queryCookers());
 
         //just a test
         List<CookerBean> list = new ArrayList<>();
@@ -172,10 +198,13 @@ public class CookerPresenter implements ICookerPresenter {
         Log.v(TAG, "++++++CookerPresenter updateCooker()++++++");
         Log.v(TAG, "args: CookerBean = " + bean.toString());
 
-        //同步至服务器
-        mService.updateCooker(mView.getUserId(), bean.getCookerId(), bean)               //创建Observable对象
-                .subscribeOn(Schedulers.io())       //在io线程产生事件
-                .observeOn(AndroidSchedulers.mainThread())  //在主线程消费事件
+        if (mUserId == null)
+            mUserId = mView.getUserId();
+
+        mService.updateCooker(mUserId, bean.getCookerId(), bean)
+                .subscribeOn(Schedulers.io())
+                .doOnNext(listHttpResult -> mModel.updateCooker(listHttpResult.getData().get(0)))
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -184,7 +213,7 @@ public class CookerPresenter implements ICookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mView.showMessage(value.toString());
+                        mView.updateCooker(position, bean);
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
@@ -197,8 +226,6 @@ public class CookerPresenter implements ICookerPresenter {
 
                     @Override
                     public void onComplete() {
-                        mView.updateCooker(position, bean);
-                        mModel.updateCooker(bean);
                         mView.setRefreshing(false);
                         Log.i(TAG, "onComplete: ");
                     }
@@ -206,13 +233,54 @@ public class CookerPresenter implements ICookerPresenter {
     }
 
     @Override
-    public void queryCookersFromServer(long userId) {
+    public void queryCookerFromServer(int position, long cookerId) {
+
+        if (mUserId == null)
+            mUserId = mView.getUserId();
+
+        mService.queryCooker(mUserId, cookerId)
+                .subscribeOn(Schedulers.io())
+                .doOnNext(listHttpResult -> mModel.updateCooker(listHttpResult.getData().get(0)))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.i(TAG, "onSubscribe: " + d.toString());
+                    }
+
+                    @Override
+                    public void onNext(HttpResult<List<CookerBean>> value) {
+                        mView.updateCooker(position, value.getData().get(0));
+                        Log.i(TAG, "onNext: " + value.toString());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showMessage(e.toString());
+                        mView.setRefreshing(false);
+                        Log.i(TAG, "onError: " + e.toString());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        mView.setRefreshing(false);
+                        Log.i(TAG, "onComplete: ");
+                    }
+                });
+    }
+
+    @Override
+    public void queryCookersFromServer() {
 
         Log.v(TAG, "++++++CookerPresenter queryCookersFromServer()++++++");
 
+        if (mUserId == null)
+            mUserId = mView.getUserId();
+
         mView.setRefreshing(true);
-        mService.queryCookers(userId)
+        mService.queryCookers(mUserId)
                 .subscribeOn(Schedulers.io())
+                .doOnNext(listHttpResult -> mModel.updateCookers(listHttpResult.getData()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
@@ -223,8 +291,6 @@ public class CookerPresenter implements ICookerPresenter {
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
                         mView.updateCookersFromServer(value.getData());
-                        mModel.updateCookers(value.getData());
-                        mView.showMessage(value.toString());
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 

@@ -24,6 +24,7 @@ import java.util.Map;
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.presenter.CookerPresenter;
+import me.stupidme.cooker.presenter.ICookerPresenter;
 import me.stupidme.cooker.view.SpaceItemDecoration;
 import me.stupidme.cooker.view.login.Constants;
 
@@ -44,7 +45,7 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
     private CookerRecyclerAdapter mAdapter;
 
     //Presenter，控制网络请求和数据库读写
-    private CookerPresenter mPresenter;
+    private ICookerPresenter mPresenter;
 
     //对话框，在添加设备的时候会显示
     private CookerDialog mDialog;
@@ -82,7 +83,7 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         View view = inflater.inflate(R.layout.fragment_cooker, container, false);
         mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.cooker_swipe_layout);
 
-        mSwipeLayout.setOnRefreshListener(() -> mPresenter.queryCookersFromServer(this.getUserId()));
+        mSwipeLayout.setOnRefreshListener(() -> mPresenter.queryCookersFromServer());
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         initRecyclerView();
@@ -151,7 +152,7 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
                         Snackbar.make(viewHolder.itemView,
                                 getString(R.string.snackbar_text_cooker_fragment),
                                 Snackbar.LENGTH_LONG)
-                                .setAction("DELETE", v -> mPresenter.deleteCooker(bean)).show();
+                                .setAction("DELETE", v -> mPresenter.deleteCooker(bean.getCookerId())).show();
 
                         mDataSet.add(position, bean);
                         mAdapter.notifyItemInserted(position);
