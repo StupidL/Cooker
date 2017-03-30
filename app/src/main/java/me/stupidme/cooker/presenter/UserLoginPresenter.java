@@ -10,7 +10,6 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.model.IUserModel;
 import me.stupidme.cooker.model.UserBean;
-import me.stupidme.cooker.model.UserModel;
 import me.stupidme.cooker.retrofit.CookerRetrofit;
 import me.stupidme.cooker.retrofit.CookerService;
 import me.stupidme.cooker.retrofit.HttpResult;
@@ -24,15 +23,12 @@ public class UserLoginPresenter implements IUserLoginPresenter {
 
     private static final String TAG = "UserLoginPresenter";
 
-    private IUserModel mModel;
-
     private ILoginView mView;
 
     private CookerService mService;
 
     public UserLoginPresenter(ILoginView view) {
         mView = view;
-        mModel = UserModel.getInstance();
         mService = CookerRetrofit.getInstance().getCookerService();
     }
 
