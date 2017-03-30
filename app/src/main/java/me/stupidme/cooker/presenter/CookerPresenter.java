@@ -9,7 +9,6 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import me.stupidme.cooker.db.DBManager;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.model.CookerModel;
 import me.stupidme.cooker.model.ICookerModel;
@@ -128,41 +127,43 @@ public class CookerPresenter implements ICookerPresenter {
 
     @Override
     public void queryCookersFromDB() {
+//
+//        DBManager.getInstance()
+//                .queryCookers()
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Observer<List<CookerBean>>() {
+//                    @Override
+//                    public void onSubscribe(Disposable d) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onNext(List<CookerBean> value) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//
+//
+//                    }
+//                });
 
-        DBManager.getInstance()
-                .queryCookers()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<CookerBean>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(List<CookerBean> value) {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                        //just a test
-                        List<CookerBean> list = new ArrayList<>();
-                        for (int i = 0; i < 10; i++) {
-                            CookerBean cooker = new CookerBean();
-                            cooker.setCookerName("Cooker" + i);
-                            cooker.setCookerLocation("Place" + i);
-                            cooker.setCookerStatus(i % 2 == 0 ? "free" : "booking");
-                            list.add(cooker);
-                        }
-                        mView.insertCookersFromDB(list);
-                    }
-                });
+        //just a test
+        List<CookerBean> list = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            CookerBean cooker = new CookerBean();
+            cooker.setCookerName("Cooker" + i);
+            cooker.setCookerLocation("Place" + i);
+            cooker.setCookerStatus(i % 2 == 0 ? "free" : "booking");
+            list.add(cooker);
+        }
+        mView.insertCookersFromDB(list);
     }
 
     @Override

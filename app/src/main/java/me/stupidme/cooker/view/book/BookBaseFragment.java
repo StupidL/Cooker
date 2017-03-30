@@ -80,7 +80,7 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
         View view = inflater.inflate(R.layout.fragment_book, container, false);
         mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.book_fragment_swipe_layout);
 
-        mSwipeLayout.setOnRefreshListener(() -> mPresenter.queryBooksFromServer(this.getUserId()));
+        mSwipeLayout.setOnRefreshListener(() -> mPresenter.queryBooksFromServer());
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.book_recycler_view);
         initRecyclerView();

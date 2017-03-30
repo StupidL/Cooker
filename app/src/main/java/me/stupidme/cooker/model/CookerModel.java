@@ -2,7 +2,7 @@ package me.stupidme.cooker.model;
 
 import java.util.List;
 
-import me.stupidme.cooker.db.StupidDBManager;
+import me.stupidme.cooker.db.DBManager;
 
 /**
  * Created by StupidL on 2017/3/7.
@@ -12,10 +12,10 @@ public class CookerModel implements ICookerModel {
 
     private static CookerModel sInstance;
 
-    private StupidDBManager mManager;
+    private DBManager mManager;
 
     private CookerModel() {
-        mManager = StupidDBManager.getInstance();
+        mManager = DBManager.getInstance();
     }
 
     public static CookerModel getInstance() {
@@ -26,7 +26,7 @@ public class CookerModel implements ICookerModel {
 
     @Override
     public void deleteCooker(CookerBean bean) {
-        mManager.deleteCooker(bean);
+        mManager.deleteCooker(bean.getCookerId());
     }
 
     @Override

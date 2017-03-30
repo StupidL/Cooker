@@ -9,7 +9,6 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import me.stupidme.cooker.db.DBManager;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.BookModel;
 import me.stupidme.cooker.model.IBookModel;
@@ -32,6 +31,8 @@ public class BookPresenter implements IBookPresenter {
 
     private CookerService mService;
 
+    private Long mUserId;
+
     public BookPresenter(IBookView view) {
         mView = view;
         mModel = BookModel.getInstance();
@@ -40,8 +41,13 @@ public class BookPresenter implements IBookPresenter {
 
     @Override
     public void insertBook(BookBean book) {
-        mService.insertBook(mView.getUserId(), book)
+
+        if (mUserId == null)
+            mUserId = mView.getUserId();
+
+        mService.insertBook(mUserId, book)
                 .subscribeOn(Schedulers.io())
+                .doOnNext(listHttpResult -> mModel.insertBook(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<BookBean>>>() {
                     @Override
@@ -51,7 +57,6 @@ public class BookPresenter implements IBookPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<BookBean>> value) {
-                        mModel.insertBook(value.getData().get(0));
                         mView.insertBook(value.getData().get(0));
                         Log.i(TAG, "onNext: " + value.toString());
                     }
@@ -72,9 +77,19 @@ public class BookPresenter implements IBookPresenter {
     }
 
     @Override
+    public void insertBooks(List<BookBean> books) {
+
+    }
+
+    @Override
     public void deleteBook(BookBean book) {
-        mService.deleteBook(mView.getUserId(), book.getBookId())
+
+        if (mUserId == null)
+            mUserId = mView.getUserId();
+
+        mService.deleteBook(mUserId, book.getBookId())
                 .subscribeOn(Schedulers.io())
+                .doOnNext(bean -> mModel.deleteBook(bean))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<BookBean>() {
                     @Override
@@ -84,7 +99,7 @@ public class BookPresenter implements IBookPresenter {
 
                     @Override
                     public void onNext(BookBean value) {
-                        mView.showMessage(value.toString());
+                        mView.removeBook(book);
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
@@ -97,8 +112,6 @@ public class BookPresenter implements IBookPresenter {
 
                     @Override
                     public void onComplete() {
-                        mView.removeBook(book);
-                        mModel.deleteBook(book);
                         mView.setRefreshing(false);
                         Log.i(TAG, "onComplete: ");
                     }
@@ -106,55 +119,47 @@ public class BookPresenter implements IBookPresenter {
     }
 
     @Override
-    public void queryBooksFromDB() {
-
-        DBManager.getInstance()
-                .queryBooks()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<BookBean>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(List<BookBean> value) {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        //just a test
-                        List<BookBean> list = new ArrayList<>();
-                        for (int i = 0; i < 10; i++) {
-                            BookBean bookBean = new BookBean();
-                            bookBean.setCookerId(i);
-                            bookBean.setCookerName(i + "");
-                            bookBean.setCookerLocation(i + "");
-                            bookBean.setPeopleCount(i);
-                            bookBean.setRiceWeight(500 + i);
-                            bookBean.setTaste(i % 2 == 0 ? "soft" : "hard");
-                            bookBean.setCookerStatus(i % 2 == 0 ? "free" : "booking");
-                            bookBean.setTime("18:00");
-                            list.add(bookBean);
-                        }
-                        Log.v(getClass().getCanonicalName(), "List Size: " + list.size());
-                        mView.insertBooks(list);
-                    }
-                });
+    public void deleteBooks(List<BookBean> books) {
 
     }
 
     @Override
-    public void queryBooksFromServer(long userId) {
-        mView.setRefreshing(true);
-        mService.queryBooks(userId)
+    public void queryBookFromDB(long bookId) {
+        mView.insertBook(mModel.queryBook(bookId));
+    }
+
+    @Override
+    public void queryBooksFromDB() {
+
+//        mView.insertBooks(mModel.queryBooks());
+
+        List<BookBean> list = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            BookBean bookBean = new BookBean();
+            bookBean.setCookerId(i);
+            bookBean.setCookerName(i + "");
+            bookBean.setCookerLocation(i + "");
+            bookBean.setPeopleCount(i);
+            bookBean.setRiceWeight(500 + i);
+            bookBean.setTaste(i % 2 == 0 ? "soft" : "hard");
+            bookBean.setCookerStatus(i % 2 == 0 ? "free" : "booking");
+            bookBean.setTime("18:00");
+            list.add(bookBean);
+        }
+        Log.v(getClass().getCanonicalName(), "List Size: " + list.size());
+        mView.insertBooks(list);
+
+    }
+
+    @Override
+    public void queryBookFromServer(long bookId) {
+
+        if (mUserId == null)
+            mUserId = mView.getUserId();
+
+        mService.queryBook(mUserId, bookId)
                 .subscribeOn(Schedulers.io())
+                .doOnNext(listHttpResult -> mModel.updateBook(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<BookBean>>>() {
                     @Override
@@ -164,9 +169,45 @@ public class BookPresenter implements IBookPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<BookBean>> value) {
-                        mModel.updateBooks(value.getData());
                         mView.insertBooks(value.getData());
-                        mView.showMessage(value.toString());
+                        Log.i(TAG, "onNext: " + value.toString());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showMessage(e.toString());
+                        mView.setRefreshing(false);
+                        Log.i(TAG, "onError: " + e.toString());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        mView.setRefreshing(false);
+                        Log.i(TAG, "onComplete: ");
+                    }
+                });
+    }
+
+    @Override
+    public void queryBooksFromServer() {
+        mView.setRefreshing(true);
+
+        if (mUserId == null)
+            mUserId = mView.getUserId();
+
+        mService.queryBooks(mUserId)
+                .subscribeOn(Schedulers.io())
+                .doOnNext(listHttpResult -> mModel.updateBooks(listHttpResult.getData()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<HttpResult<List<BookBean>>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.i(TAG, "onSubscribe: " + d.toString());
+                    }
+
+                    @Override
+                    public void onNext(HttpResult<List<BookBean>> value) {
+                        mView.insertBooks(value.getData());
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 

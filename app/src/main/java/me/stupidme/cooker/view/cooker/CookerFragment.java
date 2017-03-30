@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import me.stupidme.cooker.R;
-import me.stupidme.cooker.db.StupidDBHelper;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.presenter.CookerPresenter;
 import me.stupidme.cooker.view.SpaceItemDecoration;
@@ -189,7 +188,7 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         CookerBean cooker = new CookerBean();
         cooker.setCookerName(name);
         cooker.setCookerLocation(loc);
-        cooker.setCookerStatus(StupidDBHelper.COOKER_STATUS_FREE);
+        cooker.setCookerStatus("free");
 
         mPresenter.insertCooker(cooker);
     }

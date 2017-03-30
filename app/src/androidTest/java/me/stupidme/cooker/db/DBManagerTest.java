@@ -14,9 +14,9 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by StupidL on 2017/3/29.
  */
-public class DBManager2Test {
+public class DBManagerTest {
 
-    private DBManager2 manager2 = DBManager2.getInstance();
+    private DBManager manager2 = DBManager.getInstance();
 
     @Test
     public void insertCooker() throws Exception {
@@ -85,8 +85,8 @@ public class DBManager2Test {
             BookBean bookBean = new BookBean();
             long bId = 0x2123456L + i;
             long cId = 0xabc23L + i;
-            Log.v("DBManager2Test", "bId = " + bId);
-            Log.v("DBManager2Test", "cId = " + cId);
+            Log.v("DBManagerTest", "bId = " + bId);
+            Log.v("DBManagerTest", "cId = " + cId);
             bookBean.setBookId(bId)
                     .setCookerId(cId)
                     .setCookerName("Cooker" + i)
