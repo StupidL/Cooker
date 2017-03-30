@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.yalantis.pulltomakesoup.PullToRefreshView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,7 +52,7 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
     private CookerDialog mDialog;
 
     //下拉刷新控件
-    private SwipeRefreshLayout mSwipeLayout;
+    private PullToRefreshView mSwipeLayout;
 
     private FloatingActionButton mFab;
 
@@ -81,7 +82,7 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cooker, container, false);
-        mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.cooker_swipe_layout);
+        mSwipeLayout = (PullToRefreshView) view.findViewById(R.id.cooker_swipe_layout);
 
         mSwipeLayout.setOnRefreshListener(() -> mPresenter.queryCookersFromServer());
 
@@ -202,11 +203,9 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
     @Override
     public void setRefreshing(boolean show) {
         if (show) {
-            if (!mSwipeLayout.isRefreshing())
-                mSwipeLayout.setRefreshing(true);
+            mSwipeLayout.setRefreshing(true);
         } else {
-            if (mSwipeLayout.isRefreshing())
-                mSwipeLayout.setRefreshing(false);
+            mSwipeLayout.setRefreshing(false);
         }
     }
 
