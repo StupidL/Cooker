@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
@@ -22,41 +21,22 @@ import android.view.MenuItem;
 import java.util.List;
 
 import me.stupidme.cooker.R;
+import me.stupidme.cooker.util.SharedPreferenceUtil;
 
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = (preference, value) -> {
+    private static Preference.OnPreferenceChangeListener mPreferenceChangListener = (preference, value) -> {
 
         String stringValue = value.toString();
 
         if (preference instanceof ListPreference) {
 
-            ListPreference listPreference = (ListPreference) preference;
-            int index = listPreference.findIndexOfValue(stringValue);
-
-            preference.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
+            handleListPreference(preference, stringValue);
 
         } else if (preference instanceof RingtonePreference) {
 
-            if (TextUtils.isEmpty(stringValue)) {
-
-                preference.setSummary(R.string.pref_ringtone_silent);
-
-            } else {
-                Ringtone ringtone = RingtoneManager.getRingtone(
-                        preference.getContext(), Uri.parse(stringValue));
-
-                if (ringtone == null) {
-
-                    preference.setSummary(null);
-
-                } else {
-
-                    String name = ringtone.getTitle(preference.getContext());
-                    preference.setSummary(name);
-                }
-            }
+            handleRingtonePreference(preference, stringValue);
 
         } else {
 
@@ -65,15 +45,32 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         return true;
     };
 
+    private static void handleListPreference(Preference preference, String stringValue) {
+        ListPreference listPreference = (ListPreference) preference;
+        int index = listPreference.findIndexOfValue(stringValue);
+        preference.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
+    }
 
-    private static void bindPreferenceSummaryToValue(Preference preference) {
+    private static void handleRingtonePreference(Preference preference, String stringValue) {
+        if (TextUtils.isEmpty(stringValue)) {
+            preference.setSummary(R.string.pref_notifications_ringtone_silent);
+        } else {
+            Ringtone ringtone = RingtoneManager.getRingtone(preference.getContext(), Uri.parse(stringValue));
+            if (ringtone == null) {
+                preference.setSummary(null);
+            } else {
+                String name = ringtone.getTitle(preference.getContext());
+                preference.setSummary(name);
+            }
+        }
+    }
 
-        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+    private static void setPreferenceChangeListener(Preference preference) {
 
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
+        preference.setOnPreferenceChangeListener(mPreferenceChangListener);
+
+        mPreferenceChangListener.onPreferenceChange(preference,
+                SharedPreferenceUtil.getSharedPreference().getString(preference.getKey(), ""));
     }
 
     @Override
@@ -97,6 +94,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public boolean onIsMultiPane() {
@@ -126,7 +132,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
 
-            bindPreferenceSummaryToValue(findPreference("use_custom_theme_choose"));
+            setPreferenceChangeListener(findPreference("use_custom_theme_choose"));
         }
 
         @Override
@@ -149,7 +155,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_notification);
             setHasOptionsMenu(true);
 
-            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
+            setPreferenceChangeListener(findPreference("notifications_new_message_ringtone"));
         }
 
         @Override
@@ -172,7 +178,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_data_sync);
             setHasOptionsMenu(true);
 
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+            setPreferenceChangeListener(findPreference("sync_frequency"));
         }
 
         @Override
@@ -194,8 +200,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_account);
             setHasOptionsMenu(true);
 
-            bindPreferenceSummaryToValue(findPreference("account_user_name"));
-            bindPreferenceSummaryToValue(findPreference("account_user_password"));
+            setPreferenceChangeListener(findPreference("account_user_name"));
+            setPreferenceChangeListener(findPreference("account_user_password"));
         }
 
         @Override

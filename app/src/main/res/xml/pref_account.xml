@@ -3,22 +3,22 @@
 
     <EditTextPreference
         android:capitalize="words"
-        android:defaultValue="@string/pref_default_user_name"
+        android:defaultValue="@string/pref_account_user_name_default"
         android:inputType="textCapWords"
         android:key="account_user_name"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="@string/pref_title_user_name_title" />
+        android:title="@string/pref_account_user_name_title" />
 
     <EditTextPreference
         android:capitalize="words"
-        android:defaultValue="@string/pref_default_user_password"
+        android:defaultValue="@string/pref_account_user_password_default"
         android:inputType="textCapWords"
         android:key="account_user_password"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="@string/pref_title_user_password_title" />
+        android:title="@string/pref_account_user_password_title" />
 
 </PreferenceScreen>
