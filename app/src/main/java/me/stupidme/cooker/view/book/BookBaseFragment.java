@@ -211,9 +211,4 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public long getUserId() {
-        SharedPreferences preferences = getActivity().getSharedPreferences(Constants.COOKER_USER_LOGIN, Context.MODE_PRIVATE);
-        return preferences.getLong(Constants.USER_ID, 0L);
-    }
 }

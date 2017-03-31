@@ -15,6 +15,7 @@ import me.stupidme.cooker.model.ICookerModel;
 import me.stupidme.cooker.retrofit.CookerRetrofit;
 import me.stupidme.cooker.retrofit.CookerService;
 import me.stupidme.cooker.retrofit.HttpResult;
+import me.stupidme.cooker.util.SharedPreferenceUtil;
 import me.stupidme.cooker.view.cooker.ICookerView;
 
 /**
@@ -32,8 +33,6 @@ public class CookerPresenter implements ICookerPresenter {
     private ICookerModel mModel;
 
     private CookerService mService;
-
-    private Long mUserId;
 
     private CookerPresenter(ICookerView view) {
         mView = view;
@@ -53,10 +52,7 @@ public class CookerPresenter implements ICookerPresenter {
         Log.v(TAG, "++++++CookerPresenter deleteCooker()++++++");
         Log.v(TAG, "args: CookerBean id = " + cookerId);
 
-        if (mUserId == null)
-            mUserId = mView.getUserId();
-
-        mService.deleteCooker(mUserId, cookerId)
+        mService.deleteCooker(SharedPreferenceUtil.getAccountUserId(0L), cookerId)
                 .subscribeOn(Schedulers.io())
                 .doOnNext(listHttpResult -> mModel.deleteCooker(cookerId))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -90,10 +86,7 @@ public class CookerPresenter implements ICookerPresenter {
     @Override
     public void deleteCookers() {
 
-        if (mUserId == null)
-            mUserId = mView.getUserId();
-
-        mService.deleteCookers(mUserId)
+        mService.deleteCookers(SharedPreferenceUtil.getAccountUserId(0L))
                 .observeOn(Schedulers.io())
                 .doOnNext(listHttpResult -> mModel.deleteCookers())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -131,10 +124,7 @@ public class CookerPresenter implements ICookerPresenter {
         Log.v(TAG, "++++++CookerPresenter insertCooker()++++++");
         Log.v(TAG, "args: CookerBean = " + bean.toString());
 
-        if (mUserId == null)
-            mUserId = mView.getUserId();
-
-        mService.insertCooker(mUserId, bean)
+        mService.insertCooker(SharedPreferenceUtil.getAccountUserId(0L), bean)
                 .subscribeOn(Schedulers.io())
                 .doOnNext(listHttpResult -> mModel.insertCooker(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -198,10 +188,7 @@ public class CookerPresenter implements ICookerPresenter {
         Log.v(TAG, "++++++CookerPresenter updateCooker()++++++");
         Log.v(TAG, "args: CookerBean = " + bean.toString());
 
-        if (mUserId == null)
-            mUserId = mView.getUserId();
-
-        mService.updateCooker(mUserId, bean.getCookerId(), bean)
+        mService.updateCooker(SharedPreferenceUtil.getAccountUserId(0L), bean.getCookerId(), bean)
                 .subscribeOn(Schedulers.io())
                 .doOnNext(listHttpResult -> mModel.updateCooker(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -235,10 +222,7 @@ public class CookerPresenter implements ICookerPresenter {
     @Override
     public void queryCookerFromServer(int position, long cookerId) {
 
-        if (mUserId == null)
-            mUserId = mView.getUserId();
-
-        mService.queryCooker(mUserId, cookerId)
+        mService.queryCooker(SharedPreferenceUtil.getAccountUserId(0L), cookerId)
                 .subscribeOn(Schedulers.io())
                 .doOnNext(listHttpResult -> mModel.updateCooker(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -274,11 +258,9 @@ public class CookerPresenter implements ICookerPresenter {
 
         Log.v(TAG, "++++++CookerPresenter queryCookersFromServer()++++++");
 
-        if (mUserId == null)
-            mUserId = mView.getUserId();
-
         mView.setRefreshing(true);
-        mService.queryCookers(mUserId)
+
+        mService.queryCookers(SharedPreferenceUtil.getAccountUserId(0L))
                 .subscribeOn(Schedulers.io())
                 .doOnNext(listHttpResult -> mModel.updateCookers(listHttpResult.getData()))
                 .observeOn(AndroidSchedulers.mainThread())

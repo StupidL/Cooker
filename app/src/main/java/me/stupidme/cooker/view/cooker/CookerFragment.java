@@ -1,7 +1,5 @@
 package me.stupidme.cooker.view.cooker;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,7 +25,6 @@ import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.presenter.CookerPresenter;
 import me.stupidme.cooker.presenter.ICookerPresenter;
 import me.stupidme.cooker.view.SpaceItemDecoration;
-import me.stupidme.cooker.view.login.Constants;
 
 /**
  * Created by StupidL on 2017/3/5
@@ -281,14 +278,4 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * 获取用户ID，网络请求需要用户ID
-     *
-     * @return 用户ID
-     */
-    @Override
-    public long getUserId() {
-        SharedPreferences preferences = getActivity().getSharedPreferences(Constants.COOKER_USER_LOGIN, Context.MODE_PRIVATE);
-        return preferences.getLong(Constants.USER_ID, 0L);
-    }
 }

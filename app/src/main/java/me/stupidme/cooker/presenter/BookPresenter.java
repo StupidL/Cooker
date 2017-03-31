@@ -15,6 +15,7 @@ import me.stupidme.cooker.model.IBookModel;
 import me.stupidme.cooker.retrofit.CookerRetrofit;
 import me.stupidme.cooker.retrofit.CookerService;
 import me.stupidme.cooker.retrofit.HttpResult;
+import me.stupidme.cooker.util.SharedPreferenceUtil;
 import me.stupidme.cooker.view.book.IBookView;
 
 /**
@@ -31,8 +32,6 @@ public class BookPresenter implements IBookPresenter {
 
     private CookerService mService;
 
-    private Long mUserId;
-
     public BookPresenter(IBookView view) {
         mView = view;
         mModel = BookModel.getInstance();
@@ -42,10 +41,7 @@ public class BookPresenter implements IBookPresenter {
     @Override
     public void insertBook(BookBean book) {
 
-        if (mUserId == null)
-            mUserId = mView.getUserId();
-
-        mService.insertBook(mUserId, book)
+        mService.insertBook(SharedPreferenceUtil.getAccountUserId(0L), book)
                 .subscribeOn(Schedulers.io())
                 .doOnNext(listHttpResult -> mModel.insertBook(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -84,10 +80,7 @@ public class BookPresenter implements IBookPresenter {
     @Override
     public void deleteBook(BookBean book) {
 
-        if (mUserId == null)
-            mUserId = mView.getUserId();
-
-        mService.deleteBook(mUserId, book.getBookId())
+        mService.deleteBook(SharedPreferenceUtil.getAccountUserId(0L), book.getBookId())
                 .subscribeOn(Schedulers.io())
                 .doOnNext(bean -> mModel.deleteBook(bean))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -154,10 +147,7 @@ public class BookPresenter implements IBookPresenter {
     @Override
     public void queryBookFromServer(long bookId) {
 
-        if (mUserId == null)
-            mUserId = mView.getUserId();
-
-        mService.queryBook(mUserId, bookId)
+        mService.queryBook(SharedPreferenceUtil.getAccountUserId(0L), bookId)
                 .subscribeOn(Schedulers.io())
                 .doOnNext(listHttpResult -> mModel.updateBook(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -192,10 +182,7 @@ public class BookPresenter implements IBookPresenter {
     public void queryBooksFromServer() {
         mView.setRefreshing(true);
 
-        if (mUserId == null)
-            mUserId = mView.getUserId();
-
-        mService.queryBooks(mUserId)
+        mService.queryBooks(SharedPreferenceUtil.getAccountUserId(0L))
                 .subscribeOn(Schedulers.io())
                 .doOnNext(listHttpResult -> mModel.updateBooks(listHttpResult.getData()))
                 .observeOn(AndroidSchedulers.mainThread())
