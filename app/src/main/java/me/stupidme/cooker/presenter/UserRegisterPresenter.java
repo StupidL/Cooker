@@ -49,6 +49,7 @@ public class UserRegisterPresenter implements IUserRegisterPresenter {
                     @Override
                     public void onNext(HttpResult<List<UserBean>> value) {
                         userBean = value.getData().get(0);
+                        mView.registerSuccess(userBean);
                         Log.v(TAG, "onNext: " + value.toString());
                     }
 
@@ -61,8 +62,6 @@ public class UserRegisterPresenter implements IUserRegisterPresenter {
 
                     @Override
                     public void onComplete() {
-                        mView.loginSuccess();
-                        mView.saveUserInfo(userBean);
                         Log.v(TAG, "onComplete");
                     }
                 });

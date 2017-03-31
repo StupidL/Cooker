@@ -21,6 +21,8 @@ public class SharedPreferenceUtil {
 
     public static final String KEY_USER_PASSWORD = "account_user_password";
 
+    public static final String KEY_USER_ID = "account_user_id";
+
     public static void init(Context context) {
         WeakReference<Context> mContextRef = new WeakReference<>(context);
         mSharedPreference = PreferenceManager.getDefaultSharedPreferences(mContextRef.get());
@@ -68,5 +70,15 @@ public class SharedPreferenceUtil {
 
     public static String getAccountUserPassword(String defaultValue) {
         return mSharedPreference.getString(KEY_USER_PASSWORD, defaultValue);
+    }
+
+    public static void putAccountUserId(Long id) {
+        SharedPreferences.Editor editor = mSharedPreference.edit();
+        editor.putLong(KEY_USER_ID, id);
+        editor.apply();
+    }
+
+    public static Long getAccountUserId(Long defaultValue) {
+        return mSharedPreference.getLong(KEY_USER_ID, defaultValue);
     }
 }

@@ -30,13 +30,6 @@ public interface ILoginView {
     void rememberUser(UserBean user);
 
     /**
-     * 获取用户名和密码
-     *
-     * @return 用户登录信息
-     */
-    UserBean getUserInfo();
-
-    /**
      * 登陆成功
      */
     void loginSuccess();

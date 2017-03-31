@@ -23,14 +23,10 @@ public interface IRegisterView {
     void showProgress(boolean show);
 
     /**
-     * 登陆成功回调
-     */
-    void loginSuccess();
-
-    /**
-     * 保存用户信息搭配SharedPreference
+     * 注册成功回调
      *
-     * @param user 用户信息
+     * @param user 注册信息
      */
-    void saveUserInfo(UserBean user);
+    void registerSuccess(UserBean user);
+
 }
