@@ -7,6 +7,7 @@ import java.util.List;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.model.BookBean;
@@ -32,10 +33,13 @@ public class BookPresenter implements IBookPresenter {
 
     private CookerService mService;
 
+    private CompositeDisposable mCompositeDisposable;
+
     public BookPresenter(IBookView view) {
         mView = view;
         mModel = BookModel.getInstance();
         mService = CookerRetrofit.getInstance().getCookerService();
+        mCompositeDisposable = new CompositeDisposable();
     }
 
     @Override
@@ -48,6 +52,8 @@ public class BookPresenter implements IBookPresenter {
                 .subscribe(new Observer<HttpResult<List<BookBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        mCompositeDisposable.add(d);
+
                         Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
@@ -87,6 +93,8 @@ public class BookPresenter implements IBookPresenter {
                 .subscribe(new Observer<BookBean>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        mCompositeDisposable.add(d);
+
                         Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
@@ -154,6 +162,8 @@ public class BookPresenter implements IBookPresenter {
                 .subscribe(new Observer<HttpResult<List<BookBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        mCompositeDisposable.add(d);
+
                         Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
@@ -189,6 +199,8 @@ public class BookPresenter implements IBookPresenter {
                 .subscribe(new Observer<HttpResult<List<BookBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        mCompositeDisposable.add(d);
+
                         Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
@@ -211,5 +223,10 @@ public class BookPresenter implements IBookPresenter {
                         Log.i(TAG, "onComplete: ");
                     }
                 });
+    }
+
+    @Override
+    public void dispose() {
+        mCompositeDisposable.clear();
     }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.model.CookerBean;
@@ -34,10 +35,13 @@ public class CookerPresenter implements ICookerPresenter {
 
     private CookerService mService;
 
+    private CompositeDisposable mCompositeDisposable;
+
     private CookerPresenter(ICookerView view) {
         mView = view;
         mModel = CookerModel.getInstance();
         mService = CookerRetrofit.getInstance().getCookerService();
+        mCompositeDisposable = new CompositeDisposable();
     }
 
     public static CookerPresenter getInstance(ICookerView view) {
@@ -59,6 +63,8 @@ public class CookerPresenter implements ICookerPresenter {
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        mCompositeDisposable.add(d);
+
                         Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
@@ -93,6 +99,8 @@ public class CookerPresenter implements ICookerPresenter {
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        mCompositeDisposable.add(d);
+
                         Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
@@ -131,6 +139,8 @@ public class CookerPresenter implements ICookerPresenter {
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        mCompositeDisposable.add(d);
+
                         Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
@@ -195,6 +205,8 @@ public class CookerPresenter implements ICookerPresenter {
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        mCompositeDisposable.add(d);
+
                         Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
@@ -229,6 +241,8 @@ public class CookerPresenter implements ICookerPresenter {
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        mCompositeDisposable.add(d);
+
                         Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
@@ -267,6 +281,8 @@ public class CookerPresenter implements ICookerPresenter {
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        mCompositeDisposable.add(d);
+
                         Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
@@ -289,5 +305,10 @@ public class CookerPresenter implements ICookerPresenter {
                         Log.i(TAG, "onComplete: ");
                     }
                 });
+    }
+
+    @Override
+    public void dispose() {
+        mCompositeDisposable.clear();
     }
 }

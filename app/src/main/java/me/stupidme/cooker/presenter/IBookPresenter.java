@@ -8,7 +8,7 @@ import me.stupidme.cooker.model.BookBean;
  * Created by StupidL on 2017/3/8.
  */
 
-public interface IBookPresenter {
+public interface IBookPresenter extends DisposablePresenter{
 
     /**
      * 插入一条预约信息，本地数据库和服务器均要插入

@@ -103,6 +103,13 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         mPresenter.queryCookersFromDB();
     }
 
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mPresenter.dispose();
+    }
+
     /**
      * 初始化RecyclerView
      */
