@@ -13,7 +13,7 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import me.stupidme.cooker.R;
-import me.stupidme.cooker.notification.NotificationService;
+import me.stupidme.cooker.service.NotificationService;
 import me.stupidme.cooker.view.AboutActivity;
 import me.stupidme.cooker.view.book.BookActivity;
 import me.stupidme.cooker.view.login.Constants;
@@ -59,13 +59,6 @@ public class CookerActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        startService(new Intent(CookerActivity.this, NotificationService.class));
     }
 
     @Override

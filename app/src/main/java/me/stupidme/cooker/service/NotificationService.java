@@ -1,4 +1,4 @@
-package me.stupidme.cooker.notification;
+package me.stupidme.cooker.service;
 
 import android.app.Notification;
 import android.app.NotificationManager;
