@@ -217,5 +217,18 @@
     <string name="pref_account_user_name_title">Change user name</string>
     <string name="pref_account_user_password_default">password</string>
     <string name="pref_account_user_password_title">Change password</string>
+    <string name="feedback_add_screenshot">add screenshot</string>
+    <string name="your_input">Input feedback</string>
+    <string name="select_image">+ Add Screenshot  </string>
+    <string name="send_feedback">Send Feedback</string>
+    <string name="title_activity_feedback">Feedback</string>
+    <string name="action_send_feedback">Send Feedback</string>
+    <string name="feedback_attach_system_information">Attach System Information</string>
+    <string name="feedback_checkbox_tip">This will only collect your operation and hardware information. No privacy will be reported.</string>
+    <string name="feedback_image_view_describe">image view</string>
+    <string name="select_image_success">Select image success!</string>
+    <string name="feedback_permission_tips">You need to allow access to SD card to select images.</string>
+    <string name="chooser_title">Select Picture</string>
+    <string name="edit_text_empty">Content is empty!</string>
 
 </resources>

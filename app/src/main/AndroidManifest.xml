@@ -3,6 +3,7 @@
     package="me.stupidme.cooker">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".CookerApplication"
@@ -51,7 +52,10 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.settings.SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings" />
+        <activity
+            android:name=".view.feedback.FeedbackActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
