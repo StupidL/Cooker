@@ -8,9 +8,7 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import me.stupidme.cooker.model.IUserModel;
 import me.stupidme.cooker.model.UserBean;
-import me.stupidme.cooker.model.UserModel;
 import me.stupidme.cooker.retrofit.CookerRetrofit;
 import me.stupidme.cooker.retrofit.CookerService;
 import me.stupidme.cooker.retrofit.HttpResult;
@@ -51,6 +49,7 @@ public class UserRegisterPresenter implements IUserRegisterPresenter {
                     @Override
                     public void onNext(HttpResult<List<UserBean>> value) {
                         userBean = value.getData().get(0);
+                        mView.registerSuccess(userBean);
                         Log.v(TAG, "onNext: " + value.toString());
                     }
 
@@ -63,8 +62,6 @@ public class UserRegisterPresenter implements IUserRegisterPresenter {
 
                     @Override
                     public void onComplete() {
-                        mView.loginSuccess();
-                        mView.saveUserInfo(userBean);
                         Log.v(TAG, "onComplete");
                     }
                 });

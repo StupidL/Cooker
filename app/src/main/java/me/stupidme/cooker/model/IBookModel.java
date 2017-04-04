@@ -4,6 +4,8 @@ import java.util.List;
 
 /**
  * Created by StupidL on 2017/3/8.
+ * <p>
+ * 该类定义了本地数据的所有操作，只影响本地数据，不会印象服务器数据
  */
 
 public interface IBookModel {
@@ -44,10 +46,23 @@ public interface IBookModel {
     List<BookBean> queryBooks();
 
     /**
+     * 查询本地数据库中某个具体的预约
+     *
+     * @param bookId 预约ID
+     * @return 预约
+     */
+    BookBean queryBook(long bookId);
+
+    /**
      * 删除本地数据库某条预约记录
      *
      * @param book 预约
      */
     void deleteBook(BookBean book);
+
+    /**
+     * 删除数据库所有的预约记录
+     */
+    void deleteBooks();
 
 }

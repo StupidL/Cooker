@@ -1,12 +1,9 @@
 package me.stupidme.cooker.view.cooker;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,17 +13,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.yalantis.pulltomakesoup.PullToRefreshView;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import me.stupidme.cooker.R;
-import me.stupidme.cooker.db.StupidDBHelper;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.presenter.CookerPresenter;
+import me.stupidme.cooker.presenter.ICookerPresenter;
 import me.stupidme.cooker.view.SpaceItemDecoration;
-import me.stupidme.cooker.view.login.Constants;
 
 /**
  * Created by StupidL on 2017/3/5
@@ -45,13 +43,13 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
     private CookerRecyclerAdapter mAdapter;
 
     //Presenter，控制网络请求和数据库读写
-    private CookerPresenter mPresenter;
+    private ICookerPresenter mPresenter;
 
     //对话框，在添加设备的时候会显示
     private CookerDialog mDialog;
 
     //下拉刷新控件
-    private SwipeRefreshLayout mSwipeLayout;
+    private PullToRefreshView mSwipeLayout;
 
     private FloatingActionButton mFab;
 
@@ -81,9 +79,9 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cooker, container, false);
-        mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.cooker_swipe_layout);
+        mSwipeLayout = (PullToRefreshView) view.findViewById(R.id.cooker_swipe_layout);
 
-        mSwipeLayout.setOnRefreshListener(() -> mPresenter.queryCookersFromServer(this.getUserId()));
+        mSwipeLayout.setOnRefreshListener(() -> mPresenter.queryCookersFromServer());
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         initRecyclerView();
@@ -103,6 +101,13 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
     @Override
     public void onViewCreated(View view, Bundle bundle) {
         mPresenter.queryCookersFromDB();
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mPresenter.dispose();
     }
 
     /**
@@ -152,7 +157,7 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
                         Snackbar.make(viewHolder.itemView,
                                 getString(R.string.snackbar_text_cooker_fragment),
                                 Snackbar.LENGTH_LONG)
-                                .setAction("DELETE", v -> mPresenter.deleteCooker(bean)).show();
+                                .setAction("DELETE", v -> mPresenter.deleteCooker(bean.getCookerId())).show();
 
                         mDataSet.add(position, bean);
                         mAdapter.notifyItemInserted(position);
@@ -189,7 +194,7 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         CookerBean cooker = new CookerBean();
         cooker.setCookerName(name);
         cooker.setCookerLocation(loc);
-        cooker.setCookerStatus(StupidDBHelper.COOKER_STATUS_FREE);
+        cooker.setCookerStatus("free");
 
         mPresenter.insertCooker(cooker);
     }
@@ -202,11 +207,9 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
     @Override
     public void setRefreshing(boolean show) {
         if (show) {
-            if (!mSwipeLayout.isRefreshing())
-                mSwipeLayout.setRefreshing(true);
+            mSwipeLayout.setRefreshing(true);
         } else {
-            if (mSwipeLayout.isRefreshing())
-                mSwipeLayout.setRefreshing(false);
+            mSwipeLayout.setRefreshing(false);
         }
     }
 
@@ -282,14 +285,4 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * 获取用户ID，网络请求需要用户ID
-     *
-     * @return 用户ID
-     */
-    @Override
-    public long getUserId() {
-        SharedPreferences preferences = getActivity().getSharedPreferences(Constants.COOKER_USER_LOGIN, Context.MODE_PRIVATE);
-        return preferences.getLong(Constants.USER_ID, 0L);
-    }
 }

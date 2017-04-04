@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
@@ -22,6 +21,7 @@ import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.UserBean;
 import me.stupidme.cooker.presenter.IUserRegisterPresenter;
 import me.stupidme.cooker.presenter.UserRegisterPresenter;
+import me.stupidme.cooker.util.SharedPreferenceUtil;
 
 /**
  * Created by StupidL on 2017/3/14.
@@ -124,23 +124,15 @@ public class RegisterFragment extends Fragment implements IRegisterView {
      * 登陆成功回调，回到登录界面
      */
     @Override
-    public void loginSuccess() {
-//        saveToSharedPreference();
+    public void registerSuccess(UserBean user) {
+        SharedPreferenceUtil.putAccountUserName(user.getUserName());
+        SharedPreferenceUtil.putAccountUserPassword(user.getPassword());
+        SharedPreferenceUtil.putAccountUserId(user.getUserId());
 
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         intent.setAction(Constants.ACTION_REGISTER_SUCCESS);
         startActivity(intent);
         getActivity().finish();
-    }
-
-    @Override
-    public void saveUserInfo(UserBean user) {
-        SharedPreferences preferences = getActivity().getSharedPreferences(Constants.COOKER_USER_LOGIN, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putLong(Constants.USER_ID, user.getUserId());
-        editor.putString(Constants.USER_NAME, user.getUserName());
-        editor.putString(Constants.USER_PASSWORD, user.getPassword());
-        editor.apply();
     }
 
     /**
@@ -223,14 +215,4 @@ public class RegisterFragment extends Fragment implements IRegisterView {
         return TextUtils.equals(password, password2);
     }
 
-    /**
-     * 保存注册信息到sp
-     */
-    private void saveToSharedPreference() {
-        SharedPreferences preferences = getActivity().getSharedPreferences(Constants.COOKER_USER_LOGIN, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(Constants.USER_NAME, mNameEditText.getText().toString());
-        editor.putString(Constants.USER_PASSWORD, mPasswordEditText.getText().toString());
-        editor.apply();
-    }
 }

@@ -7,15 +7,16 @@ import java.util.List;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import me.stupidme.cooker.db.DBManager;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.model.CookerModel;
 import me.stupidme.cooker.model.ICookerModel;
 import me.stupidme.cooker.retrofit.CookerRetrofit;
 import me.stupidme.cooker.retrofit.CookerService;
 import me.stupidme.cooker.retrofit.HttpResult;
+import me.stupidme.cooker.util.SharedPreferenceUtil;
 import me.stupidme.cooker.view.cooker.ICookerView;
 
 /**
@@ -34,10 +35,13 @@ public class CookerPresenter implements ICookerPresenter {
 
     private CookerService mService;
 
+    private CompositeDisposable mCompositeDisposable;
+
     private CookerPresenter(ICookerView view) {
         mView = view;
         mModel = CookerModel.getInstance();
         mService = CookerRetrofit.getInstance().getCookerService();
+        mCompositeDisposable = new CompositeDisposable();
     }
 
     public static CookerPresenter getInstance(ICookerView view) {
@@ -47,24 +51,26 @@ public class CookerPresenter implements ICookerPresenter {
     }
 
     @Override
-    public void deleteCooker(CookerBean bean) {
+    public void deleteCooker(long cookerId) {
 
         Log.v(TAG, "++++++CookerPresenter deleteCooker()++++++");
-        Log.v(TAG, "args: CookerBean = " + bean.toString());
+        Log.v(TAG, "args: CookerBean id = " + cookerId);
 
-        //同步至服务器
-        mService.deleteCooker(mView.getUserId(), bean.getCookerId())
+        mService.deleteCooker(SharedPreferenceUtil.getAccountUserId(0L), cookerId)
                 .subscribeOn(Schedulers.io())
+                .doOnNext(listHttpResult -> mModel.deleteCooker(cookerId))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        mCompositeDisposable.add(d);
+
                         Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mView.showMessage(value.toString());
+                        mView.removeCooker(value.getData().get(0));
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
@@ -77,10 +83,43 @@ public class CookerPresenter implements ICookerPresenter {
 
                     @Override
                     public void onComplete() {
-                        //界面上移除该项目
-                        mView.removeCooker(bean);
-                        //数据库删除该设备
-                        mModel.deleteCooker(bean);
+                        mView.setRefreshing(false);
+                        Log.i(TAG, "onComplete: ");
+                    }
+                });
+    }
+
+    @Override
+    public void deleteCookers() {
+
+        mService.deleteCookers(SharedPreferenceUtil.getAccountUserId(0L))
+                .observeOn(Schedulers.io())
+                .doOnNext(listHttpResult -> mModel.deleteCookers())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        mCompositeDisposable.add(d);
+
+                        Log.i(TAG, "onSubscribe: " + d.toString());
+                    }
+
+                    @Override
+                    public void onNext(HttpResult<List<CookerBean>> value) {
+                        for (CookerBean cookerBean : value.getData())
+                            mView.removeCooker(cookerBean);
+                        Log.i(TAG, "onNext: " + value.toString());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showMessage(e.toString());
+                        mView.setRefreshing(false);
+                        Log.i(TAG, "onError: " + e.toString());
+                    }
+
+                    @Override
+                    public void onComplete() {
                         mView.setRefreshing(false);
                         Log.i(TAG, "onComplete: ");
                     }
@@ -93,19 +132,21 @@ public class CookerPresenter implements ICookerPresenter {
         Log.v(TAG, "++++++CookerPresenter insertCooker()++++++");
         Log.v(TAG, "args: CookerBean = " + bean.toString());
 
-        //同步至服务器
-        mService.insertCooker(mView.getUserId(), bean)
+        mService.insertCooker(SharedPreferenceUtil.getAccountUserId(0L), bean)
                 .subscribeOn(Schedulers.io())
+                .doOnNext(listHttpResult -> mModel.insertCooker(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        mCompositeDisposable.add(d);
+
                         Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mView.showMessage(value.toString());
+                        mView.insertCooker(value.getData().get(0));
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
@@ -118,8 +159,6 @@ public class CookerPresenter implements ICookerPresenter {
 
                     @Override
                     public void onComplete() {
-                        mModel.insertCooker(bean);
-                        mView.insertCooker(bean);
                         mView.setRefreshing(false);
                         Log.i(TAG, "onComplete: ");
                     }
@@ -127,42 +166,30 @@ public class CookerPresenter implements ICookerPresenter {
     }
 
     @Override
+    public void insertCookers(List<CookerBean> cookers) {
+
+    }
+
+    @Override
+    public void queryCookerFromDB(long cookerId) {
+        mView.insertCooker(mModel.queryCooker(cookerId));
+    }
+
+    @Override
     public void queryCookersFromDB() {
 
-        DBManager.getInstance()
-                .queryCookers()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<CookerBean>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
+//        mView.insertCookersFromDB(mModel.queryCookers());
 
-                    }
-
-                    @Override
-                    public void onNext(List<CookerBean> value) {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                        //just a test
-                        List<CookerBean> list = new ArrayList<>();
-                        for (int i = 0; i < 10; i++) {
-                            CookerBean cooker = new CookerBean();
-                            cooker.setCookerName("Cooker" + i);
-                            cooker.setCookerLocation("Place" + i);
-                            cooker.setCookerStatus(i % 2 == 0 ? "free" : "booking");
-                            list.add(cooker);
-                        }
-                        mView.insertCookersFromDB(list);
-                    }
-                });
+        //just a test
+        List<CookerBean> list = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            CookerBean cooker = new CookerBean();
+            cooker.setCookerName("Cooker" + i);
+            cooker.setCookerLocation("Place" + i);
+            cooker.setCookerStatus(i % 2 == 0 ? "free" : "booking");
+            list.add(cooker);
+        }
+        mView.insertCookersFromDB(list);
     }
 
     @Override
@@ -171,19 +198,21 @@ public class CookerPresenter implements ICookerPresenter {
         Log.v(TAG, "++++++CookerPresenter updateCooker()++++++");
         Log.v(TAG, "args: CookerBean = " + bean.toString());
 
-        //同步至服务器
-        mService.updateCooker(mView.getUserId(), bean.getCookerId(), bean)               //创建Observable对象
-                .subscribeOn(Schedulers.io())       //在io线程产生事件
-                .observeOn(AndroidSchedulers.mainThread())  //在主线程消费事件
+        mService.updateCooker(SharedPreferenceUtil.getAccountUserId(0L), bean.getCookerId(), bean)
+                .subscribeOn(Schedulers.io())
+                .doOnNext(listHttpResult -> mModel.updateCooker(listHttpResult.getData().get(0)))
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        mCompositeDisposable.add(d);
+
                         Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mView.showMessage(value.toString());
+                        mView.updateCooker(position, bean);
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
@@ -196,8 +225,6 @@ public class CookerPresenter implements ICookerPresenter {
 
                     @Override
                     public void onComplete() {
-                        mView.updateCooker(position, bean);
-                        mModel.updateCooker(bean);
                         mView.setRefreshing(false);
                         Log.i(TAG, "onComplete: ");
                     }
@@ -205,25 +232,23 @@ public class CookerPresenter implements ICookerPresenter {
     }
 
     @Override
-    public void queryCookersFromServer(long userId) {
+    public void queryCookerFromServer(int position, long cookerId) {
 
-        Log.v(TAG, "++++++CookerPresenter queryCookersFromServer()++++++");
-
-        mView.setRefreshing(true);
-        mService.queryCookers(userId)
+        mService.queryCooker(SharedPreferenceUtil.getAccountUserId(0L), cookerId)
                 .subscribeOn(Schedulers.io())
+                .doOnNext(listHttpResult -> mModel.updateCooker(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        mCompositeDisposable.add(d);
+
                         Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mView.updateCookersFromServer(value.getData());
-                        mModel.updateCookers(value.getData());
-                        mView.showMessage(value.toString());
+                        mView.updateCooker(position, value.getData().get(0));
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
@@ -240,5 +265,50 @@ public class CookerPresenter implements ICookerPresenter {
                         Log.i(TAG, "onComplete: ");
                     }
                 });
+    }
+
+    @Override
+    public void queryCookersFromServer() {
+
+        Log.v(TAG, "++++++CookerPresenter queryCookersFromServer()++++++");
+
+        mView.setRefreshing(true);
+
+        mService.queryCookers(SharedPreferenceUtil.getAccountUserId(0L))
+                .subscribeOn(Schedulers.io())
+                .doOnNext(listHttpResult -> mModel.updateCookers(listHttpResult.getData()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        mCompositeDisposable.add(d);
+
+                        Log.i(TAG, "onSubscribe: " + d.toString());
+                    }
+
+                    @Override
+                    public void onNext(HttpResult<List<CookerBean>> value) {
+                        mView.updateCookersFromServer(value.getData());
+                        Log.i(TAG, "onNext: " + value.toString());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showMessage(e.toString());
+                        mView.setRefreshing(false);
+                        Log.i(TAG, "onError: " + e.toString());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        mView.setRefreshing(false);
+                        Log.i(TAG, "onComplete: ");
+                    }
+                });
+    }
+
+    @Override
+    public void dispose() {
+        mCompositeDisposable.clear();
     }
 }

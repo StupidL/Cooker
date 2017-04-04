@@ -1,7 +1,5 @@
 package me.stupidme.cooker.view.book;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -21,8 +19,8 @@ import java.util.List;
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.presenter.BookPresenter;
+import me.stupidme.cooker.presenter.IBookPresenter;
 import me.stupidme.cooker.view.SpaceItemDecoration;
-import me.stupidme.cooker.view.login.Constants;
 
 /**
  * Created by StupidL on 2017/3/8.
@@ -48,7 +46,7 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
     /**
      * Presenter，负责网络数据请求和数据库操作
      */
-    protected BookPresenter mPresenter;
+    protected IBookPresenter mPresenter;
 
     /**
      * 下拉刷新控件
@@ -80,7 +78,7 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
         View view = inflater.inflate(R.layout.fragment_book, container, false);
         mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.book_fragment_swipe_layout);
 
-        mSwipeLayout.setOnRefreshListener(() -> mPresenter.queryBooksFromServer(this.getUserId()));
+        mSwipeLayout.setOnRefreshListener(() -> mPresenter.queryBooksFromServer());
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.book_recycler_view);
         initRecyclerView();
@@ -94,6 +92,14 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
     public void onViewCreated(View view, Bundle bundle) {
         mPresenter.queryBooksFromDB();
         Log.v(getClass().getCanonicalName(), "onViewCreated()");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mPresenter.dispose();
+        Log.v(getClass().getCanonicalName(), "mPresenter dispose...");
+        Log.v(getClass().getCanonicalName(), "onDestroy()");
     }
 
     /**
@@ -211,9 +217,4 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public long getUserId() {
-        SharedPreferences preferences = getActivity().getSharedPreferences(Constants.COOKER_USER_LOGIN, Context.MODE_PRIVATE);
-        return preferences.getLong(Constants.USER_ID, 0L);
-    }
 }

@@ -9,6 +9,7 @@ import me.stupidme.cooker.model.UserBean;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -33,6 +34,7 @@ public interface CookerService {
      * @see HttpResult
      * @see UserBean
      */
+    @FormUrlEncoded
     @POST("/user/login")
     Observable<HttpResult<List<UserBean>>> login(@Field("username") String name,
                                                  @Field("password") String password);
@@ -170,7 +172,7 @@ public interface CookerService {
      * @see HttpResult
      * @see BookBean
      */
-    @PUT("/user/{userId}/books/{bookId}")
+    @PUT("/user/{userId}/books")
     Observable<HttpResult<List<BookBean>>> updateBook(@Path("userId") long userId,
                                                       @Body BookBean bean);
 

@@ -23,6 +23,7 @@ import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.UserBean;
 import me.stupidme.cooker.presenter.IUserLoginPresenter;
 import me.stupidme.cooker.presenter.UserLoginPresenter;
+import me.stupidme.cooker.util.SharedPreferenceUtil;
 import me.stupidme.cooker.view.cooker.CookerActivity;
 
 import static me.stupidme.cooker.view.login.Constants.USER_NAME;
@@ -113,26 +114,9 @@ public class LoginFragment extends Fragment implements ILoginView {
      */
     @Override
     public void rememberUser(UserBean user) {
-        SharedPreferences preferences = getActivity().getSharedPreferences(Constants.COOKER_USER_LOGIN, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(USER_NAME, user.getUserName());
-        editor.putString(USER_PASSWORD, user.getPassword());
-        editor.apply();
-    }
-
-    /**
-     * 自动登录的时候调用
-     *
-     * @return 用户信息
-     */
-    @Override
-    public UserBean getUserInfo() {
-        SharedPreferences preferences = getActivity().getSharedPreferences(Constants.COOKER_USER_LOGIN, Context.MODE_PRIVATE);
-        String name = preferences.getString(USER_NAME, "");
-        String password = preferences.getString(USER_PASSWORD, "");
-        if (isNameAndPasswordValid(name, password))
-            return new UserBean(name, password);
-        return null;
+        SharedPreferenceUtil.putAccountUserName(user.getUserName());
+        SharedPreferenceUtil.putAccountUserPassword(user.getPassword());
+        SharedPreferenceUtil.putAccountUserId(user.getUserId());
     }
 
     /**

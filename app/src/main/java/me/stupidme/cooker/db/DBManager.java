@@ -4,19 +4,17 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.CookerBean;
 
 /**
- * Created by StupidL on 2017/3/20.
+ * Created by StupidL on 2017/3/29.
  */
 
 public class DBManager implements IDBManager {
@@ -26,26 +24,27 @@ public class DBManager implements IDBManager {
     private static final String DELETE_BOOK_TABLE = "DELETE FROM book";
     private static final String RESET_BOOK_SEQUENCE = "UPDATE sqlite_sequence SET seq = 0 WHERE name = 'book'";
 
-    private static WeakReference<Context> mContextRef;
+    private static final String PREFIX_INSERT_BOOK = "REPLACE INTO book(bookId,cookerId," +
+            "cookerName,cookerLocation,cookerStatus,riceWeight,peopleCount,taste,time) VALUES(";
+
+    private static final String PREFIX_INSERT_COOKER = "REPLACE INTO cooker(cookerId," +
+            "cookerName,cookerLocation,cookerStatus) VALUES(";
+    private static DBManager sInstance;
 
     private SQLiteDatabase mWritableDB;
 
     private SQLiteDatabase mReadableDB;
 
-    private static DBManager sInstance;
+    private static WeakReference<Context> mContextRef;
 
     public static void init(Context context) {
         mContextRef = new WeakReference<>(context);
     }
 
     private DBManager() {
-        if (mContextRef.get() != null) {
-            DBHelper helper = new DBHelper(mContextRef.get());
-            mWritableDB = helper.getWritableDatabase();
-            mReadableDB = helper.getReadableDatabase();
-        } else {
-            throw new RuntimeException("Context is null. Create Database failed.");
-        }
+        DBHelper helper = new DBHelper(mContextRef.get());
+        mWritableDB = helper.getWritableDatabase();
+        mReadableDB = helper.getReadableDatabase();
     }
 
     public static DBManager getInstance() {
@@ -59,389 +58,240 @@ public class DBManager implements IDBManager {
     }
 
     @Override
-    public Observable<Boolean> insertCooker(CookerBean cooker) {
-        return new Observable<Boolean>() {
-            @Override
-            protected void subscribeActual(Observer<? super Boolean> observer) {
-                ContentValues values = new ContentValues(4);
-                values.put("cookerId", cooker.getCookerId());
-                values.put("cookerName", cooker.getCookerName());
-                values.put("cookerLocation", cooker.getCookerLocation());
-                values.put("cookerStatus", cooker.getCookerStatus());
-                long r = mWritableDB.insert("cooker", null, values);
-                if (r == -1) {
-                    observer.onError(new Throwable("Error occurs when insert contents in table 'cooker'"));
-                    observer.onComplete();
-                } else {
-                    observer.onNext(true);
-                    observer.onComplete();
-                }
-            }
-        }.subscribeOn(Schedulers.io());
+    public boolean insertCooker(CookerBean cooker) {
+
+        String sql = PREFIX_INSERT_COOKER +
+                cooker.getCookerId() + ",'" + cooker.getCookerName() + "','" +
+                cooker.getCookerLocation() + "','" + cooker.getCookerStatus() + "')";
+
+        mWritableDB.execSQL(sql);
+
+        return true;
     }
 
     @Override
-    public Observable<Boolean> insertCookers(List<CookerBean> cookers) {
-        return new Observable<Boolean>() {
-            @Override
-            protected void subscribeActual(Observer<? super Boolean> observer) {
-                mWritableDB.beginTransaction();
-                boolean success = true;
-                for (CookerBean cooker : cookers) {
-                    ContentValues values = new ContentValues(4);
-                    values.put("cookerId", cooker.getCookerId());
-                    values.put("cookerName", cooker.getCookerName());
-                    values.put("cookerLocation", cooker.getCookerLocation());
-                    values.put("cookerStatus", cooker.getCookerStatus());
-                    long c = mWritableDB.insertOrThrow("cooker", null, values);
-                    if (c == -1) {
-                        success = false;
-                        break;
-                    }
-                }
-                mWritableDB.endTransaction();
-                if (success) {
-                    observer.onNext(true);
-                    observer.onComplete();
-                } else {
-                    observer.onError(new Throwable("Error occurs when insert contents into table 'cooker'"));
-                    observer.onComplete();
-                }
-            }
-        }.subscribeOn(Schedulers.io());
+    public boolean insertCookers(List<CookerBean> cookers) {
+        mWritableDB.beginTransaction();
+        for (CookerBean cooker : cookers) {
+            insertCooker(cooker);
+        }
+        mWritableDB.setTransactionSuccessful();
+        mWritableDB.endTransaction();
+        return true;
     }
 
     @Override
-    public Observable<Boolean> deleteCooker(long cookerId) {
-        return new Observable<Boolean>() {
-            @Override
-            protected void subscribeActual(Observer<? super Boolean> observer) {
-                int r = mWritableDB.delete("cooker", "cookerId=?", new String[]{String.valueOf(cookerId)});
-                if (r > 0) {
-                    observer.onNext(true);
-                    observer.onComplete();
-                } else {
-                    observer.onError(new Throwable("Error occurs when delete item from tale 'cooker'"));
-                    observer.onComplete();
-                }
-            }
-        }.subscribeOn(Schedulers.io());
+    public boolean deleteCooker(long cookerId) {
+        int r = mWritableDB.delete("cooker", "cookerId=?", new String[]{String.valueOf(cookerId)});
+        return r != 0;
     }
 
     @Override
-    public Observable<Boolean> deleteCookers() {
-        return new Observable<Boolean>() {
-            @Override
-            protected void subscribeActual(Observer<? super Boolean> observer) {
-                mWritableDB.execSQL(DELETE_COOKER_TABLE);
-                mWritableDB.execSQL(RESET_COOKER_SEQUENCE);
-                observer.onNext(true);
-                observer.onComplete();
-            }
-        }.subscribeOn(Schedulers.io());
+    public boolean deleteCookers() {
+        mWritableDB.execSQL(DELETE_COOKER_TABLE);
+        mWritableDB.execSQL(RESET_COOKER_SEQUENCE);
+        return true;
     }
 
     @Override
-    public Observable<CookerBean> queryCooker(long cookerId) {
-        return new Observable<CookerBean>() {
-            @Override
-            protected void subscribeActual(Observer<? super CookerBean> observer) {
-                Cursor cursor = mReadableDB.rawQuery("SELECT * FROM cooker WHERE cookerId=?",
-                        new String[]{String.valueOf(cookerId)});
-                if (cursor.getCount() > 0) {
-                    cursor.moveToLast();
-
-                    CookerBean cooker = new CookerBean();
-                    cooker.setCookerId(cursor.getLong(cursor.getColumnIndex("cookerId")));
-                    cooker.setCookerName(cursor.getString(cursor.getColumnIndex("cookerName")));
-                    cooker.setCookerLocation(cursor.getString(cursor.getColumnIndex("cookerLocation")));
-                    cooker.setCookerStatus(cursor.getString(cursor.getColumnIndex("cookerStatus")));
-
-                    observer.onNext(cooker);
-                    observer.onComplete();
-                } else {
-                    observer.onError(new Throwable("Can not find cooker in table 'cooker' where cookerId = " + cookerId));
-                    observer.onComplete();
-                }
-                cursor.close();
-            }
-        }.subscribeOn(Schedulers.io());
+    public CookerBean queryCooker(long cookerId) {
+        Cursor cursor = mReadableDB.rawQuery("SELECT * FROM cooker WHERE cookerId=?",
+                new String[]{String.valueOf(cookerId)});
+        CookerBean cooker = new CookerBean();
+        if (cursor.getCount() > 0) {
+            cursor.moveToLast();
+            cooker.setCookerId(cursor.getLong(cursor.getColumnIndex("cookerId")));
+            cooker.setCookerName(cursor.getString(cursor.getColumnIndex("cookerName")));
+            cooker.setCookerLocation(cursor.getString(cursor.getColumnIndex("cookerLocation")));
+            cooker.setCookerStatus(cursor.getString(cursor.getColumnIndex("cookerStatus")));
+        }
+        cursor.close();
+        return cooker;
     }
 
     @Override
-    public Observable<List<CookerBean>> queryCookers() {
-        return new Observable<List<CookerBean>>() {
-            @Override
-            protected void subscribeActual(Observer<? super List<CookerBean>> observer) {
-                List<CookerBean> list = new ArrayList<>();
-                Cursor cursor = mReadableDB.rawQuery("SELECT * FROM cooker", null);
-                cursor.moveToFirst();
-                while (!cursor.isAfterLast()) {
-                    CookerBean cooker = new CookerBean();
-                    cooker.setCookerId(cursor.getLong(cursor.getColumnIndex("cookerId")));
-                    cooker.setCookerName(cursor.getString(cursor.getColumnIndex("cookerName")));
-                    cooker.setCookerLocation(cursor.getString(cursor.getColumnIndex("cookerLocation")));
-                    cooker.setCookerStatus(cursor.getString(cursor.getColumnIndex("cookerStatus")));
-                    list.add(cooker);
-                    cursor.moveToNext();
-                }
-                cursor.close();
-                observer.onNext(list);
-                observer.onComplete();
-            }
-        }.subscribeOn(Schedulers.io());
+    public List<CookerBean> queryCookers() {
+        List<CookerBean> list = new ArrayList<>();
+        Cursor cursor = mReadableDB.rawQuery("SELECT * FROM cooker", null);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            CookerBean cooker = new CookerBean();
+            cooker.setCookerId(cursor.getLong(cursor.getColumnIndex("cookerId")));
+            cooker.setCookerName(cursor.getString(cursor.getColumnIndex("cookerName")));
+            cooker.setCookerLocation(cursor.getString(cursor.getColumnIndex("cookerLocation")));
+            cooker.setCookerStatus(cursor.getString(cursor.getColumnIndex("cookerStatus")));
+            list.add(cooker);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return list;
     }
 
     @Override
-    public Observable<Boolean> updateCooker(CookerBean cooker) {
-        return new Observable<Boolean>() {
-            @Override
-            protected void subscribeActual(Observer<? super Boolean> observer) {
-                ContentValues values = new ContentValues(4);
-                values.put("cookerId", cooker.getCookerId());
-                values.put("cookerName", cooker.getCookerName());
-                values.put("cookerLocation", cooker.getCookerLocation());
-                values.put("cookerStatus", cooker.getCookerStatus());
-                int r = mWritableDB.update("cooker", values, "cookerId=?",
-                        new String[]{String.valueOf(cooker.getCookerId())});
-                if (r > 0) {
-                    observer.onNext(true);
-                    observer.onComplete();
-                } else {
-                    observer.onError(new Throwable("There is no this item in table 'cooker', update failed."));
-                    observer.onComplete();
-                }
-            }
-        }.subscribeOn(Schedulers.io());
+    public boolean updateCooker(CookerBean cooker) {
+        ContentValues values = new ContentValues(4);
+        values.put("cookerId", cooker.getCookerId());
+        values.put("cookerName", cooker.getCookerName());
+        values.put("cookerLocation", cooker.getCookerLocation());
+        values.put("cookerStatus", cooker.getCookerStatus());
+        int r = mWritableDB.update("cooker", values, "cookerId=?",
+                new String[]{String.valueOf(cooker.getCookerId())});
+        return r > 0;
     }
 
     @Override
-    public Observable<Boolean> updateCookers(List<CookerBean> cookers) {
-        return new Observable<Boolean>() {
-            @Override
-            protected void subscribeActual(Observer<? super Boolean> observer) {
-                mWritableDB.beginTransaction();
-                mWritableDB.execSQL(DELETE_COOKER_TABLE);
-                mWritableDB.execSQL(RESET_COOKER_SEQUENCE);
-                for (CookerBean cooker : cookers) {
-                    ContentValues values = new ContentValues(4);
-                    values.put("cookerId", cooker.getCookerId());
-                    values.put("cookerName", cooker.getCookerName());
-                    values.put("cookerLocation", cooker.getCookerLocation());
-                    values.put("cookerStatus", cooker.getCookerStatus());
-                    long r = mWritableDB.insert("cooker", null, values);
-                    if (r == -1) {
-                        observer.onError(new Throwable("Error occurs when insert content into table 'cooker'"));
-                    }
-                }
-                mWritableDB.endTransaction();
-                observer.onNext(true);
-                observer.onComplete();
+    public boolean updateCookers(List<CookerBean> cookers) {
+        mWritableDB.beginTransaction();
+        mWritableDB.execSQL(DELETE_COOKER_TABLE);
+        mWritableDB.execSQL(RESET_COOKER_SEQUENCE);
+        long r = 0;
+        for (CookerBean cooker : cookers) {
+            ContentValues values = new ContentValues(4);
+            values.put("cookerId", cooker.getCookerId());
+            values.put("cookerName", cooker.getCookerName());
+            values.put("cookerLocation", cooker.getCookerLocation());
+            values.put("cookerStatus", cooker.getCookerStatus());
+            r = mWritableDB.insert("cooker", null, values);
+            if (r == -1) {
+                break;
             }
-        }.subscribeOn(Schedulers.io());
+        }
+        mWritableDB.endTransaction();
+        return r != -1;
     }
 
     @Override
-    public Observable<Boolean> insertBook(BookBean book) {
-        return new Observable<Boolean>() {
-            @Override
-            protected void subscribeActual(Observer<? super Boolean> observer) {
-                ContentValues values = new ContentValues(9);
-                values.put("bookId", book.getBookId());
-                values.put("cookerId", book.getCookerId());
-                values.put("cookerName", book.getCookerName());
-                values.put("cookerLocation", book.getCookerLocation());
-                values.put("cookerStatus", book.getCookerStatus());
-                values.put("riceWeight", book.getRiceWeight());
-                values.put("peopleCount", book.getPeopleCount());
-                values.put("taste", book.getTaste());
-                values.put("time", book.getTime());
-                long r = mWritableDB.insert("book", null, values);
-                if (r == -1) {
-                    observer.onError(new Throwable("Error occurs when insert contents in table 'cooker'"));
-                    observer.onComplete();
-                } else {
-                    observer.onNext(true);
-                    observer.onComplete();
-                }
-            }
-        }.subscribeOn(Schedulers.io());
+    public boolean insertBook(BookBean book) {
+
+        String sql = PREFIX_INSERT_BOOK +
+                book.getBookId() + ", " + book.getCookerId() + ",'" + book.getCookerName() + "','" +
+                book.getCookerLocation() + "','" + book.getCookerStatus() + "'," +
+                book.getRiceWeight() + "," + book.getPeopleCount() + ",'" + book.getTaste() + "','" +
+                book.getTime() + "'" + ")";
+
+        mWritableDB.execSQL(sql);
+
+        return true;
     }
 
     @Override
-    public Observable<Boolean> insertBooks(List<BookBean> books) {
-        return new Observable<Boolean>() {
-            @Override
-            protected void subscribeActual(Observer<? super Boolean> observer) {
-                mWritableDB.beginTransaction();
-                for (BookBean book : books) {
-                    ContentValues values = new ContentValues(9);
-                    values.put("bookId", book.getBookId());
-                    values.put("cookerId", book.getCookerId());
-                    values.put("cookerName", book.getCookerName());
-                    values.put("cookerLocation", book.getCookerLocation());
-                    values.put("cookerStatus", book.getCookerStatus());
-                    values.put("riceWeight", book.getRiceWeight());
-                    values.put("peopleCount", book.getPeopleCount());
-                    values.put("taste", book.getTaste());
-                    values.put("time", book.getTime());
-                    long r = mWritableDB.insert("book", null, values);
-                    if (r == -1) {
-                        observer.onError(new Throwable("Error occurs when insert contents in table 'cooker'"));
-                    }
-                }
-                mWritableDB.endTransaction();
-                observer.onNext(true);
-                observer.onComplete();
-            }
-        }.subscribeOn(Schedulers.io());
+    public boolean insertBooks(List<BookBean> books) {
+        mWritableDB.beginTransaction();
+        for (BookBean book : books) {
+            insertBook(book);
+        }
+        mWritableDB.setTransactionSuccessful();
+        mWritableDB.endTransaction();
+        return true;
+    }
+
+
+    @Override
+    public boolean deleteBook(long bookId) {
+        int r = mWritableDB.delete("book", "bookId=?", new String[]{String.valueOf(bookId)});
+        return r > 0;
     }
 
     @Override
-    public Observable<Boolean> deleteBook(long bookId) {
-        return new Observable<Boolean>() {
-            @Override
-            protected void subscribeActual(Observer<? super Boolean> observer) {
-                int r = mWritableDB.delete("book", "bookId=?", new String[]{String.valueOf(bookId)});
-                if (r > 0) {
-                    observer.onNext(true);
-                    observer.onComplete();
-                } else {
-                    observer.onError(new Throwable("Error occurs when delete item from tale 'book'"));
-                    observer.onComplete();
-                }
-            }
-        }.subscribeOn(Schedulers.io());
+    public boolean deleteBooks() {
+        mWritableDB.execSQL(DELETE_BOOK_TABLE);
+        mWritableDB.execSQL(RESET_BOOK_SEQUENCE);
+        return true;
     }
 
     @Override
-    public Observable<Boolean> deleteBooks() {
-        return new Observable<Boolean>() {
-            @Override
-            protected void subscribeActual(Observer<? super Boolean> observer) {
-                mWritableDB.execSQL(DELETE_BOOK_TABLE);
-                mWritableDB.execSQL(RESET_BOOK_SEQUENCE);
-                observer.onNext(true);
-                observer.onComplete();
-            }
-        }.subscribeOn(Schedulers.io());
+    public BookBean queryBook(long bookId) {
+        Cursor cursor = mReadableDB.rawQuery("SELECT * FROM book WHERE bookId=?",
+                new String[]{String.valueOf(bookId)});
+
+        Log.v("DBManager", "cursor count : " + cursor.getCount());
+        BookBean book = new BookBean();
+        if (cursor.getCount() > 0) {
+            cursor.moveToLast();
+            book.setBookId(cursor.getLong(cursor.getColumnIndex("bookId")));
+            book.setCookerId(cursor.getLong(cursor.getColumnIndex("cookerId")));
+            book.setCookerName(cursor.getString(cursor.getColumnIndex("cookerName")));
+            book.setCookerLocation(cursor.getString(cursor.getColumnIndex("cookerLocation")));
+            book.setCookerStatus(cursor.getString(cursor.getColumnIndex("cookerStatus")));
+            book.setRiceWeight(cursor.getInt(cursor.getColumnIndex("riceWeight")));
+            book.setPeopleCount(cursor.getInt(cursor.getColumnIndex("peopleCount")));
+            book.setTaste(cursor.getString(cursor.getColumnIndex("taste")));
+            book.setTime(cursor.getString(cursor.getColumnIndex("time")));
+        }
+        cursor.close();
+        return book;
     }
 
     @Override
-    public Observable<BookBean> queryBook(long bookId) {
-        return new Observable<BookBean>() {
-            @Override
-            protected void subscribeActual(Observer<? super BookBean> observer) {
-                Cursor cursor = mReadableDB.rawQuery("SELECT * FROM cooker WHERE bookId=?",
-                        new String[]{String.valueOf(bookId)});
-                if (cursor.getCount() > 0) {
-                    cursor.moveToLast();
-                    BookBean book = new BookBean();
-                    book.setBookId(cursor.getLong(cursor.getColumnIndex("bookId")));
-                    book.setCookerId(cursor.getLong(cursor.getColumnIndex("cookerId")));
-                    book.setCookerName(cursor.getString(cursor.getColumnIndex("cookerName")));
-                    book.setCookerLocation(cursor.getString(cursor.getColumnIndex("cookerLocation")));
-                    book.setCookerStatus(cursor.getString(cursor.getColumnIndex("cookerStatus")));
-                    book.setRiceWeight(cursor.getInt(cursor.getColumnIndex("riceWeight")));
-                    book.setPeopleCount(cursor.getInt(cursor.getColumnIndex("peopleCount")));
-                    book.setTaste(cursor.getString(cursor.getColumnIndex("taste")));
-                    book.setTime(cursor.getString(cursor.getColumnIndex("time")));
-                    observer.onNext(book);
-                    observer.onComplete();
-                } else {
-                    observer.onError(new Throwable("Can not find item in table 'cooker' where bookId = " + bookId));
-                    observer.onComplete();
-                }
-                cursor.close();
-            }
-        }.subscribeOn(Schedulers.io());
+    public List<BookBean> queryBooks() {
+        List<BookBean> list = new ArrayList<>();
+        Cursor cursor = mReadableDB.rawQuery("SELECT * FROM book", null);
+        Log.v("DBManager", "cursor getCount = " + cursor.getCount());
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            BookBean book = new BookBean();
+            book.setBookId(cursor.getLong(cursor.getColumnIndex("bookId")));
+            book.setCookerId(cursor.getLong(cursor.getColumnIndex("cookerId")));
+            book.setCookerName(cursor.getString(cursor.getColumnIndex("cookerName")));
+            book.setCookerLocation(cursor.getString(cursor.getColumnIndex("cookerLocation")));
+            book.setCookerStatus(cursor.getString(cursor.getColumnIndex("cookerStatus")));
+            book.setRiceWeight(cursor.getInt(cursor.getColumnIndex("riceWeight")));
+            book.setPeopleCount(cursor.getInt(cursor.getColumnIndex("peopleCount")));
+            book.setTaste(cursor.getString(cursor.getColumnIndex("taste")));
+            book.setTime(cursor.getString(cursor.getColumnIndex("time")));
+            list.add(book);
+            cursor.moveToNext();
+        }
+        Log.v("DBManager", "queryBooks success. List size: " + list.size());
+        cursor.close();
+        return list;
     }
 
     @Override
-    public Observable<List<BookBean>> queryBooks() {
-        return new Observable<List<BookBean>>() {
-            @Override
-            protected void subscribeActual(Observer<? super List<BookBean>> observer) {
-                List<BookBean> list = new ArrayList<>();
-                Cursor cursor = mReadableDB.rawQuery("SELECT * FROM cooker", null);
-                cursor.moveToFirst();
-                while (!cursor.isAfterLast()) {
-                    BookBean book = new BookBean();
-                    book.setBookId(cursor.getLong(cursor.getColumnIndex("bookId")));
-                    book.setCookerId(cursor.getLong(cursor.getColumnIndex("cookerId")));
-                    book.setCookerName(cursor.getString(cursor.getColumnIndex("cookerName")));
-                    book.setCookerLocation(cursor.getString(cursor.getColumnIndex("cookerLocation")));
-                    book.setCookerStatus(cursor.getString(cursor.getColumnIndex("cookerStatus")));
-                    book.setRiceWeight(cursor.getInt(cursor.getColumnIndex("riceWeight")));
-                    book.setPeopleCount(cursor.getInt(cursor.getColumnIndex("peopleCount")));
-                    book.setTaste(cursor.getString(cursor.getColumnIndex("taste")));
-                    book.setTime(cursor.getString(cursor.getColumnIndex("time")));
-                    list.add(book);
-                    cursor.moveToNext();
-                }
-                cursor.close();
-                observer.onNext(list);
-                observer.onComplete();
-            }
-        }.subscribeOn(Schedulers.computation());
+    public boolean updateBook(BookBean book) {
+        ContentValues values = new ContentValues(9);
+        values.put("bookId", book.getBookId());
+        values.put("cookerId", book.getCookerId());
+        values.put("cookerName", book.getCookerName());
+        values.put("cookerLocation", book.getCookerLocation());
+        values.put("cookerStatus", book.getCookerStatus());
+        values.put("riceWeight", book.getRiceWeight());
+        values.put("peopleCount", book.getPeopleCount());
+        values.put("taste", book.getTaste());
+        values.put("time", book.getTime());
+        int r = mWritableDB.update("book", values, "bookId=?",
+                new String[]{String.valueOf(book.getBookId())});
+
+        Log.v("DBManager", "cookerName : " + book.getCookerName());
+        Log.v("DBManager", "update return: " + r);
+
+        return r > 0;
     }
 
     @Override
-    public Observable<Boolean> updateBook(BookBean book) {
-        return new Observable<Boolean>() {
-            @Override
-            protected void subscribeActual(Observer<? super Boolean> observer) {
-                ContentValues values = new ContentValues(9);
-                values.put("bookId", book.getBookId());
-                values.put("cookerId", book.getCookerId());
-                values.put("cookerName", book.getCookerName());
-                values.put("cookerLocation", book.getCookerLocation());
-                values.put("cookerStatus", book.getCookerStatus());
-                values.put("riceWeight", book.getRiceWeight());
-                values.put("peopleCount", book.getPeopleCount());
-                values.put("taste", book.getTaste());
-                values.put("time", book.getTime());
-                int r = mWritableDB.update("book", values, "bookId=?",
-                        new String[]{String.valueOf(book.getCookerId())});
-                if (r > 0) {
-                    observer.onNext(true);
-                    observer.onComplete();
-                } else {
-                    observer.onError(new Throwable("There is no this item in table 'book', update failed."));
-                    observer.onComplete();
-                }
+    public boolean updateBooks(List<BookBean> books) {
+        mWritableDB.beginTransaction();
+        mWritableDB.execSQL(DELETE_BOOK_TABLE);
+        mWritableDB.execSQL(RESET_BOOK_SEQUENCE);
+        long r = 0;
+        for (BookBean book : books) {
+            ContentValues values = new ContentValues(9);
+            values.put("bookId", book.getBookId());
+            values.put("cookerId", book.getCookerId());
+            values.put("cookerName", book.getCookerName());
+            values.put("cookerLocation", book.getCookerLocation());
+            values.put("cookerStatus", book.getCookerStatus());
+            values.put("riceWeight", book.getRiceWeight());
+            values.put("peopleCount", book.getPeopleCount());
+            values.put("taste", book.getTaste());
+            values.put("time", book.getTime());
+            r = mWritableDB.insert("cooker", null, values);
+            if (r == -1) {
+                break;
             }
-        }.subscribeOn(Schedulers.io());
-    }
-
-    @Override
-    public Observable<Boolean> updateBooks(List<BookBean> books) {
-        return new Observable<Boolean>() {
-            @Override
-            protected void subscribeActual(Observer<? super Boolean> observer) {
-                mWritableDB.beginTransaction();
-                mWritableDB.execSQL(DELETE_BOOK_TABLE);
-                mWritableDB.execSQL(RESET_BOOK_SEQUENCE);
-                for (BookBean book : books) {
-                    ContentValues values = new ContentValues(9);
-                    values.put("bookId", book.getBookId());
-                    values.put("cookerId", book.getCookerId());
-                    values.put("cookerName", book.getCookerName());
-                    values.put("cookerLocation", book.getCookerLocation());
-                    values.put("cookerStatus", book.getCookerStatus());
-                    values.put("riceWeight", book.getRiceWeight());
-                    values.put("peopleCount", book.getPeopleCount());
-                    values.put("taste", book.getTaste());
-                    values.put("time", book.getTime());
-                    long r = mWritableDB.insert("cooker", null, values);
-                    if (r == -1) {
-                        observer.onError(new Throwable("Error occurs when insert content into table 'cooker'"));
-                    }
-                }
-                mWritableDB.endTransaction();
-                observer.onNext(true);
-                observer.onComplete();
-            }
-        }.subscribeOn(Schedulers.io());
+        }
+        mWritableDB.setTransactionSuccessful();
+        mWritableDB.endTransaction();
+        return r != -1;
     }
 }

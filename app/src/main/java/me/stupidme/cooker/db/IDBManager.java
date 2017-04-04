@@ -2,45 +2,44 @@ package me.stupidme.cooker.db;
 
 import java.util.List;
 
-import io.reactivex.Observable;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.CookerBean;
 
 /**
- * Created by StupidL on 2017/3/20.
+ * Created by StupidL on 2017/3/29.
  */
 
 public interface IDBManager {
 
-    Observable<Boolean> insertCooker(CookerBean cooker);
+    boolean insertCooker(CookerBean cooker);
 
-    Observable<Boolean> insertCookers(List<CookerBean> cookers);
+    boolean insertCookers(List<CookerBean> cookers);
 
-    Observable<Boolean> deleteCooker(long cookerId);
+    boolean deleteCooker(long cookerId);
 
-    Observable<Boolean> deleteCookers();
+    boolean deleteCookers();
 
-    Observable<CookerBean> queryCooker(long cookerId);
+    CookerBean queryCooker(long cookerId);
 
-    Observable<List<CookerBean>> queryCookers();
+    List<CookerBean> queryCookers();
 
-    Observable<Boolean> updateCooker(CookerBean cooker);
+    boolean updateCooker(CookerBean cooker);
 
-    Observable<Boolean> updateCookers(List<CookerBean> cookers);
+    boolean updateCookers(List<CookerBean> cookers);
 
-    Observable<Boolean> insertBook(BookBean book);
+    boolean insertBook(BookBean book);
 
-    Observable<Boolean> insertBooks(List<BookBean> books);
+    boolean insertBooks(List<BookBean> books);
 
-    Observable<Boolean> deleteBook(long bookId);
+    boolean deleteBook(long bookId);
 
-    Observable<Boolean> deleteBooks();
+    boolean deleteBooks();
 
-    Observable<BookBean> queryBook(long bookId);
+    BookBean queryBook(long bookId);
 
-    Observable<List<BookBean>> queryBooks();
+    List<BookBean> queryBooks();
 
-    Observable<Boolean> updateBook(BookBean book);
+    boolean updateBook(BookBean book);
 
-    Observable<Boolean> updateBooks(List<BookBean> books);
+    boolean updateBooks(List<BookBean> books);
 }

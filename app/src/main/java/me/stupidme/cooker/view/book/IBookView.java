@@ -62,10 +62,4 @@ public interface IBookView {
      */
     void showMessage(String message);
 
-    /**
-     * 获取用户ID
-     *
-     * @return 用户ID
-     */
-    long getUserId();
 }
