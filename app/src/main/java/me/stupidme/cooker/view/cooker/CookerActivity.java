@@ -12,6 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.webianks.easy_feedback.EasyFeedback;
+
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.service.NotificationService;
 import me.stupidme.cooker.view.AboutActivity;
@@ -76,7 +78,11 @@ public class CookerActivity extends AppCompatActivity
                 startActivityForResult(new Intent(CookerActivity.this, AboutActivity.class), REQUEST_CODE_ABOUT);
                 break;
             case R.id.nav_feedback:
-
+                new EasyFeedback.Builder(this)
+                        .withEmail("562117676@qq.com")
+                        .withSystemInfo()
+                        .build()
+                        .start();
                 break;
             case R.id.nav_settings:
                 Intent settingsIntent = new Intent(CookerActivity.this, SettingsActivity.class);
