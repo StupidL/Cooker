@@ -119,19 +119,35 @@ public class ResourceUtil {
         Intent i = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "562117676@qq.com", null));
         List<ResolveInfo> activities = context.getPackageManager().queryIntentActivities(i, 0);
 
-        for(ResolveInfo ri : activities) {
+        for (ResolveInfo ri : activities) {
             Intent target = new Intent(source);
             target.setPackage(ri.activityInfo.packageName);
             intents.add(target);
         }
 
-        if(!intents.isEmpty()) {
+        if (!intents.isEmpty()) {
             Intent chooserIntent = Intent.createChooser(intents.remove(0), chooserTitle);
             chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toArray(new Parcelable[intents.size()]));
             return chooserIntent;
         } else {
             return Intent.createChooser(source, chooserTitle);
         }
+    }
+
+    public static Intent createEmailIntent(Context context, StringBuilder builder,
+                                           String imageUrl, String emailTo) {
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setType("*/*");
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, ResourceUtil.getAppLabel(context) + " Feedback");
+
+        if (imageUrl != null) {
+            Uri uri = Uri.parse("file://" + imageUrl);
+            emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        }
+
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{emailTo});
+        emailIntent.putExtra(Intent.EXTRA_TEXT, builder.toString());
+        return emailIntent;
     }
 
     public static String getAllDeviceInfo(Context context, boolean fromDialog) {

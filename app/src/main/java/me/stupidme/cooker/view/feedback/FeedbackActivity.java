@@ -3,7 +3,7 @@ package me.stupidme.cooker.view.feedback;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -31,13 +31,22 @@ public class FeedbackActivity extends AppCompatActivity {
 
     private String mImageUrl;
 
+    private FeedbackIntentInfo mInfo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // handle intent
+        handleIntent(getIntent());
+        //set status color. only works when API >= 21.
+        getWindow().setStatusBarColor(mInfo.getColorPrimaryDark());
+
         setContentView(R.layout.activity_feedback);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.title_activity_feedback);
+        // set toolbar color
+        toolbar.setBackgroundColor(mInfo.getColorPrimary());
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -50,6 +59,8 @@ public class FeedbackActivity extends AppCompatActivity {
 
         mTextView = (TextView) findViewById(R.id.feedback_text_view);
         mTextView.setOnClickListener(v -> PermissionUtil.attemptSelectImages(this));
+        // set text view background.
+        mTextView.setBackgroundColor(mInfo.getColorPrimary());
 
     }
 
@@ -117,20 +128,28 @@ public class FeedbackActivity extends AppCompatActivity {
             String deviceInfo = ResourceUtil.getAllDeviceInfo(this, false);
             builder.append(deviceInfo);
         }
-        Intent emailIntent = new Intent(Intent.ACTION_SEND);
-        emailIntent.setType("*/*");
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, ResourceUtil.getAppLabel(this) + " Feedback");
-
-        if (mImageUrl != null) {
-            Uri uri = Uri.parse("file://" + mImageUrl);
-            emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-        }
-
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"562117676@qq.com"});
-        emailIntent.putExtra(Intent.EXTRA_TEXT, builder.toString());
+        Intent emailIntent = ResourceUtil.createEmailIntent(this, builder, mImageUrl, mInfo.getEmailTo());
 
         startActivity(ResourceUtil.createEmailOnlyChooserIntent(this, emailIntent, getString(R.string.send_feedback)));
 
+    }
+
+    private void handleIntent(Intent intent) {
+        String action = intent.getAction();
+        mInfo = new FeedbackIntentInfo();
+        if (FeedbackConstants.ACTION_START_FEEDBACK.equals(action)) {
+            Bundle bundle = intent.getExtras();
+            int colorPrimary = bundle.getInt(FeedbackConstants.KEY_COLOR_PRIMARY);
+            int colorPrimaryDark = bundle.getInt(FeedbackConstants.KEY_COLOR_PRIMARY_DARK);
+            String emailTo = bundle.getString(FeedbackConstants.KEY_EMAIL_TO);
+            mInfo.setColorPrimary(colorPrimary);
+            mInfo.setColorPrimaryDark(colorPrimaryDark);
+            mInfo.setEmailTo(emailTo);
+        } else {
+            mInfo.setColorPrimary(Color.parseColor("#546E7A"));
+            mInfo.setColorPrimaryDark(Color.parseColor("#455A64"));
+            mInfo.setEmailTo("562117676@qq.com");
+        }
     }
 
 }

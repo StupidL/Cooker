@@ -1,6 +1,7 @@
 package me.stupidme.cooker.view.cooker;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -15,7 +16,7 @@ import android.view.MenuItem;
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.view.AboutActivity;
 import me.stupidme.cooker.view.book.BookActivity;
-import me.stupidme.cooker.view.feedback.FeedbackActivity;
+import me.stupidme.cooker.view.feedback.FeedbackHelper;
 import me.stupidme.cooker.view.login.Constants;
 import me.stupidme.cooker.view.login.LoginActivity;
 import me.stupidme.cooker.view.settings.SettingsActivity;
@@ -76,7 +77,12 @@ public class CookerActivity extends AppCompatActivity
                 startActivityForResult(new Intent(CookerActivity.this, AboutActivity.class), REQUEST_CODE_ABOUT);
                 break;
             case R.id.nav_feedback:
-                startActivity(new Intent(CookerActivity.this, FeedbackActivity.class));
+                FeedbackHelper helper = new FeedbackHelper.Builder(this)
+                        .colorPrimary(getResources().getColor(R.color.colorPrimary))
+                        .colorPrimaryDark(getResources().getColor(R.color.colorPrimaryDark))
+                        .emailTo("562117676@qq.com")
+                        .build();
+                helper.start();
                 break;
             case R.id.nav_settings:
                 Intent settingsIntent = new Intent(CookerActivity.this, SettingsActivity.class);
