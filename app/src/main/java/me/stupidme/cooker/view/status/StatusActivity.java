@@ -1,4 +1,4 @@
-package me.stupidme.cooker.view;
+package me.stupidme.cooker.view.status;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;

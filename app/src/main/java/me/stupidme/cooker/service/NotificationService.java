@@ -11,7 +11,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import me.stupidme.cooker.R;
-import me.stupidme.cooker.view.StatusActivity;
+import me.stupidme.cooker.view.status.StatusActivity;
 
 public class NotificationService extends Service {
 

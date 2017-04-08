@@ -45,7 +45,7 @@
             android:exported="true" />
 
         <activity
-            android:name=".view.StatusActivity"
+            android:name=".view.status.StatusActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
             android:taskAffinity=""

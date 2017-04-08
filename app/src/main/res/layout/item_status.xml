@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="64dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="16dp"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="5dp">
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <me.stupidme.cooker.view.custom.ArcView
+            android:id="@+id/status_arc_view"
+            android:layout_width="match_parent"
+            android:layout_height="200dp" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/status_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:rotation="90"
+            app:fabSize="normal"
+            app:layout_anchor="@id/status_arc_view"
+            app:layout_anchorGravity="bottom|end"
+            app:srcCompat="@drawable/ic_add_white_48dp" />
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="200dp"
+            android:padding="16dp">
+
+            <TableRow style="@style/StatusCardTableRow">
+
+                <TextView
+                    android:id="@+id/status_cooker_id"
+                    style="@style/StatusCardTextView"
+                    android:text="Cooker ID" />
+
+                <TextView
+                    android:id="@+id/status_cooker_name"
+                    style="@style/StatusCardTextView"
+                    android:text="Cooker Name" />
+
+                <TextView
+                    android:id="@+id/status_cooker_location"
+                    style="@style/StatusCardTextView"
+                    android:text="Cooker Location" />
+
+
+            </TableRow>
+
+            <TableRow style="@style/StatusCardTableRow">
+
+                <TextView
+                    android:id="@+id/status_book_id"
+                    style="@style/StatusCardTextView"
+                    android:text="Book ID" />
+
+                <TextView
+                    android:id="@+id/status_book_rice_weight"
+                    style="@style/StatusCardTextView"
+                    android:text="Rice Weight" />
+
+                <TextView
+                    android:id="@+id/status_book_people_count"
+                    style="@style/StatusCardTextView"
+                    android:text="People Count" />
+
+            </TableRow>
+
+            <TableRow style="@style/StatusCardTableRow">
+
+                <TextView
+                    android:id="@+id/status_book_taste"
+                    style="@style/StatusCardTextView"
+                    android:text="Taste" />
+
+                <TextView
+                    android:id="@+id/status_book_time"
+                    style="@style/StatusCardTextView"
+                    android:drawableLeft="@drawable/ic_access_time_red_500_24dp"
+                    android:gravity="center_vertical"
+                    android:text="18:00" />
+
+                <TextView style="@style/StatusCardTextView" />
+
+            </TableRow>
+
+        </TableLayout>
+    </android.support.design.widget.CoordinatorLayout>
+
+
+</android.support.v7.widget.CardView>
