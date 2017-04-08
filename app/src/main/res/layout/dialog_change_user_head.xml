@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/choose_from_album"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|start"
+        android:drawablePadding="16dp"
+        android:drawableStart="@drawable/ic_photo_amber_500_36dp"
+        android:gravity="center_vertical|start"
+        android:text="@string/dialog_choose_from_album"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/take_from_camera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|start"
+        android:layout_marginTop="16dp"
+        android:drawablePadding="16dp"
+        android:drawableStart="@drawable/ic_photo_camera_cyan_500_36dp"
+        android:gravity="center_vertical|start"
+        android:text="@string/dialog_take_from_camera"
+        android:textSize="18sp" />
+</LinearLayout>

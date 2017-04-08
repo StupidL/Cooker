@@ -1,7 +1,6 @@
 package me.stupidme.cooker.view.cooker;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -11,9 +10,14 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import me.stupidme.cooker.R;
+import me.stupidme.cooker.util.SharedPreferenceUtil;
 import me.stupidme.cooker.view.AboutActivity;
 import me.stupidme.cooker.view.book.BookActivity;
 import me.stupidme.cooker.view.feedback.FeedbackHelper;
@@ -26,6 +30,7 @@ public class CookerActivity extends AppCompatActivity
 
     private static final int REQUEST_CODE_BOOK = 0x02;
     private static final int REQUEST_CODE_ABOUT = 0x05;
+    private static final int REQUEST_CODE_USER = 0x07;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,13 @@ public class CookerActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
+
+        View view = LayoutInflater.from(this).inflate(R.layout.nav_header_main, navigationView);
+        CircleImageView circleImageView = (CircleImageView) view.findViewById(R.id.user_head);
+        circleImageView.setOnClickListener(v ->
+                startActivityForResult(new Intent(CookerActivity.this, UserActivity.class), REQUEST_CODE_USER));
+        TextView name = (TextView) view.findViewById(R.id.user_name);
+        name.setText(SharedPreferenceUtil.getAccountUserName("Cooker"));
 
         CookerFragment cookerFragment = CookerFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
@@ -101,5 +113,10 @@ public class CookerActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
     }
 }
