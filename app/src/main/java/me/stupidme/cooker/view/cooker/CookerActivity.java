@@ -32,6 +32,8 @@ public class CookerActivity extends AppCompatActivity
     private static final int REQUEST_CODE_ABOUT = 0x05;
     private static final int REQUEST_CODE_USER = 0x07;
 
+    CircleImageView mCircleImageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,11 +52,19 @@ public class CookerActivity extends AppCompatActivity
         navigationView.setItemIconTintList(null);
 
         View view = LayoutInflater.from(this).inflate(R.layout.nav_header_main, navigationView);
-        CircleImageView circleImageView = (CircleImageView) view.findViewById(R.id.user_head);
-        circleImageView.setOnClickListener(v ->
-                startActivityForResult(new Intent(CookerActivity.this, UserActivity.class), REQUEST_CODE_USER));
+        mCircleImageView = (CircleImageView) view.findViewById(R.id.user_head);
+        mCircleImageView.setOnClickListener(v -> {
+            startActivity(new Intent(CookerActivity.this, UserActivity.class));
+            drawer.closeDrawer(GravityCompat.START);
+        });
         TextView name = (TextView) view.findViewById(R.id.user_name);
         name.setText(SharedPreferenceUtil.getAccountUserName("Cooker"));
+//
+//        String imageUrl = SharedPreferenceUtil.getAvatarImageUrl(null);
+//        if (imageUrl != null) {
+//            mCircleImageView.setImageBitmap(BitmapUtil.decodeSampledBitmap(imageUrl,
+//                    mCircleImageView.getWidth(), mCircleImageView.getHeight()));
+//        }
 
         CookerFragment cookerFragment = CookerFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
@@ -73,6 +83,16 @@ public class CookerActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
+//
+//    @Override
+//    public void onRestart() {
+//        super.onRestart();
+//        if (getIntent() != null) {
+//            String url = getIntent().getStringExtra(SharedPreferenceUtil.KEY_AVATAR_IMAGE_URL);
+//            mCircleImageView.setImageBitmap(BitmapUtil.decodeSampledBitmap(url,
+//                    mCircleImageView.getWidth(), mCircleImageView.getHeight()));
+//        }
+//    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {

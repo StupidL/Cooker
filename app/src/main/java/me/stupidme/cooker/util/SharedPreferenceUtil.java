@@ -23,6 +23,8 @@ public class SharedPreferenceUtil {
 
     public static final String KEY_USER_ID = "account_user_id";
 
+    public static final String KEY_AVATAR_IMAGE_URL = "avatar_image_url";
+
     public static void init(Context context) {
         WeakReference<Context> mContextRef = new WeakReference<>(context);
         mSharedPreference = PreferenceManager.getDefaultSharedPreferences(mContextRef.get());
@@ -80,5 +82,15 @@ public class SharedPreferenceUtil {
 
     public static Long getAccountUserId(Long defaultValue) {
         return mSharedPreference.getLong(KEY_USER_ID, defaultValue);
+    }
+
+    public static void putAvatarImageUrl(String url) {
+        SharedPreferences.Editor editor = mSharedPreference.edit();
+        editor.putString(KEY_AVATAR_IMAGE_URL, url);
+        editor.apply();
+    }
+
+    public static String getAvatarImageUrl(String defaultValue) {
+        return mSharedPreference.getString(KEY_AVATAR_IMAGE_URL, defaultValue);
     }
 }
