@@ -56,6 +56,9 @@
         <activity
             android:name=".view.feedback.FeedbackActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.cooker.UserActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
