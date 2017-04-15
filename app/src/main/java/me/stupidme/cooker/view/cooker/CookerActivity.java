@@ -23,6 +23,7 @@ import me.stupidme.cooker.view.book.BookActivity;
 import me.stupidme.cooker.view.feedback.FeedbackHelper;
 import me.stupidme.cooker.view.login.Constants;
 import me.stupidme.cooker.view.login.LoginActivity;
+import me.stupidme.cooker.view.search.SearchActivity;
 import me.stupidme.cooker.view.settings.SettingsActivity;
 
 public class CookerActivity extends AppCompatActivity
@@ -104,6 +105,9 @@ public class CookerActivity extends AppCompatActivity
             case R.id.nav_book:
                 Intent i = new Intent(CookerActivity.this, BookActivity.class);
                 startActivityForResult(i, REQUEST_CODE_BOOK);
+                break;
+            case R.id.nav_search:
+                startActivity(new Intent(CookerActivity.this, SearchActivity.class));
                 break;
             case R.id.nav_about:
                 startActivityForResult(new Intent(CookerActivity.this, AboutActivity.class), REQUEST_CODE_ABOUT);
