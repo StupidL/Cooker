@@ -44,7 +44,7 @@ public class StatusRecyclerAdapter extends RecyclerView.Adapter<StatusRecyclerAd
         holder.riceWeightText.setText(String.valueOf(book.getRiceWeight()));
         holder.peopleCountText.setText(String.valueOf(book.getPeopleCount()));
         holder.tasteText.setText(book.getTaste());
-        holder.timeText.setText(book.getTime());
+        holder.timeText.setText(book.getTime() + "");
         holder.arcView.setArcAngleStart(-90);
         holder.fab.setOnClickListener(v -> mPresenter.cancelBook(book.getBookId()));
 

@@ -144,7 +144,7 @@ public class BookPresenter implements IBookPresenter {
             bookBean.setRiceWeight(500 + i);
             bookBean.setTaste(i % 2 == 0 ? "soft" : "hard");
             bookBean.setCookerStatus(i % 2 == 0 ? "free" : "booking");
-            bookBean.setTime("18:00");
+            bookBean.setTime(1433387772);
             list.add(bookBean);
         }
         Log.v(getClass().getCanonicalName(), "List Size: " + list.size());
