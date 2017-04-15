@@ -171,6 +171,8 @@
     <string name="pref_general_use_custom_theme_title">Enable custom theme</string>
     <string name="pref_general_use_custom_theme_summary">Choose the most beautiful color theme you like most.</string>
     <string name="pref_general_choose_theme_title">Choose a theme</string>
+    <string name="key_pref_general_use_custom_theme">general_use_custom_theme</string>
+    <string name="key_pref_general_use_custom_theme_choose">general_use_custom_theme_choose</string>
     <string-array name="pref_general_choose_theme_entries">
         <item>Default</item>
         <item>Light</item>
@@ -182,9 +184,12 @@
         <item>2</item>
     </string-array>
 
+
     <!-- Example settings for Data & Sync -->
     <string name="pref_header_data_sync">Data sync</string>
     <string name="pref_sync_frequency_title">Sync frequency</string>
+    <string name="pref_sync_system_settings">System sync settings</string>
+    <string name="key_pref_sync_sync_frequency">data_sync_frequency</string>
     <string-array name="pref_sync_frequency_entries">
         <item>1 minutes</item>
         <item>2 minutes</item>
@@ -202,7 +207,6 @@
         <item>-1</item>
     </string-array>
 
-    <string name="pref_sync_system_settings">System sync settings</string>
 
     <!-- Example settings for Notifications -->
     <string name="pref_header_notifications">Notifications</string>
@@ -211,12 +215,24 @@
     <string name="pref_notifications_title_ringtone">Ringtone</string>
     <string name="pref_notifications_ringtone_silent">Silent</string>
     <string name="pref_notifications_title_vibrate">Vibrate</string>
+    <string name="key_pref_notification_notification_new_message">notification_new_message</string>
+    <string name="key_pref_notification_notification_new_message_ringtone">notification_new_message_ringtone</string>
+    <string name="key_pref_notification_notification_new_message_vibrate">notification_new_message_vibrate</string>
+
 
     <string name="pref_header_account">Account</string>
     <string name="pref_account_user_name_default">Cooker</string>
     <string name="pref_account_user_name_title">Change user name</string>
     <string name="pref_account_user_password_default">password</string>
     <string name="pref_account_user_password_title">Change password</string>
+    <string name="key_pref_account_account_user_name">account_user_name</string>
+    <string name="key_pref_account_account_user_password">account_user_password</string>
+
+    <string name="pref_header_update">Update</string>
+    <string name="pref_update_check_update">Check Update</string>
+    <string name="key_pref_update_check_update">update_check_update</string>
+
+
     <string name="feedback_add_screenshot">add screenshot</string>
     <string name="your_input">Input feedback</string>
     <string name="select_image">+ Add Screenshot  </string>
@@ -224,7 +240,7 @@
     <string name="title_activity_feedback">Feedback</string>
     <string name="action_send_feedback">Send Feedback</string>
     <string name="feedback_attach_system_information">Attach System Information</string>
-    <string name="feedback_checkbox_tip">This will only collect your operation and hardware information. No privacy will be reported.</string>
+    <string name="feedback_checkbox_tip">This will only collect your OS and hardware information. No privacy will be reported.</string>
     <string name="feedback_image_view_describe">image view</string>
     <string name="select_image_success">Select image success!</string>
     <string name="feedback_permission_tips">You need to allow access to SD card to select images.</string>
@@ -232,5 +248,7 @@
     <string name="edit_text_empty">Content is empty!</string>
     <string name="dialog_choose_from_album">Choose From Album</string>
     <string name="dialog_take_from_camera">Take From Camera</string>
+    <string name="search">Search</string>
+    <string name="holder">Holder</string>
 
 </resources>

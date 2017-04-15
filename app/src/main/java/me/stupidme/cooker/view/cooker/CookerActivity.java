@@ -23,6 +23,7 @@ import me.stupidme.cooker.view.book.BookActivity;
 import me.stupidme.cooker.view.feedback.FeedbackHelper;
 import me.stupidme.cooker.view.login.Constants;
 import me.stupidme.cooker.view.login.LoginActivity;
+import me.stupidme.cooker.view.search.SearchActivity;
 import me.stupidme.cooker.view.settings.SettingsActivity;
 
 public class CookerActivity extends AppCompatActivity
@@ -31,6 +32,8 @@ public class CookerActivity extends AppCompatActivity
     private static final int REQUEST_CODE_BOOK = 0x02;
     private static final int REQUEST_CODE_ABOUT = 0x05;
     private static final int REQUEST_CODE_USER = 0x07;
+
+    CircleImageView mCircleImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +53,19 @@ public class CookerActivity extends AppCompatActivity
         navigationView.setItemIconTintList(null);
 
         View view = LayoutInflater.from(this).inflate(R.layout.nav_header_main, navigationView);
-        CircleImageView circleImageView = (CircleImageView) view.findViewById(R.id.user_head);
-        circleImageView.setOnClickListener(v ->
-                startActivityForResult(new Intent(CookerActivity.this, UserActivity.class), REQUEST_CODE_USER));
+        mCircleImageView = (CircleImageView) view.findViewById(R.id.user_head);
+        mCircleImageView.setOnClickListener(v -> {
+            startActivity(new Intent(CookerActivity.this, UserActivity.class));
+            drawer.closeDrawer(GravityCompat.START);
+        });
         TextView name = (TextView) view.findViewById(R.id.user_name);
         name.setText(SharedPreferenceUtil.getAccountUserName("Cooker"));
+//
+//        String imageUrl = SharedPreferenceUtil.getAvatarImageUrl(null);
+//        if (imageUrl != null) {
+//            mCircleImageView.setImageBitmap(BitmapUtil.decodeSampledBitmap(imageUrl,
+//                    mCircleImageView.getWidth(), mCircleImageView.getHeight()));
+//        }
 
         CookerFragment cookerFragment = CookerFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
@@ -73,6 +84,16 @@ public class CookerActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
+//
+//    @Override
+//    public void onRestart() {
+//        super.onRestart();
+//        if (getIntent() != null) {
+//            String url = getIntent().getStringExtra(SharedPreferenceUtil.KEY_AVATAR_IMAGE_URL);
+//            mCircleImageView.setImageBitmap(BitmapUtil.decodeSampledBitmap(url,
+//                    mCircleImageView.getWidth(), mCircleImageView.getHeight()));
+//        }
+//    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -84,6 +105,9 @@ public class CookerActivity extends AppCompatActivity
             case R.id.nav_book:
                 Intent i = new Intent(CookerActivity.this, BookActivity.class);
                 startActivityForResult(i, REQUEST_CODE_BOOK);
+                break;
+            case R.id.nav_search:
+                startActivity(new Intent(CookerActivity.this, SearchActivity.class));
                 break;
             case R.id.nav_about:
                 startActivityForResult(new Intent(CookerActivity.this, AboutActivity.class), REQUEST_CODE_ABOUT);

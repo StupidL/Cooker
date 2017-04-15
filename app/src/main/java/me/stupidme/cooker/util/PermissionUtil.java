@@ -32,7 +32,7 @@ public class PermissionUtil {
             if (permission != PackageManager.PERMISSION_GRANTED) {
                 activity.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS);
             }
-            selectImage(activity);
+//            selectImage(activity);
         }
         selectImage(activity);
     }

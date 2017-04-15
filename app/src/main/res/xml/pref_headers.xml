@@ -22,4 +22,9 @@
         android:icon="@drawable/ic_account_circle_deep_purple_500_24dp"
         android:title="@string/pref_header_account" />
 
+    <header
+        android:fragment="me.stupidme.cooker.view.settings.SettingsActivity$UpdatePreferenceFragment"
+        android:icon="@drawable/ic_update_red_500_24dp"
+        android:title="@string/pref_header_update" />
+
 </preference-headers>

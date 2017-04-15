@@ -23,6 +23,27 @@ public class SharedPreferenceUtil {
 
     public static final String KEY_USER_ID = "account_user_id";
 
+    public static final String KEY_AVATAR_IMAGE_URL = "avatar_image_url";
+
+    public static final String KEY_PREF_NOTIFICATION = "notification";
+    public static final String KEY_PREF_NOTIFICATION_NEW_MESSAGE = "notification_new_message";
+    public static final String KEY_PREF_NOTIFICATION_NEW_MESSAGE_RINGTONE = "notification_new_message_ringtone";
+    public static final String KEY_PREF_NOTIFICATION_NEW_MESSAGE_VIBRATE = "notification_new_message_vibrate";
+
+    public static final String KEY_PREF_GENERAL = "general";
+    public static final String KEY_PREF_GENERAL_USE_CUSTOM_THEME = "general_use_custom_theme";
+    public static final String KEY_PREF_GENERAL_USE_CUSTOM_THEME_CHOOSE = "general_use_custom_theme_choose";
+
+    public static final String KEY_PREF_DATASYNC = "data_sync";
+    public static final String KEY_PREF_DATASYNC_FREQ = "data_sync_frequency";
+
+    public static final String KEY_PREF_ACCOUNT = "account";
+    public static final String KEY_PREF_ACCOUNT_USER_NAME = "account_user_name";
+    public static final String KEY_PREF_ACCOUNT_USER_PASSWORD = "account_user_password";
+
+    public static final String KEY_PREF_UPDATE = "update";
+    public static final String KEY_PREF_UPDATE_CHECK_UPDATE = "update_check_update";
+
     public static void init(Context context) {
         WeakReference<Context> mContextRef = new WeakReference<>(context);
         mSharedPreference = PreferenceManager.getDefaultSharedPreferences(mContextRef.get());
@@ -80,5 +101,15 @@ public class SharedPreferenceUtil {
 
     public static Long getAccountUserId(Long defaultValue) {
         return mSharedPreference.getLong(KEY_USER_ID, defaultValue);
+    }
+
+    public static void putAvatarImageUrl(String url) {
+        SharedPreferences.Editor editor = mSharedPreference.edit();
+        editor.putString(KEY_AVATAR_IMAGE_URL, url);
+        editor.apply();
+    }
+
+    public static String getAvatarImageUrl(String defaultValue) {
+        return mSharedPreference.getString(KEY_AVATAR_IMAGE_URL, defaultValue);
     }
 }

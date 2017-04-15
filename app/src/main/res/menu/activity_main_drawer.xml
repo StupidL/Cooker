@@ -12,12 +12,13 @@
             android:title="@string/book" />
 
         <item
-            android:icon="@drawable/ic_extension_orange_500_36dp"
-            android:title="Holder" />
+            android:id="@+id/nav_search"
+            android:icon="@drawable/ic_search_orange_500_36dp"
+            android:title="@string/search" />
 
         <item
             android:icon="@drawable/ic_extension_orange_500_36dp"
-            android:title="Holder" />
+            android:title="@string/holder" />
 
     </group>
 

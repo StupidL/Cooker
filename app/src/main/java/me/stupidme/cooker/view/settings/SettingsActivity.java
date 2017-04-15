@@ -120,7 +120,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 || GeneralPreferenceFragment.class.getName().equals(fragmentName)
                 || DataSyncPreferenceFragment.class.getName().equals(fragmentName)
                 || NotificationPreferenceFragment.class.getName().equals(fragmentName)
-                || AccountPreferenceFragment.class.getName().equals(fragmentName);
+                || AccountPreferenceFragment.class.getName().equals(fragmentName)
+                || UpdatePreferenceFragment.class.getName().equals(fragmentName);
     }
 
 
@@ -132,7 +133,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
 
-            setPreferenceChangeListener(findPreference("use_custom_theme_choose"));
+            setPreferenceChangeListener(findPreference(SharedPreferenceUtil.KEY_PREF_GENERAL_USE_CUSTOM_THEME_CHOOSE));
         }
 
         @Override
@@ -155,7 +156,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_notification);
             setHasOptionsMenu(true);
 
-            setPreferenceChangeListener(findPreference("notifications_new_message_ringtone"));
+            setPreferenceChangeListener(findPreference(SharedPreferenceUtil.KEY_PREF_NOTIFICATION_NEW_MESSAGE_RINGTONE));
         }
 
         @Override
@@ -178,7 +179,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_data_sync);
             setHasOptionsMenu(true);
 
-            setPreferenceChangeListener(findPreference("sync_frequency"));
+            setPreferenceChangeListener(findPreference(SharedPreferenceUtil.KEY_PREF_DATASYNC_FREQ));
         }
 
         @Override
@@ -200,8 +201,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_account);
             setHasOptionsMenu(true);
 
-            setPreferenceChangeListener(findPreference("account_user_name"));
-            setPreferenceChangeListener(findPreference("account_user_password"));
+            setPreferenceChangeListener(findPreference(SharedPreferenceUtil.KEY_PREF_ACCOUNT_USER_NAME));
+            setPreferenceChangeListener(findPreference(SharedPreferenceUtil.KEY_PREF_ACCOUNT_USER_PASSWORD));
         }
 
         @Override
@@ -212,6 +213,38 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 return true;
             }
             return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static class UpdatePreferenceFragment extends PreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_update);
+            setHasOptionsMenu(true);
+
+            Preference preference = findPreference(SharedPreferenceUtil.KEY_PREF_UPDATE_CHECK_UPDATE);
+            setPreferenceChangeListener(preference);
+            preference.setOnPreferenceClickListener(preference1 -> {
+                checkUpdate();
+                return true;
+            });
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            int id = item.getItemId();
+            if (id == android.R.id.home) {
+                startActivity(new Intent(getActivity(), SettingsActivity.class));
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
+        }
+
+        private void checkUpdate() {
+
         }
     }
 }
