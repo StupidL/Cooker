@@ -13,9 +13,9 @@ import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.BookModel;
 import me.stupidme.cooker.model.IBookModel;
-import me.stupidme.cooker.retrofit.CookerRetrofit;
-import me.stupidme.cooker.retrofit.CookerService;
-import me.stupidme.cooker.retrofit.HttpResult;
+import me.stupidme.cooker.model.http.CookerRetrofit;
+import me.stupidme.cooker.model.http.CookerService;
+import me.stupidme.cooker.model.http.HttpResult;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
 import me.stupidme.cooker.view.book.IBookView;
 
@@ -144,7 +144,7 @@ public class BookPresenter implements IBookPresenter {
             bookBean.setRiceWeight(500 + i);
             bookBean.setTaste(i % 2 == 0 ? "soft" : "hard");
             bookBean.setCookerStatus(i % 2 == 0 ? "free" : "booking");
-            bookBean.setTime("18:00");
+            bookBean.setTime(1433387772);
             list.add(bookBean);
         }
         Log.v(getClass().getCanonicalName(), "List Size: " + list.size());

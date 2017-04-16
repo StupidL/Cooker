@@ -1,4 +1,4 @@
-package me.stupidme.cooker.db;
+package me.stupidme.cooker.model.db;
 
 import java.util.List;
 

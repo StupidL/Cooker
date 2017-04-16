@@ -20,7 +20,7 @@ import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.presenter.BookPresenter;
 import me.stupidme.cooker.presenter.IBookPresenter;
-import me.stupidme.cooker.view.SpaceItemDecoration;
+import me.stupidme.cooker.view.custom.SpaceItemDecoration;
 
 /**
  * Created by StupidL on 2017/3/8.

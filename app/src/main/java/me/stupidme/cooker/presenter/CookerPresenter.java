@@ -13,9 +13,9 @@ import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.model.CookerModel;
 import me.stupidme.cooker.model.ICookerModel;
-import me.stupidme.cooker.retrofit.CookerRetrofit;
-import me.stupidme.cooker.retrofit.CookerService;
-import me.stupidme.cooker.retrofit.HttpResult;
+import me.stupidme.cooker.model.http.CookerRetrofit;
+import me.stupidme.cooker.model.http.CookerService;
+import me.stupidme.cooker.model.http.HttpResult;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
 import me.stupidme.cooker.view.cooker.ICookerView;
 

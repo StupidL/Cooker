@@ -3,27 +3,27 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="me.stupidme.cooker.view.settings.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="me.stupidme.cooker.view.settings.GeneralFragment"
         android:icon="@drawable/ic_group_work_green_500_24dp"
         android:title="@string/pref_header_general" />
 
     <header
-        android:fragment="me.stupidme.cooker.view.settings.SettingsActivity$NotificationPreferenceFragment"
+        android:fragment="me.stupidme.cooker.view.settings.NotificationFragment"
         android:icon="@drawable/ic_notifications_orange_500_24dp"
         android:title="@string/pref_header_notifications" />
 
     <header
-        android:fragment="me.stupidme.cooker.view.settings.SettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="me.stupidme.cooker.view.settings.DataSyncFragment"
         android:icon="@drawable/ic_sync_cyan_500_24dp"
         android:title="@string/pref_header_data_sync" />
 
     <header
-        android:fragment="me.stupidme.cooker.view.settings.SettingsActivity$AccountPreferenceFragment"
+        android:fragment="me.stupidme.cooker.view.settings.AccountFragment"
         android:icon="@drawable/ic_account_circle_deep_purple_500_24dp"
         android:title="@string/pref_header_account" />
 
     <header
-        android:fragment="me.stupidme.cooker.view.settings.SettingsActivity$UpdatePreferenceFragment"
+        android:fragment="me.stupidme.cooker.view.settings.UpdateFragment"
         android:icon="@drawable/ic_update_red_500_24dp"
         android:title="@string/pref_header_update" />
 

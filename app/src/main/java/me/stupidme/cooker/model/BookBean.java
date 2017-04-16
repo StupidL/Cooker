@@ -1,15 +1,19 @@
 package me.stupidme.cooker.model;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 /**
  * 该类承载预定信息
  * Created by StupidL on 2017/3/5.
  */
 
-public class BookBean {
+public class BookBean extends RealmObject {
 
     /**
      * 该预定的唯一ID，在服务器成功创建预约的时候，会返回改预约信息，此时可以获取ID，在此之前ID都为空
      */
+    @PrimaryKey
     private long bookId;
 
     /**
@@ -45,7 +49,7 @@ public class BookBean {
     /**
      * 该预约设置的预计吃饭时间
      */
-    private String time;
+    private long time;
 
     /**
      * 该预约设置的米饭口感
@@ -115,11 +119,11 @@ public class BookBean {
         return this;
     }
 
-    public String getTime() {
+    public long getTime() {
         return time;
     }
 
-    public BookBean setTime(String time) {
+    public BookBean setTime(long time) {
         this.time = time;
         return this;
     }

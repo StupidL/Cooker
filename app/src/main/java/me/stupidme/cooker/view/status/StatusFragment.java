@@ -18,7 +18,7 @@ import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.presenter.IStatusPresenter;
 import me.stupidme.cooker.presenter.StatusPresenter;
-import me.stupidme.cooker.view.SpaceItemDecoration;
+import me.stupidme.cooker.view.custom.SpaceItemDecoration;
 import me.stupidme.cooker.view.base.BaseFragment;
 import me.stupidme.cooker.view.cooker.CookerActivity;
 

@@ -4,11 +4,11 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import me.stupidme.cooker.db.DBManager;
-import me.stupidme.cooker.db.IDBManager;
+import me.stupidme.cooker.model.db.DBManager;
+import me.stupidme.cooker.model.db.IDBManager;
 import me.stupidme.cooker.model.BookBean;
-import me.stupidme.cooker.retrofit.CookerRetrofit;
-import me.stupidme.cooker.retrofit.CookerService;
+import me.stupidme.cooker.model.http.CookerRetrofit;
+import me.stupidme.cooker.model.http.CookerService;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
 import me.stupidme.cooker.view.status.IStatusView;
 

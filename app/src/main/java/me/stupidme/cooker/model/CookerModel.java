@@ -2,7 +2,7 @@ package me.stupidme.cooker.model;
 
 import java.util.List;
 
-import me.stupidme.cooker.db.DBManager;
+import me.stupidme.cooker.model.db.DBManager;
 
 /**
  * Created by StupidL on 2017/3/7.

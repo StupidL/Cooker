@@ -1,4 +1,4 @@
-package me.stupidme.cooker.db;
+package me.stupidme.cooker.model.db;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -216,7 +216,7 @@ public class DBManager implements IDBManager {
             book.setRiceWeight(cursor.getInt(cursor.getColumnIndex("riceWeight")));
             book.setPeopleCount(cursor.getInt(cursor.getColumnIndex("peopleCount")));
             book.setTaste(cursor.getString(cursor.getColumnIndex("taste")));
-            book.setTime(cursor.getString(cursor.getColumnIndex("time")));
+            book.setTime(cursor.getLong(cursor.getColumnIndex("time")));
         }
         cursor.close();
         return book;
@@ -238,7 +238,7 @@ public class DBManager implements IDBManager {
             book.setRiceWeight(cursor.getInt(cursor.getColumnIndex("riceWeight")));
             book.setPeopleCount(cursor.getInt(cursor.getColumnIndex("peopleCount")));
             book.setTaste(cursor.getString(cursor.getColumnIndex("taste")));
-            book.setTime(cursor.getString(cursor.getColumnIndex("time")));
+            book.setTime(cursor.getLong(cursor.getColumnIndex("time")));
             list.add(book);
             cursor.moveToNext();
         }
