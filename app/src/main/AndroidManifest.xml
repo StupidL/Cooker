@@ -10,7 +10,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/cooker_square"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/cooker_circle"
+        android:roundIcon="@mipmap/cooker"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
