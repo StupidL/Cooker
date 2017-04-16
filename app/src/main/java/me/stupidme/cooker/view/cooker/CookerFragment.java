@@ -24,7 +24,7 @@ import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.presenter.CookerPresenter;
 import me.stupidme.cooker.presenter.ICookerPresenter;
-import me.stupidme.cooker.view.SpaceItemDecoration;
+import me.stupidme.cooker.view.custom.SpaceItemDecoration;
 
 /**
  * Created by StupidL on 2017/3/5

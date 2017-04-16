@@ -1,4 +1,4 @@
-package me.stupidme.cooker.retrofit;
+package me.stupidme.cooker.model.http;
 
 import android.content.Context;
 

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.stupidme.cooker.model.BookBean;
+import me.stupidme.cooker.model.db.DBManager;
 
 import static org.junit.Assert.assertEquals;
 

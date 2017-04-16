@@ -1,4 +1,4 @@
-package me.stupidme.cooker.retrofit;
+package me.stupidme.cooker.model.http;
 
 /**
  * 该类承载服务器返回的消息

@@ -2,8 +2,8 @@ package me.stupidme.cooker;
 
 import android.app.Application;
 
-import me.stupidme.cooker.db.DBManager;
-import me.stupidme.cooker.retrofit.CookerRetrofit;
+import me.stupidme.cooker.model.db.DBManager;
+import me.stupidme.cooker.model.http.CookerRetrofit;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
 
 /**
