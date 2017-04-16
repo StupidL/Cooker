@@ -6,6 +6,8 @@ import io.reactivex.Observable;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.model.UserBean;
+import me.stupidme.cooker.model.update.VersionBean;
+import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.Field;
@@ -14,6 +16,8 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Streaming;
+import retrofit2.http.Url;
 
 /**
  * 该类定义了所有网络请求所用的接口。
@@ -208,5 +212,13 @@ public interface CookerService {
      */
     @DELETE("/user/{userId}/books")
     Observable<BookBean> deleteBooks(@Path("userId") long userId);
+
+
+    @GET("/update/onResult")
+    Observable<HttpResult<VersionBean>> checkUpdate();
+
+    @Streaming
+    @GET
+    Observable<ResponseBody> downloadFile(@Url String url);
 
 }
