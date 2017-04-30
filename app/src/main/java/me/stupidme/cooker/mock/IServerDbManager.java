@@ -1,4 +1,4 @@
-package me.stupidme.cooker.model.db;
+package me.stupidme.cooker.mock;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import me.stupidme.cooker.model.UserBean;
  * Created by StupidL on 2017/4/30.
  */
 
-public interface IServerDbManager{
+public interface IServerDbManager {
 
     UserBean insertUser(UserBean userBean);
 
@@ -24,9 +24,9 @@ public interface IServerDbManager{
 
     boolean deleteCookers();
 
-    CookerBean queryCooker(Long cookerId);
+    CookerBean queryCooker(Long userId, Long cookerId);
 
-    List<CookerBean> queryCookers();
+    List<CookerBean> queryCookers(Long userId);
 
     CookerBean updateCooker(CookerBean cooker);
 

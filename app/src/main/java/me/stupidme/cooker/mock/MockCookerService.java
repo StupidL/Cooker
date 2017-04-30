@@ -7,7 +7,6 @@ import io.reactivex.Observable;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.model.UserBean;
-import me.stupidme.cooker.model.db.RealmServerManager;
 import me.stupidme.cooker.model.http.CookerService;
 import me.stupidme.cooker.model.http.HttpResult;
 import me.stupidme.cooker.model.update.VersionBean;
@@ -43,25 +42,25 @@ public class MockCookerService implements CookerService {
             result.setResultCode(400);
             result.setResultMessage("Not a valid account.");
             result.setData(list);
-            return mDelegate.returningResponse(result).login(userId,name,password);
+            return mDelegate.returningResponse(result).login(userId, name, password);
         }
         if (!userBean.getUserName().equals(name)) {
             result.setResultCode(400);
             result.setResultMessage("Please check your name or password.");
             result.setData(list);
-            return mDelegate.returningResponse(result).login(userId,name,password);
+            return mDelegate.returningResponse(result).login(userId, name, password);
         }
         if (!userBean.getPassword().equals(password)) {
             result.setResultCode(400);
             result.setResultMessage("Please check your name or password.");
             result.setData(list);
-            return mDelegate.returningResponse(result).login(userId,name,password);
+            return mDelegate.returningResponse(result).login(userId, name, password);
         }
         result.setResultCode(200);
         result.setResultMessage("Login success.");
         list.add(userBean);
         result.setData(list);
-        return mDelegate.returningResponse(result).login(userId,name,password);
+        return mDelegate.returningResponse(result).login(userId, name, password);
     }
 
     @Override
@@ -77,17 +76,33 @@ public class MockCookerService implements CookerService {
     }
 
     @Override
-    public Observable<HttpResult<List<UserBean>>> register(@Field("username") String name, @Field("password") String password) {
-        return null;
+    public Observable<HttpResult<List<UserBean>>> register(@Field("username") String name,
+                                                           @Field("password") String password) {
+        HttpResult<List<UserBean>> result = new HttpResult<>();
+        List<UserBean> list = new ArrayList<>();
+        UserBean user = new UserBean(name, password);
+        UserBean bean = mRealmManager.insertUser(user);
+        list.add(bean);
+        result.setResultCode(200);
+        result.setResultMessage("Register success.");
+        result.setData(list);
+        return mDelegate.returningResponse(result).register(user);
     }
 
     @Override
     public Observable<HttpResult<List<CookerBean>>> queryCookers(@Path("userId") long userId) {
-        return null;
+        HttpResult<List<CookerBean>> result = new HttpResult<>();
+        List<CookerBean> list = new ArrayList<>();
+        list.addAll(mRealmManager.queryCookers(userId));
+        result.setResultCode(200);
+        result.setResultMessage("Query Cookers success.");
+        result.setData(list);
+        return mDelegate.returningResponse(list).queryCookers(userId);
     }
 
     @Override
-    public Observable<HttpResult<List<CookerBean>>> queryCooker(@Path("userId") long userId, @Path("cookerId") long cookerId) {
+    public Observable<HttpResult<List<CookerBean>>> queryCooker(@Path("userId") long userId,
+                                                                @Path("cookerId") long cookerId) {
         return null;
     }
 

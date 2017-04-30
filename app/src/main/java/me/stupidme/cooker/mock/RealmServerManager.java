@@ -1,4 +1,4 @@
-package me.stupidme.cooker.model.db;
+package me.stupidme.cooker.mock;
 
 import java.util.List;
 import java.util.Random;
@@ -8,6 +8,7 @@ import io.realm.RealmConfiguration;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.model.UserBean;
+import me.stupidme.cooker.model.db.RealmManager;
 
 /**
  * Created by StupidL on 2017/4/30.
@@ -90,17 +91,18 @@ public class RealmServerManager implements IServerDbManager {
     }
 
     @Override
-    public CookerBean queryCooker(Long cookerId) {
+    public CookerBean queryCooker(Long userId, Long cookerId) {
         mRealm.beginTransaction();
-        CookerBean cookerBean = mRealm.where(CookerBean.class).equalTo("cookerId", cookerId).findFirstAsync();
+        CookerBean cookerBean = mRealm.where(CookerBean.class).equalTo("cookerId", cookerId)
+                .equalTo("userId", userId).findFirstAsync();
         mRealm.commitTransaction();
         return cookerBean;
     }
 
     @Override
-    public List<CookerBean> queryCookers() {
+    public List<CookerBean> queryCookers(Long userId) {
         mRealm.beginTransaction();
-        List<CookerBean> cookerBeanList = mRealm.where(CookerBean.class).findAllAsync();
+        List<CookerBean> cookerBeanList = mRealm.where(CookerBean.class).equalTo("userId", userId).findAllAsync();
         mRealm.commitTransaction();
         return cookerBeanList;
     }
