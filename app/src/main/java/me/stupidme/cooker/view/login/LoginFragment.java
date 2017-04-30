@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
@@ -22,12 +21,9 @@ import android.widget.Toast;
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.UserBean;
 import me.stupidme.cooker.presenter.IUserLoginPresenter;
-import me.stupidme.cooker.presenter.UserLoginPresenter;
+import me.stupidme.cooker.presenter.UserLoginMockPresenter;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
 import me.stupidme.cooker.view.cooker.CookerActivity;
-
-import static me.stupidme.cooker.view.login.Constants.USER_NAME;
-import static me.stupidme.cooker.view.login.Constants.USER_PASSWORD;
 
 /**
  * Created by StupidL on 2017/3/14.
@@ -49,6 +45,8 @@ public class LoginFragment extends Fragment implements ILoginView {
 
     private ScrollView mLoginFormView;
 
+    private boolean autoLogin = false;
+
     private static final String AUTO_LOGIN = "autoLogin";
 
     public LoginFragment() {
@@ -66,13 +64,14 @@ public class LoginFragment extends Fragment implements ILoginView {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPresenter = new UserLoginPresenter(this);
-
+//        mPresenter = new UserLoginPresenter(this);
+        mPresenter = new UserLoginMockPresenter(this);
         Bundle bundle = getArguments();
-        boolean autoLogin = bundle.getBoolean(AUTO_LOGIN);
-
-        if (autoLogin)
-            mPresenter.attemptAutoLogin();
+        autoLogin = bundle.getBoolean(AUTO_LOGIN);
+//
+//        if (autoLogin) {
+//            mPresenter.attemptAutoLogin();
+//        }
     }
 
     @Override
@@ -105,6 +104,14 @@ public class LoginFragment extends Fragment implements ILoginView {
         });
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle bundle) {
+        if (autoLogin) {
+            showProgress(true);
+            mPresenter.attemptAutoLogin();
+        }
     }
 
     /**

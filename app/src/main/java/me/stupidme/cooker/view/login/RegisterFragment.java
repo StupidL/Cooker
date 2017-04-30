@@ -20,7 +20,7 @@ import android.widget.Toast;
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.UserBean;
 import me.stupidme.cooker.presenter.IUserRegisterPresenter;
-import me.stupidme.cooker.presenter.UserRegisterPresenter;
+import me.stupidme.cooker.presenter.UserRegisterMockPresenter;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
 
 /**
@@ -55,7 +55,8 @@ public class RegisterFragment extends Fragment implements IRegisterView {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPresenter = new UserRegisterPresenter(this);
+//        mPresenter = new UserRegisterPresenter(this);
+        mPresenter = new UserRegisterMockPresenter(this);
     }
 
     @Override
@@ -71,7 +72,7 @@ public class RegisterFragment extends Fragment implements IRegisterView {
 
         mRegisterButton.setOnClickListener(v -> {
             hideSoftInputMethod();
-
+            showProgress(true);
             String name = mNameEditText.getText().toString();
             String password = mPasswordEditText.getText().toString();
             String password2 = mPasswordRepeatEditText.getText().toString();
