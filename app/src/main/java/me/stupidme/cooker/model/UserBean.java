@@ -1,12 +1,15 @@
 package me.stupidme.cooker.model;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 /**
  * 该类用来承载用户信息，包括<code>username</code>、<code>password</code>和<code>userId</code>.
  * 在发送登录请求的时候，可以将该类对象作为参数，Retrofit会将该类的所有域映射成对应的POST请求参数。
  * Created by StupidL on 2017/3/8.
  */
 
-public class UserBean {
+public class UserBean extends RealmObject {
 
     /**
      * 用户名。对应登录/注册POST请求参数<code>username</code>
@@ -21,7 +24,8 @@ public class UserBean {
     /**
      * 用户ID。当用户注册成功时，服务器会返回该用户独一无二的ID。
      */
-    private long userId;
+    @PrimaryKey
+    private Long userId;
 
     /**
      * 构造器，因为不一定有<code>userId</code>值，所以没有userId参数
@@ -87,7 +91,7 @@ public class UserBean {
      * @param id 用户ID
      * @return 自身引用，支持链式调用
      */
-    public UserBean setUserId(long id) {
+    public UserBean setUserId(Long id) {
         this.userId = id;
         return this;
     }
@@ -97,7 +101,7 @@ public class UserBean {
      *
      * @return 用户ID
      */
-    public long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 

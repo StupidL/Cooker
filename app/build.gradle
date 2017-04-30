@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 25
@@ -13,7 +14,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         jackOptions {
-            enabled true
+            enabled false
         }
     }
     buildTypes {
@@ -25,6 +26,12 @@ android {
     compileOptions {
         targetCompatibility 1.8
         sourceCompatibility 1.8
+    }
+
+    sourceSets{
+        main{
+            java.srcDirs = ['src/main/java','src/main/aidl']
+        }
     }
 }
 
@@ -44,6 +51,7 @@ dependencies {
     compile 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
     compile 'io.reactivex.rxjava2:rxjava:2.0.1'
+    compile 'com.squareup.retrofit2:retrofit-mock:2.2.0'
     compile 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
     compile 'com.github.Yalantis:pull-to-make-soup:1.0.2'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'

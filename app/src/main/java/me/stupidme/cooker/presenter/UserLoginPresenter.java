@@ -9,6 +9,7 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import me.stupidme.cooker.mock.MockCookerService;
 import me.stupidme.cooker.model.UserBean;
 import me.stupidme.cooker.model.http.CookerRetrofit;
 import me.stupidme.cooker.model.http.CookerService;
@@ -28,15 +29,18 @@ public class UserLoginPresenter implements IUserLoginPresenter {
 
     private CookerService mService;
 
+    private MockCookerService mMockService;
+
     public UserLoginPresenter(ILoginView view) {
         mView = view;
         mService = CookerRetrofit.getInstance().getCookerService();
+        mMockService = CookerRetrofit.getInstance().getMockService();
     }
 
     @Override
     public void login(String name, String password, boolean remember) {
         mView.showProgress(true);
-        mService.login(name, password)
+        mService.login(0L,name, password)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<UserBean>>>() {
@@ -77,7 +81,7 @@ public class UserLoginPresenter implements IUserLoginPresenter {
 
         if (!(TextUtils.isEmpty(userName) | TextUtils.isEmpty(userPassword))) {
 
-            mService.login(userName, userPassword)
+            mService.login(0L,userName, userPassword)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<HttpResult<List<UserBean>>>() {
