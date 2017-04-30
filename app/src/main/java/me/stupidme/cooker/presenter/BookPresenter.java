@@ -137,7 +137,7 @@ public class BookPresenter implements IBookPresenter {
         List<BookBean> list = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             BookBean bookBean = new BookBean();
-            bookBean.setCookerId(i);
+            bookBean.setCookerId(Long.decode(i + ""));
             bookBean.setCookerName(i + "");
             bookBean.setCookerLocation(i + "");
             bookBean.setPeopleCount(i);

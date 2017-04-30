@@ -18,7 +18,7 @@ import java.util.List;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
-import me.stupidme.cooker.presenter.BookPresenter;
+import me.stupidme.cooker.presenter.BookMockPresenter;
 import me.stupidme.cooker.presenter.IBookPresenter;
 import me.stupidme.cooker.view.custom.SpaceItemDecoration;
 
@@ -65,8 +65,8 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
             mDataSet = new ArrayList<>();
         if (mAdapter == null)
             mAdapter = new BookRecyclerAdapter(mDataSet);
-        mPresenter = new BookPresenter(this);
-
+//        mPresenter = new BookPresenter(this);
+        mPresenter = new BookMockPresenter(this);
         Log.v(getClass().getCanonicalName(), "onCreate()");
 
         Log.v(getClass().getCanonicalName(), "DataSet Size: " + mDataSet.size());
