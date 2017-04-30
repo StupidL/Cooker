@@ -15,6 +15,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
 
     private static final String CREATE_TABLE_COOKER = "CREATE TABLE cooker("
+            + "userId INTEGER NOT NULL, "
             + "cookerId INTEGER UNIQUE NOT NULL, "
             + "cookerName VARCHAR(20) NOT NULL, "
             + "cookerLocation VARCHAR(20) NOT NULL, "
@@ -22,6 +23,7 @@ public class DBHelper extends SQLiteOpenHelper {
             + ")";
 
     private static final String CREATE_TABLE_BOOK = "CREATE TABLE book("
+            + "userId INTEGER NOT NULL, "
             + "bookId INTEGER UNIQUE NOT NULL, "
             + "cookerId INTEGER NOT NULL, "
             + "cookerName VARCHAR(20) NOT NULL, "
