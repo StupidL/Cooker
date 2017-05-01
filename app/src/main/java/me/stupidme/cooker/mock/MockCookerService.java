@@ -23,7 +23,7 @@ import retrofit2.mock.BehaviorDelegate;
 
 public class MockCookerService implements CookerService {
 
-    private RealmServerManager mRealmManager = RealmServerManager.getInstance();
+    private IServerDbManager mServerDbManager = RealmServerManager.getInstance();
 
     private BehaviorDelegate<CookerService> mDelegate;
 
@@ -37,7 +37,7 @@ public class MockCookerService implements CookerService {
                                                         @Field("password") String password) {
         HttpResult<List<UserBean>> result = new HttpResult<>();
         List<UserBean> list = new ArrayList<>();
-        UserBean userBean = mRealmManager.queryUser(userId);
+        UserBean userBean = mServerDbManager.queryUser(userId);
         if (userBean == null) {
             result.setResultCode(400);
             result.setResultMessage("Not a valid account.");
@@ -67,7 +67,7 @@ public class MockCookerService implements CookerService {
     public Observable<HttpResult<List<UserBean>>> register(@Body UserBean user) {
         HttpResult<List<UserBean>> result = new HttpResult<>();
         List<UserBean> list = new ArrayList<>();
-        UserBean bean = mRealmManager.insertUser(user);
+        UserBean bean = mServerDbManager.insertUser(user);
         list.add(bean);
         result.setResultCode(200);
         result.setResultMessage("Register success.");
@@ -81,7 +81,7 @@ public class MockCookerService implements CookerService {
         HttpResult<List<UserBean>> result = new HttpResult<>();
         List<UserBean> list = new ArrayList<>();
         UserBean user = new UserBean(name, password);
-        UserBean bean = mRealmManager.insertUser(user);
+        UserBean bean = mServerDbManager.insertUser(user);
         list.add(bean);
         result.setResultCode(200);
         result.setResultMessage("Register success.");
@@ -93,7 +93,7 @@ public class MockCookerService implements CookerService {
     public Observable<HttpResult<List<CookerBean>>> queryCookers(@Path("userId") long userId) {
         HttpResult<List<CookerBean>> result = new HttpResult<>();
         List<CookerBean> list = new ArrayList<>();
-        list.addAll(mRealmManager.queryCookers(userId));
+        list.addAll(mServerDbManager.queryCookers(userId));
         result.setResultCode(200);
         result.setResultMessage("Query Cookers success.");
         result.setData(list);
