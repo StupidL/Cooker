@@ -2,18 +2,18 @@ package me.stupidme.cooker.view.cooker;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
-import com.yalantis.pulltomakesoup.PullToRefreshView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +23,6 @@ import java.util.Map;
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.presenter.CookerMockPresenter;
-import me.stupidme.cooker.presenter.CookerPresenter;
 import me.stupidme.cooker.presenter.ICookerPresenter;
 import me.stupidme.cooker.view.custom.SpaceItemDecoration;
 
@@ -50,7 +49,7 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
     private CookerDialog mDialog;
 
     //下拉刷新控件
-    private PullToRefreshView mSwipeLayout;
+    private SwipeRefreshLayout mSwipeLayout;
 
     private FloatingActionButton mFab;
 
@@ -80,7 +79,7 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cooker, container, false);
-        mSwipeLayout = (PullToRefreshView) view.findViewById(R.id.cooker_swipe_layout);
+        mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.cooker_swipe_layout);
 
         mSwipeLayout.setOnRefreshListener(() -> mPresenter.queryCookersFromServer());
 
@@ -154,14 +153,22 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
                         CookerBean bean = mDataSet.get(position);
                         mDataSet.remove(position);
                         mAdapter.notifyItemRemoved(position);
+                        Long cookerId = bean.getCookerId();
 
-                        Snackbar.make(viewHolder.itemView,
-                                getString(R.string.snackbar_text_cooker_fragment),
-                                Snackbar.LENGTH_LONG)
-                                .setAction("DELETE", v -> mPresenter.deleteCooker(bean.getCookerId())).show();
+                        new AlertDialog.Builder(viewHolder.itemView.getContext())
+                                .setMessage(getString(R.string.snackbar_text_cooker_fragment))
+                                .setTitle(getString(R.string.tips_title))
+                                .setNegativeButton("CANCEL", (dialog12, which) -> {
+                                    dialog12.dismiss();
+                                    mDataSet.add(position, bean);
+                                    mAdapter.notifyItemInserted(position);
+                                })
+                                .setPositiveButton("DELETE", (dialog1, which) -> {
+                                    dialog1.dismiss();
+                                    mPresenter.deleteCooker(cookerId);
+                                })
+                                .show();
 
-                        mDataSet.add(position, bean);
-                        mAdapter.notifyItemInserted(position);
                     }
                 };
 
@@ -206,7 +213,8 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
      * @param show true则显示， false则不显示
      */
     @Override
-    public void setRefreshing(boolean show) {
+    public void showRefreshing(boolean show) {
+        Log.v("CookerFragment", "setRefresh()...");
         if (show) {
             mSwipeLayout.setRefreshing(true);
         } else {

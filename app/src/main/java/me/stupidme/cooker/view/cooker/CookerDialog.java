@@ -5,7 +5,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 
 import java.util.HashMap;
@@ -66,7 +65,7 @@ public class CookerDialog extends Dialog {
             map.put(COOKER_NAME_KEY, name);
             map.put(COOKER_LOCATION_KEY, location);
             mListener.onSave(map);
-
+            dismiss();
         });
 
         mCancel.setOnClickListener(v -> dismiss());

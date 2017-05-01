@@ -69,13 +69,13 @@ public class CookerPresenter implements ICookerPresenter {
                     @Override
                     public void onError(Throwable e) {
                         mView.showMessage(e.toString());
-                        mView.setRefreshing(false);
+                        mView.showRefreshing(false);
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-                        mView.setRefreshing(false);
+                        mView.showRefreshing(false);
                         Log.i(TAG, "onComplete: ");
                     }
                 });
@@ -106,13 +106,13 @@ public class CookerPresenter implements ICookerPresenter {
                     @Override
                     public void onError(Throwable e) {
                         mView.showMessage(e.toString());
-                        mView.setRefreshing(false);
+                        mView.showRefreshing(false);
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-                        mView.setRefreshing(false);
+                        mView.showRefreshing(false);
                         Log.i(TAG, "onComplete: ");
                     }
                 });
@@ -145,13 +145,13 @@ public class CookerPresenter implements ICookerPresenter {
                     @Override
                     public void onError(Throwable e) {
                         mView.showMessage(e.toString());
-                        mView.setRefreshing(false);
+                        mView.showRefreshing(false);
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-                        mView.setRefreshing(false);
+                        mView.showRefreshing(false);
                         Log.i(TAG, "onComplete: ");
                     }
                 });
@@ -211,13 +211,13 @@ public class CookerPresenter implements ICookerPresenter {
                     @Override
                     public void onError(Throwable e) {
                         mView.showMessage(e.toString());
-                        mView.setRefreshing(false);
+                        mView.showRefreshing(false);
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-                        mView.setRefreshing(false);
+                        mView.showRefreshing(false);
                         Log.i(TAG, "onComplete: ");
                     }
                 });
@@ -247,13 +247,13 @@ public class CookerPresenter implements ICookerPresenter {
                     @Override
                     public void onError(Throwable e) {
                         mView.showMessage(e.toString());
-                        mView.setRefreshing(false);
+                        mView.showRefreshing(false);
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-                        mView.setRefreshing(false);
+                        mView.showRefreshing(false);
                         Log.i(TAG, "onComplete: ");
                     }
                 });
@@ -264,7 +264,7 @@ public class CookerPresenter implements ICookerPresenter {
 
         Log.v(TAG, "++++++CookerPresenter queryCookersFromServer()++++++");
 
-        mView.setRefreshing(true);
+        mView.showRefreshing(true);
 
         mService.queryCookers(SharedPreferenceUtil.getAccountUserId(0L))
                 .subscribeOn(Schedulers.io())
@@ -287,13 +287,13 @@ public class CookerPresenter implements ICookerPresenter {
                     @Override
                     public void onError(Throwable e) {
                         mView.showMessage(e.toString());
-                        mView.setRefreshing(false);
+                        mView.showRefreshing(false);
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-                        mView.setRefreshing(false);
+                        mView.showRefreshing(false);
                         Log.i(TAG, "onComplete: ");
                     }
                 });

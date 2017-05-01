@@ -15,7 +15,7 @@ public interface ICookerView {
      *
      * @param show true则显示，false则不显示
      */
-    void setRefreshing(boolean show);
+    void showRefreshing(boolean show);
 
     /**
      * 界面上移除一个设备信息

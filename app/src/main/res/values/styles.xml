@@ -35,6 +35,16 @@
         <item name="android:elevation">3dp</item>
     </style>
 
+    <style name="CookerCardView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:elevation">3dp</item>
+    </style>
+
     <style name="BookCardTextStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">30dp</item>
@@ -44,6 +54,13 @@
     </style>
 
     <style name="BookCardTableRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+    </style>
+
+    <style name="CookerCardTableRow">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:paddingStart">8dp</item>

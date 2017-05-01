@@ -250,5 +250,6 @@
     <string name="dialog_take_from_camera">Take From Camera</string>
     <string name="search">Search</string>
     <string name="holder">Holder</string>
+    <string name="tips_title">Tips</string>
 
 </resources>

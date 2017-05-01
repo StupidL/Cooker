@@ -9,6 +9,7 @@ import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.model.UserBean;
 import me.stupidme.cooker.model.db.RealmManager;
+import me.stupidme.cooker.util.SharedPreferenceUtil;
 
 /**
  * Created by StupidL on 2017/4/30.
@@ -54,6 +55,8 @@ public class RealmServerManager implements IServerDbManager {
     @Override
     public CookerBean insertCooker(CookerBean cooker) {
         mRealm.beginTransaction();
+        cooker.setUserId(SharedPreferenceUtil.getAccountUserId(0L));
+        cooker.setCookerId(new Random().nextLong());
         CookerBean bean = mRealm.copyToRealmOrUpdate(cooker);
         mRealm.commitTransaction();
         return bean;
