@@ -10,6 +10,12 @@ import me.stupidme.cooker.model.CookerBean;
 
 public interface RealmCookerManager {
 
+    String KEY_USER_ID = "userId";
+    String KEY_COOKER_ID = "cookerId";
+    String KEY_COOKER_NAME = "cookerName";
+    String KEY_COOKER_LOCATION = "cookerLocation";
+    String KEY_COOKER_STATUS = "cookerStatus";
+
     CookerBean insertCooker(CookerBean cookerBean);
 
     List<CookerBean> insertCookers(List<CookerBean> cookerBeanList);
@@ -22,7 +28,7 @@ public interface RealmCookerManager {
 
     List<CookerBean> updateCookers(List<CookerBean> cookerBeanList);
 
-    List<CookerBean> queryCookers(String where,String equalTo);
+    List<CookerBean> queryCookers(String where, String equalTo);
 
 //    List<CookerBean> queryCookers(Map<String,String> conditions);
 }

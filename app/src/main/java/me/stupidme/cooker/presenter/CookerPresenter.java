@@ -27,8 +27,6 @@ public class CookerPresenter implements ICookerPresenter {
 
     private static final String TAG = "CookerPresenter";
 
-    private static CookerPresenter sInstance;
-
     private ICookerView mView;
 
     private ICookerModel mModel;
@@ -37,17 +35,11 @@ public class CookerPresenter implements ICookerPresenter {
 
     private CompositeDisposable mCompositeDisposable;
 
-    private CookerPresenter(ICookerView view) {
+    public CookerPresenter(ICookerView view) {
         mView = view;
         mModel = CookerModel.getInstance();
         mService = CookerRetrofit.getInstance().getCookerService();
         mCompositeDisposable = new CompositeDisposable();
-    }
-
-    public static CookerPresenter getInstance(ICookerView view) {
-        if (sInstance == null)
-            sInstance = new CookerPresenter(view);
-        return sInstance;
     }
 
     @Override

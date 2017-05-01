@@ -22,6 +22,7 @@ import java.util.Map;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.CookerBean;
+import me.stupidme.cooker.presenter.CookerMockPresenter;
 import me.stupidme.cooker.presenter.CookerPresenter;
 import me.stupidme.cooker.presenter.ICookerPresenter;
 import me.stupidme.cooker.view.custom.SpaceItemDecoration;
@@ -71,8 +72,8 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
 
         mDataSet = new ArrayList<>();
         mAdapter = new CookerRecyclerAdapter(mDataSet);
-        mPresenter = CookerPresenter.getInstance(this);
-
+//        mPresenter = new CookerPresenter(this);
+        mPresenter = new CookerMockPresenter(this);
     }
 
     @Override
@@ -225,6 +226,12 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         mAdapter.notifyItemRemoved(position);
     }
 
+    @Override
+    public void removeCookers(List<CookerBean> cookers) {
+        mDataSet.removeAll(cookers);
+        mAdapter.notifyDataSetChanged();
+    }
+
     /**
      * 界面上新增一个电饭锅设备
      *
@@ -234,6 +241,13 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
     public void insertCooker(CookerBean cooker) {
         mDataSet.add(0, cooker);
         mAdapter.notifyItemInserted(0);
+    }
+
+    @Override
+    public void insertCookers(List<CookerBean> cookers) {
+        mDataSet.clear();
+        mDataSet.addAll(cookers);
+        mAdapter.notifyDataSetChanged();
     }
 
     /**

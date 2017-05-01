@@ -25,11 +25,25 @@ public interface ICookerView {
     void removeCooker(CookerBean cooker);
 
     /**
+     * 批量删除设备信息
+     *
+     * @param cookers 设备集合
+     */
+    void removeCookers(List<CookerBean> cookers);
+
+    /**
      * 插入一个设备信息
      *
      * @param cooker 要插入的设备信息
      */
     void insertCooker(CookerBean cooker);
+
+    /**
+     * 批量插入设备信息
+     *
+     * @param cookers 设备集合
+     */
+    void insertCookers(List<CookerBean> cookers);
 
     /**
      * 界面上批量插入设备信息，在从数据库获取数据的时候调用
