@@ -22,6 +22,8 @@ public interface RealmCookerManager {
 
     List<CookerBean> deleteCookers(String where, String equalTo);
 
+    List<CookerBean> deleteCookers(String where, Long equalTo);
+
 //    List<CookerBean> deleteCookers(Map<String,String> conditions);
 
     CookerBean updateCooker(CookerBean cookerBean);
@@ -29,6 +31,8 @@ public interface RealmCookerManager {
     List<CookerBean> updateCookers(List<CookerBean> cookerBeanList);
 
     List<CookerBean> queryCookers(String where, String equalTo);
+
+    List<CookerBean> queryCookers(String where, Long equalTo);
 
 //    List<CookerBean> queryCookers(Map<String,String> conditions);
 }

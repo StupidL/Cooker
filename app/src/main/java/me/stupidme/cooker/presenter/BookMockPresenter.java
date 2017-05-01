@@ -73,7 +73,7 @@ public class BookMockPresenter implements IBookPresenter {
 
     @Override
     public void queryBooksFromDB() {
-        mView.insertBooks(mRealmManager.queryBooks(RealmBookManager.KEY_USER_ID, String.valueOf(SharedPreferenceUtil.getAccountUserId(0L))));
+        mView.insertBooks(mRealmManager.queryBooks(RealmBookManager.KEY_USER_ID, SharedPreferenceUtil.getAccountUserId(0L)));
     }
 
     @Override

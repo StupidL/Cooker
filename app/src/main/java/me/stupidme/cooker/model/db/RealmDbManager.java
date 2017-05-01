@@ -61,6 +61,19 @@ public class RealmDbManager implements RealmCookerManager, RealmBookManager {
     }
 
     @Override
+    public List<BookBean> deleteBooks(String where, Long equalTo) {
+        final List<BookBean> bookBeanList = new ArrayList<>();
+        mRealm.executeTransaction(realm -> {
+            List<BookBean> list = realm.where(BookBean.class).equalTo(where, equalTo).findAllAsync();
+            for (BookBean bookBean : list) {
+                bookBeanList.add(bookBean);
+                bookBean.deleteFromRealm();
+            }
+        });
+        return bookBeanList;
+    }
+
+    @Override
     public BookBean updateBook(BookBean bookBean) {
         mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(bookBean));
         return bookBean;
@@ -75,6 +88,13 @@ public class RealmDbManager implements RealmCookerManager, RealmBookManager {
 
     @Override
     public List<BookBean> queryBooks(String where, String equalTo) {
+        final List<BookBean> list = new ArrayList<>();
+        mRealm.executeTransaction(realm -> list.addAll(realm.where(BookBean.class).equalTo(where, equalTo).findAllAsync()));
+        return list;
+    }
+
+    @Override
+    public List<BookBean> queryBooks(String where, Long equalTo) {
         final List<BookBean> list = new ArrayList<>();
         mRealm.executeTransaction(realm -> list.addAll(realm.where(BookBean.class).equalTo(where, equalTo).findAllAsync()));
         return list;
@@ -107,6 +127,19 @@ public class RealmDbManager implements RealmCookerManager, RealmBookManager {
     }
 
     @Override
+    public List<CookerBean> deleteCookers(String where, Long equalTo) {
+        final List<CookerBean> list = new ArrayList<>();
+        mRealm.executeTransaction(realm -> {
+            List<CookerBean> cookerBeanList = realm.where(CookerBean.class).equalTo(where, equalTo).findAllAsync();
+            for (CookerBean cookerBean : cookerBeanList) {
+                list.add(cookerBean);
+                cookerBean.deleteFromRealm();
+            }
+        });
+        return list;
+    }
+
+    @Override
     public CookerBean updateCooker(CookerBean cookerBean) {
         mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(cookerBean));
         return cookerBean;
@@ -121,6 +154,13 @@ public class RealmDbManager implements RealmCookerManager, RealmBookManager {
 
     @Override
     public List<CookerBean> queryCookers(String where, String equalTo) {
+        final List<CookerBean> list = new ArrayList<>();
+        mRealm.executeTransaction(realm -> list.addAll(realm.where(CookerBean.class).equalTo(where, equalTo).findAllAsync()));
+        return list;
+    }
+
+    @Override
+    public List<CookerBean> queryCookers(String where, Long equalTo) {
         final List<CookerBean> list = new ArrayList<>();
         mRealm.executeTransaction(realm -> list.addAll(realm.where(CookerBean.class).equalTo(where, equalTo).findAllAsync()));
         return list;

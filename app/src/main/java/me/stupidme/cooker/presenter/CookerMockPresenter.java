@@ -133,13 +133,13 @@ public class CookerMockPresenter implements ICookerPresenter {
 
     @Override
     public void queryCookerFromDB(long cookerId) {
-        mView.insertCooker(mRealmManager.queryCookers(RealmCookerManager.KEY_COOKER_ID, cookerId + "").get(0));
+        mView.insertCooker(mRealmManager.queryCookers(RealmCookerManager.KEY_COOKER_ID, cookerId).get(0));
     }
 
     @Override
     public void queryCookersFromDB() {
         mView.insertCookers(mRealmManager.queryCookers(RealmCookerManager.KEY_USER_ID,
-                SharedPreferenceUtil.getAccountUserId(0L) + ""));
+                SharedPreferenceUtil.getAccountUserId(0L)));
     }
 
     @Override

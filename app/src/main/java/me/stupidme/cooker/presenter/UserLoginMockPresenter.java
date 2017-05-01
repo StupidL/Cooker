@@ -78,6 +78,7 @@ public class UserLoginMockPresenter implements IUserLoginPresenter {
         String userPassword = SharedPreferenceUtil.getAccountUserPassword("");
         if (userId == 0L || TextUtils.isEmpty(userName) || TextUtils.isEmpty(userPassword)) {
             mView.showMessage("Auto login failed. No username and password remembered.");
+            mView.showProgress(false);
             return;
         }
         mMockService.login(userId, userName, userPassword)

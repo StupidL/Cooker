@@ -27,7 +27,7 @@ public interface RealmBookManager {
 
     List<BookBean> deleteBooks(String where, String equalTo);
 
-//    List<BookBean> deleteBooks(Map<String, String> conditions);
+    List<BookBean> deleteBooks(String where, Long equalTo);
 
     BookBean updateBook(BookBean bookBean);
 
@@ -35,5 +35,6 @@ public interface RealmBookManager {
 
     List<BookBean> queryBooks(String where, String equalTo);
 
-//    List<BookBean> queryBooks(Map<String, String> conditions);
+    List<BookBean> queryBooks(String where, Long equalTo);
+
 }
