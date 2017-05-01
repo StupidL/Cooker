@@ -22,7 +22,7 @@ public interface IServerDbManager {
 
     CookerBean deleteCooker(Long cookerId);
 
-    boolean deleteCookers();
+    List<CookerBean> deleteCookers(Long userId);
 
     CookerBean queryCooker(Long userId, Long cookerId);
 
@@ -38,11 +38,11 @@ public interface IServerDbManager {
 
     BookBean deleteBook(Long bookId);
 
-    boolean deleteBooks();
+    List<BookBean> deleteBooks(Long userId);
 
     BookBean queryBook(Long bookId);
 
-    List<BookBean> queryBooks();
+    List<BookBean> queryBooks(Long userId);
 
     BookBean updateBook(BookBean book);
 

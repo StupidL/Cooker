@@ -77,8 +77,8 @@ public class SQLiteServerManager implements IServerDbManager {
     }
 
     @Override
-    public boolean deleteCookers() {
-        return false;
+    public List<CookerBean> deleteCookers(Long userId) {
+        return null;
     }
 
     @Override
@@ -117,8 +117,8 @@ public class SQLiteServerManager implements IServerDbManager {
     }
 
     @Override
-    public boolean deleteBooks() {
-        return false;
+    public List<BookBean> deleteBooks(Long userId) {
+        return null;
     }
 
     @Override
@@ -127,7 +127,7 @@ public class SQLiteServerManager implements IServerDbManager {
     }
 
     @Override
-    public List<BookBean> queryBooks() {
+    public List<BookBean> queryBooks(Long userId) {
         return null;
     }
 

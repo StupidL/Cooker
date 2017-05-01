@@ -79,15 +79,15 @@ public class RealmServerManager implements IServerDbManager {
     }
 
     @Override
-    public boolean deleteCookers() {
+    public List<CookerBean> deleteCookers(Long userId) {
         mRealm.beginTransaction();
-        List<CookerBean> cookerBeanList = mRealm.where(CookerBean.class).findAllAsync();
+        List<CookerBean> cookerBeanList = mRealm.where(CookerBean.class).equalTo("userId", userId).findAllAsync();
         if (cookerBeanList.size() > 0) {
             for (CookerBean cookerBean : cookerBeanList)
                 cookerBean.deleteFromRealm();
         }
         mRealm.commitTransaction();
-        return true;
+        return cookerBeanList;
     }
 
     @Override
@@ -150,15 +150,15 @@ public class RealmServerManager implements IServerDbManager {
     }
 
     @Override
-    public boolean deleteBooks() {
+    public List<BookBean> deleteBooks(Long userId) {
         mRealm.beginTransaction();
-        List<BookBean> bookBeanList = mRealm.where(BookBean.class).findAllAsync();
+        List<BookBean> bookBeanList = mRealm.where(BookBean.class).equalTo("userId", userId).findAllAsync();
         if (bookBeanList.size() > 0) {
             for (BookBean bookBean : bookBeanList)
                 bookBean.deleteFromRealm();
         }
         mRealm.commitTransaction();
-        return true;
+        return bookBeanList;
     }
 
     @Override
@@ -170,9 +170,9 @@ public class RealmServerManager implements IServerDbManager {
     }
 
     @Override
-    public List<BookBean> queryBooks() {
+    public List<BookBean> queryBooks(Long userId) {
         mRealm.beginTransaction();
-        List<BookBean> bookBeanList = mRealm.where(BookBean.class).findAllAsync();
+        List<BookBean> bookBeanList = mRealm.where(BookBean.class).equalTo("userId", userId).findAllAsync();
         mRealm.commitTransaction();
         return bookBeanList;
     }
