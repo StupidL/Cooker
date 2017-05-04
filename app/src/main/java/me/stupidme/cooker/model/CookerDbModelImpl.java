@@ -2,27 +2,27 @@ package me.stupidme.cooker.model;
 
 import java.util.List;
 
-import me.stupidme.cooker.model.db.DBManager;
+import me.stupidme.cooker.model.db.CookerDbManagerSQLiteImpl;
 
 /**
  * Created by StupidL on 2017/3/7.
  */
 
-public class CookerModel implements ICookerModel {
+public class CookerDbModelImpl implements CookerDbModel {
 
-    private static CookerModel sInstance;
+    private static CookerDbModelImpl sInstance;
 
-    private DBManager mManager;
+    private CookerDbManagerSQLiteImpl mManager;
 
-    private CookerModel() {
-        mManager = DBManager.getInstance();
+    private CookerDbModelImpl() {
+        mManager = CookerDbManagerSQLiteImpl.getInstance();
     }
 
-    public static CookerModel getInstance() {
+    public static CookerDbModelImpl getInstance() {
         if (sInstance == null) {
-            synchronized (CookerModel.class) {
+            synchronized (CookerDbModelImpl.class) {
                 if (sInstance == null)
-                    sInstance = new CookerModel();
+                    sInstance = new CookerDbModelImpl();
             }
         }
         return sInstance;

@@ -11,29 +11,29 @@ import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.mock.MockCookerService;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.db.RealmBookManager;
-import me.stupidme.cooker.model.db.RealmDbManager;
+import me.stupidme.cooker.model.db.RealmDbManagerImpl;
 import me.stupidme.cooker.model.http.CookerRetrofit;
 import me.stupidme.cooker.model.http.HttpResult;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
-import me.stupidme.cooker.view.book.IBookView;
+import me.stupidme.cooker.view.book.BookView;
 
 /**
  * Created by StupidL on 2017/4/30.
  */
 
-public class BookMockPresenter implements IBookPresenter {
+public class BookMockPresenterImpl implements BookPresenter {
 
     private static final String TAG = "BookMockPresenter";
 
-    private IBookView mView;
+    private BookView mView;
 
     private RealmBookManager mRealmManager;
 
     private MockCookerService mMockService;
 
-    public BookMockPresenter(IBookView view) {
+    public BookMockPresenterImpl(BookView view) {
         mView = view;
-        mRealmManager = RealmDbManager.getInstance();
+        mRealmManager = RealmDbManagerImpl.getInstance();
         mMockService = CookerRetrofit.getInstance().getMockService();
     }
 

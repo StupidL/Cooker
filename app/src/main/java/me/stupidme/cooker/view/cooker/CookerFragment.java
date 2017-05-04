@@ -22,8 +22,8 @@ import java.util.Map;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.CookerBean;
-import me.stupidme.cooker.presenter.CookerMockPresenter;
-import me.stupidme.cooker.presenter.ICookerPresenter;
+import me.stupidme.cooker.presenter.CookerMockPresenterImpl;
+import me.stupidme.cooker.presenter.CookerPresenter;
 import me.stupidme.cooker.view.custom.SpaceItemDecoration;
 
 /**
@@ -31,7 +31,7 @@ import me.stupidme.cooker.view.custom.SpaceItemDecoration;
  * CookerFragment展示的是用户所有的电饭锅的信息
  */
 
-public class CookerFragment extends Fragment implements ICookerView, CookerDialog.CookerAddListener {
+public class CookerFragment extends Fragment implements CookerView, CookerDialog.CookerAddListener {
 
     //RecyclerView控件，展示所有的Cooker设备信息
     private RecyclerView mRecyclerView;
@@ -43,7 +43,7 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
     private CookerRecyclerAdapter mAdapter;
 
     //Presenter，控制网络请求和数据库读写
-    private ICookerPresenter mPresenter;
+    private CookerPresenter mPresenter;
 
     //对话框，在添加设备的时候会显示
     private CookerDialog mDialog;
@@ -72,7 +72,7 @@ public class CookerFragment extends Fragment implements ICookerView, CookerDialo
         mDataSet = new ArrayList<>();
         mAdapter = new CookerRecyclerAdapter(mDataSet);
 //        mPresenter = new CookerPresenter(this);
-        mPresenter = new CookerMockPresenter(this);
+        mPresenter = new CookerMockPresenterImpl(this);
     }
 
     @Override

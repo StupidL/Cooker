@@ -2,30 +2,30 @@ package me.stupidme.cooker.model;
 
 import java.util.List;
 
-import me.stupidme.cooker.model.db.DBManager;
-import me.stupidme.cooker.model.db.IDBManager;
+import me.stupidme.cooker.model.db.CookerDbManagerSQLiteImpl;
+import me.stupidme.cooker.model.db.CookerDbManager;
 
 /**
  * Created by StupidL on 2017/3/8.
  */
 
-public class BookModel implements IBookModel {
+public class BookDbModelImpl implements BookDbModel {
 
     private static final String TAG = "BookModel";
 
-    private static BookModel sInstance;
+    private static BookDbModelImpl sInstance;
 
-    private IDBManager mManager2;
+    private CookerDbManager mManager2;
 
-    private BookModel() {
-        mManager2 = DBManager.getInstance();
+    private BookDbModelImpl() {
+        mManager2 = CookerDbManagerSQLiteImpl.getInstance();
     }
 
-    public static BookModel getInstance() {
+    public static BookDbModelImpl getInstance() {
         if (sInstance == null) {
-            synchronized (BookModel.class) {
+            synchronized (BookDbModelImpl.class) {
                 if (sInstance == null)
-                    sInstance = new BookModel();
+                    sInstance = new BookDbModelImpl();
             }
         }
         return sInstance;

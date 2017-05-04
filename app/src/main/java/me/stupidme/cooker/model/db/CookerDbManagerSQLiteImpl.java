@@ -17,7 +17,7 @@ import me.stupidme.cooker.model.CookerBean;
  * Created by StupidL on 2017/3/29.
  */
 
-public class DBManager implements IDBManager {
+public class CookerDbManagerSQLiteImpl implements CookerDbManager {
 
     private static final String DELETE_COOKER_TABLE = "DELETE FROM cooker";
     private static final String RESET_COOKER_SEQUENCE = "UPDATE sqlite_sequence SET seq = 0 WHERE name = 'cooker'";
@@ -29,7 +29,7 @@ public class DBManager implements IDBManager {
 
     private static final String PREFIX_INSERT_COOKER = "REPLACE INTO cooker(cookerId," +
             "cookerName,cookerLocation,cookerStatus) VALUES(";
-    private static DBManager sInstance;
+    private static CookerDbManagerSQLiteImpl sInstance;
 
     private SQLiteDatabase mWritableDB;
 
@@ -41,17 +41,17 @@ public class DBManager implements IDBManager {
         mContextRef = new WeakReference<>(context);
     }
 
-    private DBManager() {
-        DBHelper helper = new DBHelper(mContextRef.get());
+    private CookerDbManagerSQLiteImpl() {
+        CookerDbHelper helper = new CookerDbHelper(mContextRef.get());
         mWritableDB = helper.getWritableDatabase();
         mReadableDB = helper.getReadableDatabase();
     }
 
-    public static DBManager getInstance() {
+    public static CookerDbManagerSQLiteImpl getInstance() {
         if (sInstance == null) {
-            synchronized (DBManager.class) {
+            synchronized (CookerDbManagerSQLiteImpl.class) {
                 if (sInstance == null)
-                    sInstance = new DBManager();
+                    sInstance = new CookerDbManagerSQLiteImpl();
             }
         }
         return sInstance;

@@ -8,7 +8,7 @@ import me.stupidme.cooker.model.CookerBean;
  * Created by StupidL on 2017/3/9.
  */
 
-public interface ICookerView {
+public interface CookerView {
 
     /**
      * 控制刷新控件的显示

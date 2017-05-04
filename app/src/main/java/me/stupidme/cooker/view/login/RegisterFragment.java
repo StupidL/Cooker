@@ -19,17 +19,17 @@ import android.widget.Toast;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.UserBean;
-import me.stupidme.cooker.presenter.IUserRegisterPresenter;
-import me.stupidme.cooker.presenter.UserRegisterMockPresenter;
+import me.stupidme.cooker.presenter.UserRegisterPresenter;
+import me.stupidme.cooker.presenter.UserRegisterMockPresenterImpl;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
 
 /**
  * Created by StupidL on 2017/3/14.
  */
 
-public class RegisterFragment extends Fragment implements IRegisterView {
+public class RegisterFragment extends Fragment implements RegisterView {
 
-    private IUserRegisterPresenter mPresenter;
+    private UserRegisterPresenter mPresenter;
 
     private ScrollView mRegisterFormView;
 
@@ -56,7 +56,7 @@ public class RegisterFragment extends Fragment implements IRegisterView {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        mPresenter = new UserRegisterPresenter(this);
-        mPresenter = new UserRegisterMockPresenter(this);
+        mPresenter = new UserRegisterMockPresenterImpl(this);
     }
 
     @Override

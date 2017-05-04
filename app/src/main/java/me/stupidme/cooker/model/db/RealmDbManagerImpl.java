@@ -12,23 +12,23 @@ import me.stupidme.cooker.model.CookerBean;
  * Created by StupidL on 2017/4/30.
  */
 
-public class RealmDbManager implements RealmCookerManager, RealmBookManager {
+public class RealmDbManagerImpl implements RealmCookerManager, RealmBookManager {
 
     private static final String TAG = "RealmDbManager";
 
-    private static volatile RealmDbManager sInstance;
+    private static volatile RealmDbManagerImpl sInstance;
 
     private Realm mRealm;
 
-    private RealmDbManager() {
+    private RealmDbManagerImpl() {
         mRealm = Realm.getInstance(new RealmConfiguration.Builder().name("cooker_client.realm").build());
     }
 
-    public static RealmDbManager getInstance() {
+    public static RealmDbManagerImpl getInstance() {
         if (sInstance == null) {
-            synchronized (RealmDbManager.class) {
+            synchronized (RealmDbManagerImpl.class) {
                 if (sInstance == null)
-                    sInstance = new RealmDbManager();
+                    sInstance = new RealmDbManagerImpl();
             }
         }
         return sInstance;

@@ -18,15 +18,15 @@ import java.util.List;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
-import me.stupidme.cooker.presenter.BookMockPresenter;
-import me.stupidme.cooker.presenter.IBookPresenter;
+import me.stupidme.cooker.presenter.BookMockPresenterImpl;
+import me.stupidme.cooker.presenter.BookPresenter;
 import me.stupidme.cooker.view.custom.SpaceItemDecoration;
 
 /**
  * Created by StupidL on 2017/3/8.
  */
 
-public abstract class BookBaseFragment extends Fragment implements IBookView {
+public abstract class BookBaseFragment extends Fragment implements BookView {
 
     /**
      * RecyclerView控件，用来展示各个预约信息
@@ -46,7 +46,7 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
     /**
      * Presenter，负责网络数据请求和数据库操作
      */
-    protected IBookPresenter mPresenter;
+    protected BookPresenter mPresenter;
 
     /**
      * 下拉刷新控件
@@ -66,7 +66,7 @@ public abstract class BookBaseFragment extends Fragment implements IBookView {
         if (mAdapter == null)
             mAdapter = new BookRecyclerAdapter(mDataSet);
 //        mPresenter = new BookPresenter(this);
-        mPresenter = new BookMockPresenter(this);
+        mPresenter = new BookMockPresenterImpl(this);
         Log.v(getClass().getCanonicalName(), "onCreate()");
 
         Log.v(getClass().getCanonicalName(), "DataSet Size: " + mDataSet.size());

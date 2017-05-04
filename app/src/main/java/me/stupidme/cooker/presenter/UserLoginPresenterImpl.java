@@ -9,50 +9,50 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import me.stupidme.cooker.mock.MockCookerService;
 import me.stupidme.cooker.model.UserBean;
 import me.stupidme.cooker.model.http.CookerRetrofit;
+import me.stupidme.cooker.model.http.CookerService;
 import me.stupidme.cooker.model.http.HttpResult;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
-import me.stupidme.cooker.view.login.ILoginView;
+import me.stupidme.cooker.view.login.LoginView;
 
 /**
- * Created by StupidL on 2017/4/30.
+ * Created by StupidL on 2017/3/14.
  */
 
-public class UserLoginMockPresenter implements IUserLoginPresenter {
+public class UserLoginPresenterImpl implements UserLoginPresenter {
 
-    private static final String TAG = "UserLoginMockPresenter";
+    private static final String TAG = "UserLoginPresenter";
 
-    private ILoginView mView;
+    private LoginView mView;
 
-    private MockCookerService mMockService;
+    private CookerService mService;
 
-    public UserLoginMockPresenter(ILoginView view) {
+    public UserLoginPresenterImpl(LoginView view) {
         mView = view;
-        mMockService = CookerRetrofit.getInstance().getMockService();
+        mService = CookerRetrofit.getInstance().getCookerService();
     }
 
     @Override
     public void login(String name, String password, boolean remember) {
         mView.showProgress(true);
         Long userId = SharedPreferenceUtil.getAccountUserId(0L);
-        mMockService.login(userId, name, password)
+        mService.login(userId,name, password)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<UserBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-
+                        Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
                     @Override
                     public void onNext(HttpResult<List<UserBean>> value) {
+                        Log.i(TAG, "onNext: " + value.toString());
                         if (remember) {
                             UserBean user = value.getData().get(0);
                             mView.rememberUser(user);
                         }
-                        mView.loginSuccess();
                     }
 
                     @Override
@@ -73,41 +73,36 @@ public class UserLoginMockPresenter implements IUserLoginPresenter {
 
     @Override
     public void attemptAutoLogin() {
-        Long userId = SharedPreferenceUtil.getAccountUserId(0L);
         String userName = SharedPreferenceUtil.getAccountUserName("");
         String userPassword = SharedPreferenceUtil.getAccountUserPassword("");
-        if (userId == 0L || TextUtils.isEmpty(userName) || TextUtils.isEmpty(userPassword)) {
-            mView.showMessage("Auto login failed. No username and password remembered.");
-            mView.showProgress(false);
-            return;
+
+        if (!(TextUtils.isEmpty(userName) | TextUtils.isEmpty(userPassword))) {
+
+            mService.login(0L, userName, userPassword)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<HttpResult<List<UserBean>>>() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            Log.i(TAG, "onSubscribe: " + d.toString());
+                        }
+
+                        @Override
+                        public void onNext(HttpResult<List<UserBean>> value) {
+                            Log.i(TAG, "onNext: " + value.toString());
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.i(TAG, "onError: " + e.toString());
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            mView.loginSuccess();
+                            Log.i(TAG, "onComplete");
+                        }
+                    });
         }
-        mMockService.login(userId, userName, userPassword)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<HttpResult<List<UserBean>>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        Log.i(TAG, "onSubscribe: " + d.toString());
-                    }
-
-                    @Override
-                    public void onNext(HttpResult<List<UserBean>> value) {
-                        Log.i(TAG, "onNext: " + value.toString());
-                        UserBean userBean = value.getData().get(0);
-                        Log.v(TAG, "user: " + userBean.toString());
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.i(TAG, "onError: " + e.toString());
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        mView.loginSuccess();
-                        Log.i(TAG, "onComplete");
-                    }
-                });
-
     }
 }

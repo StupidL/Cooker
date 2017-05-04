@@ -8,7 +8,7 @@ import java.util.List;
  * 该类定义了本地数据的所有操作，只影响本地数据，不会印象服务器数据
  */
 
-public interface IBookModel {
+public interface BookDbModel {
 
     /**
      * 插入一条预约信息到数据库

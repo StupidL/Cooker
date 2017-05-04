@@ -8,7 +8,6 @@ import io.realm.RealmConfiguration;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.model.UserBean;
-import me.stupidme.cooker.model.db.RealmManager;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
 
 /**
@@ -27,7 +26,7 @@ public class RealmServerManager implements IServerDbManager {
 
     public static RealmServerManager getInstance() {
         if (sInstance == null) {
-            synchronized (RealmManager.class) {
+            synchronized (RealmServerManager.class) {
                 if (sInstance == null)
                     sInstance = new RealmServerManager();
             }

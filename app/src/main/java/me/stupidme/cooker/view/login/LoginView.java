@@ -6,7 +6,7 @@ import me.stupidme.cooker.model.UserBean;
  * Created by StupidL on 2017/3/14.
  */
 
-public interface IRegisterView {
+public interface LoginView {
 
     /**
      * 弹出提示信息
@@ -23,10 +23,14 @@ public interface IRegisterView {
     void showProgress(boolean show);
 
     /**
-     * 注册成功回调
+     * 记住用户名和密码
      *
-     * @param user 注册信息
+     * @param user 用户
      */
-    void registerSuccess(UserBean user);
+    void rememberUser(UserBean user);
 
+    /**
+     * 登陆成功
+     */
+    void loginSuccess();
 }

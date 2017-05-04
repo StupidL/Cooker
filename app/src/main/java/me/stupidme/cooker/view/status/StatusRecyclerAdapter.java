@@ -11,7 +11,7 @@ import java.util.List;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
-import me.stupidme.cooker.presenter.IStatusPresenter;
+import me.stupidme.cooker.presenter.StatusPresenter;
 import me.stupidme.cooker.view.custom.ArcView;
 
 /**
@@ -22,7 +22,7 @@ public class StatusRecyclerAdapter extends RecyclerView.Adapter<StatusRecyclerAd
 
     private List<BookBean> mDataSet;
 
-    private IStatusPresenter mPresenter;
+    private StatusPresenter mPresenter;
 
     public StatusRecyclerAdapter(List<BookBean> list) {
         mDataSet = list;
@@ -58,7 +58,7 @@ public class StatusRecyclerAdapter extends RecyclerView.Adapter<StatusRecyclerAd
         return mDataSet.size();
     }
 
-    public void setPresenter(IStatusPresenter presenter) {
+    public void setPresenter(StatusPresenter presenter) {
         this.mPresenter = presenter;
     }
 

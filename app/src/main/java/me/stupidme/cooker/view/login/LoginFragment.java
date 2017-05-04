@@ -20,8 +20,8 @@ import android.widget.Toast;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.UserBean;
-import me.stupidme.cooker.presenter.IUserLoginPresenter;
-import me.stupidme.cooker.presenter.UserLoginMockPresenter;
+import me.stupidme.cooker.presenter.UserLoginPresenter;
+import me.stupidme.cooker.presenter.UserLoginMockPresenterImpl;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
 import me.stupidme.cooker.view.cooker.CookerActivity;
 
@@ -29,11 +29,11 @@ import me.stupidme.cooker.view.cooker.CookerActivity;
  * Created by StupidL on 2017/3/14.
  */
 
-public class LoginFragment extends Fragment implements ILoginView {
+public class LoginFragment extends Fragment implements LoginView {
 
     private static final String TAG = "LoginFragment";
 
-    private IUserLoginPresenter mPresenter;
+    private UserLoginPresenter mPresenter;
 
     private ProgressBar mProgressBar;
 
@@ -65,7 +65,7 @@ public class LoginFragment extends Fragment implements ILoginView {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        mPresenter = new UserLoginPresenter(this);
-        mPresenter = new UserLoginMockPresenter(this);
+        mPresenter = new UserLoginMockPresenterImpl(this);
         Bundle bundle = getArguments();
         autoLogin = bundle.getBoolean(AUTO_LOGIN);
 //
