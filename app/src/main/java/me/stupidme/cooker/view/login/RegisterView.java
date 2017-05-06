@@ -4,28 +4,31 @@ import me.stupidme.cooker.model.UserBean;
 
 /**
  * Created by StupidL on 2017/3/14.
+ * <p>
+ * A callback interface to accept response from server and then decides actions of UI fragment.
  */
 
 public interface RegisterView {
 
     /**
-     * 弹出提示信息
+     * Show message in fragment.
      *
-     * @param message 要展示的信息
+     * @param what    message type
+     * @param message message contents.
      */
-    void showMessage(String message);
+    void showMessage(int what, CharSequence message);
 
     /**
-     * 显示进度条
+     * Show progressbar when necessary.
      *
-     * @param show true则显示，否则不显示
+     * @param show show progressbar with animations if true.
      */
     void showProgress(boolean show);
 
     /**
-     * 注册成功回调
+     * Called bu UserRegisterPresenter only if register success.
      *
-     * @param user 注册信息
+     * @param user user account info including username, password and userId.
      */
     void registerSuccess(UserBean user);
 

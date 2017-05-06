@@ -1,7 +1,5 @@
 package me.stupidme.cooker.presenter;
 
-import android.util.Log;
-
 import java.util.List;
 
 import io.reactivex.Observer;
@@ -16,14 +14,23 @@ import me.stupidme.cooker.view.login.RegisterView;
 
 /**
  * Created by StupidL on 2017/4/30.
+ * <p>
+ * A presenter to transfer response of server to UI fragment.
  */
 
 public class UserRegisterMockPresenterImpl implements UserRegisterPresenter {
 
+    //debug
     private static final String TAG = UserRegisterMockPresenterImpl.class.getSimpleName();
 
+    /**
+     * A callback interface to communicate with UI fragment.
+     */
     private RegisterView mView;
 
+    /**
+     * A mock server.
+     */
     private MockCookerService mMockService;
 
     public UserRegisterMockPresenterImpl(RegisterView view) {
@@ -33,6 +40,7 @@ public class UserRegisterMockPresenterImpl implements UserRegisterPresenter {
 
     @Override
     public void register(String name, String password) {
+        mView.showProgress(true);
         mMockService.register(new UserBean(name, password))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -44,19 +52,25 @@ public class UserRegisterMockPresenterImpl implements UserRegisterPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<UserBean>> value) {
-                        List<UserBean> list = value.getData();
-                        Log.v(TAG, "code: " + value.getResultCode());
-                        Log.v(TAG, "message: " + value.getResultMessage());
-                        Log.v(TAG, "data: ");
-                        for (UserBean userBean : list) {
-                            Log.v(TAG, "user: " + userBean.toString());
+                        if (value.getResultCode() != 200) {
+                            mView.showProgress(false);
+                            mView.showMessage(MESSAGE_WHAT_REGISTER_FAILED, null);
+                            return;
                         }
-                        mView.registerSuccess(list.get(0));
+
+                        if (value.getData().size() <= 0) {
+                            mView.showProgress(false);
+                            mView.showMessage(MESSAGE_WHAT_REGISTER_FAILED, null);
+                            return;
+                        }
+                        mView.showMessage(MESSAGE_WHAT_REGISTER_SUCCESS, null);
+                        mView.registerSuccess(value.getData().get(0));
                     }
 
                     @Override
                     public void onError(Throwable e) {
-
+                        mView.showProgress(false);
+                        mView.showMessage(MESSAGE_WHAT_REGISTER_FAILED, e.toString());
                     }
 
                     @Override

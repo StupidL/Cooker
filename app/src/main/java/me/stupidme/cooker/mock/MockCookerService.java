@@ -1,5 +1,7 @@
 package me.stupidme.cooker.mock;
 
+import android.text.TextUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,19 +41,19 @@ public class MockCookerService implements CookerService {
         List<UserBean> list = new ArrayList<>();
         UserBean userBean = mServerDbManager.queryUser(userId);
         if (userBean == null) {
-            result.setResultCode(400);
+            result.setResultCode(404);
             result.setResultMessage("Not a valid account.");
             result.setData(list);
             return mDelegate.returningResponse(result).login(userId, name, password);
         }
         if (!userBean.getUserName().equals(name)) {
-            result.setResultCode(400);
+            result.setResultCode(403);
             result.setResultMessage("Please check your name or password.");
             result.setData(list);
             return mDelegate.returningResponse(result).login(userId, name, password);
         }
         if (!userBean.getPassword().equals(password)) {
-            result.setResultCode(400);
+            result.setResultCode(403);
             result.setResultMessage("Please check your name or password.");
             result.setData(list);
             return mDelegate.returningResponse(result).login(userId, name, password);
@@ -68,6 +70,21 @@ public class MockCookerService implements CookerService {
         HttpResult<List<UserBean>> result = new HttpResult<>();
         List<UserBean> list = new ArrayList<>();
         UserBean bean = mServerDbManager.insertUser(user);
+        if (bean == null) {
+            result.setResultCode(400);
+            result.setResultMessage("Register failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).register(user);
+        }
+        if (!bean.getUserName().equals(user.getUserName())
+                || !bean.getPassword().equals(user.getPassword())
+                || TextUtils.isEmpty(bean.getUserId() + "")) {
+            result.setResultCode(400);
+            result.setResultMessage("Register failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).register(user);
+        }
+
         list.add(bean);
         result.setResultCode(200);
         result.setResultMessage("Register success.");

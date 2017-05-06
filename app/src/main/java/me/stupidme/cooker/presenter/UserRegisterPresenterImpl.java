@@ -1,14 +1,11 @@
 package me.stupidme.cooker.presenter;
 
-import android.util.Log;
-
 import java.util.List;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import me.stupidme.cooker.mock.MockCookerService;
 import me.stupidme.cooker.model.UserBean;
 import me.stupidme.cooker.model.http.CookerRetrofit;
 import me.stupidme.cooker.model.http.CookerService;
@@ -17,22 +14,28 @@ import me.stupidme.cooker.view.login.RegisterView;
 
 /**
  * Created by StupidL on 2017/3/14.
+ * <p>
+ * A presenter to transfer response of server to UI fragment.
  */
 
 public class UserRegisterPresenterImpl implements UserRegisterPresenter {
 
+    //debug
     private static final String TAG = "UserRegisterPresenter";
 
+    /**
+     * A callback interface to communicate with UI fragment.
+     */
     private RegisterView mView;
 
+    /**
+     * A real server.
+     */
     private CookerService mService;
-
-    private MockCookerService mMockService;
 
     public UserRegisterPresenterImpl(RegisterView view) {
         mView = view;
         mService = CookerRetrofit.getInstance().getCookerService();
-        mMockService = CookerRetrofit.getInstance().getMockService();
     }
 
     @Override
@@ -43,30 +46,38 @@ public class UserRegisterPresenterImpl implements UserRegisterPresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<UserBean>>>() {
 
-                    UserBean userBean;
-
                     @Override
                     public void onSubscribe(Disposable d) {
-                        Log.v(TAG, "onSubscribe: " + d.toString());
+
                     }
 
                     @Override
                     public void onNext(HttpResult<List<UserBean>> value) {
-                        userBean = value.getData().get(0);
-                        mView.registerSuccess(userBean);
-                        Log.v(TAG, "onNext: " + value.toString());
+                        if (value.getResultCode() != 200) {
+                            mView.showProgress(false);
+                            mView.showMessage(MESSAGE_WHAT_REGISTER_FAILED, null);
+                            return;
+                        }
+
+                        if (value.getData().size() <= 0) {
+                            mView.showProgress(false);
+                            mView.showMessage(MESSAGE_WHAT_REGISTER_FAILED, null);
+                            return;
+                        }
+                        mView.showMessage(MESSAGE_WHAT_REGISTER_SUCCESS, null);
+                        mView.registerSuccess(value.getData().get(0));
+
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         mView.showProgress(false);
-                        mView.showMessage(e.toString());
-                        Log.v(TAG, "onError: " + e.toString());
+                        mView.showMessage(MESSAGE_WHAT_REGISTER_FAILED, e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-                        Log.v(TAG, "onComplete");
+
                     }
                 });
     }

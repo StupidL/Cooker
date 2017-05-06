@@ -19,8 +19,8 @@ import android.widget.Toast;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.UserBean;
-import me.stupidme.cooker.presenter.UserRegisterPresenter;
 import me.stupidme.cooker.presenter.UserRegisterMockPresenterImpl;
+import me.stupidme.cooker.presenter.UserRegisterPresenter;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
 
 /**
@@ -29,16 +29,35 @@ import me.stupidme.cooker.util.SharedPreferenceUtil;
 
 public class RegisterFragment extends Fragment implements RegisterView {
 
+    /**
+     * A presenter to process all login logic, and transfer results to fragment through callback methods.
+     */
     private UserRegisterPresenter mPresenter;
 
+    /**
+     * A view group contains two exit text for better UI affect especially when the device' screen
+     * too small to show input keyboard and edit text controls together.
+     */
     private ScrollView mRegisterFormView;
 
+    /**
+     * An EditText control for user input username to login's needs.
+     */
     private TextInputEditText mNameEditText;
 
+    /**
+     * An EditText control for user input password to login's needs.
+     */
     private TextInputEditText mPasswordEditText;
 
+    /**
+     * An EditText control for user input repeat password to login's needs.
+     */
     private TextInputEditText mPasswordRepeatEditText;
 
+    /**
+     * Progressbar to show when login button clicked to make a better use experience.
+     */
     private ProgressBar mProgressBar;
 
     public RegisterFragment() {
@@ -72,7 +91,6 @@ public class RegisterFragment extends Fragment implements RegisterView {
 
         mRegisterButton.setOnClickListener(v -> {
             hideSoftInputMethod();
-            showProgress(true);
             String name = mNameEditText.getText().toString();
             String password = mPasswordEditText.getText().toString();
             String password2 = mPasswordRepeatEditText.getText().toString();
@@ -83,21 +101,18 @@ public class RegisterFragment extends Fragment implements RegisterView {
         return view;
     }
 
-    /**
-     * 弹出提示消息
-     *
-     * @param message 要展示的信息
-     */
     @Override
-    public void showMessage(String message) {
-        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    public void showMessage(int what, CharSequence message) {
+        switch (what) {
+            case UserRegisterPresenter.MESSAGE_WHAT_REGISTER_FAILED:
+                showToastShort(getString(R.string.fragment_register_failed));
+                break;
+            case UserRegisterPresenter.MESSAGE_WHAT_REGISTER_SUCCESS:
+
+                break;
+        }
     }
 
-    /**
-     * 控制进度条的展示与否
-     *
-     * @param show true则显示，否则不显示
-     */
     @Override
     public void showProgress(boolean show) {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
@@ -121,9 +136,6 @@ public class RegisterFragment extends Fragment implements RegisterView {
         });
     }
 
-    /**
-     * 登陆成功回调，回到登录界面
-     */
     @Override
     public void registerSuccess(UserBean user) {
         SharedPreferenceUtil.putAccountUserName(user.getUserName());
@@ -137,7 +149,7 @@ public class RegisterFragment extends Fragment implements RegisterView {
     }
 
     /**
-     * 隐藏输入法
+     * hide soft input method when register button clicked and trying to register account.
      */
     private void hideSoftInputMethod() {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -145,12 +157,11 @@ public class RegisterFragment extends Fragment implements RegisterView {
     }
 
     /**
-     * 判断用户名和密码是否有效
+     * check username and password is valid or not.
      *
-     * @param name      用户名
-     * @param password  密码
-     * @param password2 重复密码
-     * @return true则有效，否则无效
+     * @param name     username user inputted.
+     * @param password password user inputted.
+     * @return true if valid.
      */
     private boolean isNameAndPasswordValid(String name, String password, String password2) {
         mNameEditText.setError(null);
@@ -186,34 +197,43 @@ public class RegisterFragment extends Fragment implements RegisterView {
     }
 
     /**
-     * 判断用户名是否有效。非空且长度大于4有效
+     * check username is valid or not. username must not be empty and length should at least 4.
      *
-     * @param name 用户名
-     * @return true则有效，否则无效
+     * @param name username that user inputted.
+     * @return true if username is valid.
      */
     private boolean isNameValid(String name) {
-        return !TextUtils.isEmpty(name) & name.length() > 4;
+        return !TextUtils.isEmpty(name) & name.length() >= 4;
     }
 
     /**
-     * 判断密码是否有效。非空且长度大于6有效
+     * check password is valid or not. password must not be empty and length should at least 6.
      *
-     * @param password 密码
-     * @return true则有效，否则无效
+     * @param password password that user inputted.
+     * @return true if password is valid.
      */
     private boolean isPasswordValid(String password) {
-        return !TextUtils.isEmpty(password) & password.length() > 6;
+        return !TextUtils.isEmpty(password) & password.length() >= 6;
     }
 
     /**
-     * 判断密码是否一致
+     * check if the two passwords are the same or not.
      *
-     * @param password  密码
-     * @param password2 重复密码
-     * @return true则一致，否则不一致
+     * @param password  password.
+     * @param password2 password repeat.
+     * @return true if passwords are the same.
      */
     private boolean isPasswordsSame(String password, String password2) {
         return TextUtils.equals(password, password2);
+    }
+
+    /**
+     * show a toast when received message from presenter in a short time.
+     *
+     * @param message the message to be toasted.
+     */
+    private void showToastShort(CharSequence message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
 }
