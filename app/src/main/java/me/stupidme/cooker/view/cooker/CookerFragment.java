@@ -1,5 +1,6 @@
 package me.stupidme.cooker.view.cooker;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -28,10 +30,14 @@ import me.stupidme.cooker.view.custom.SpaceItemDecoration;
 
 /**
  * Created by StupidL on 2017/3/5
- * CookerFragment展示的是用户所有的电饭锅的信息
+ * <p>
+ * This fragment is to manage all cooker devices. You can create a cooker and delete it.
+ * All the operations is synchronized with server.
  */
 
 public class CookerFragment extends Fragment implements CookerView, CookerDialog.CookerAddListener {
+
+    private static final String TAG = "CookerFragment";
 
     //RecyclerView控件，展示所有的Cooker设备信息
     private RecyclerView mRecyclerView;
@@ -53,6 +59,10 @@ public class CookerFragment extends Fragment implements CookerView, CookerDialog
 
     private FloatingActionButton mFab;
 
+    private TextView mEmptyView;
+
+    private ProgressDialog mProgressDialog;
+
     public CookerFragment() {
         // Required empty public constructor
     }
@@ -73,6 +83,9 @@ public class CookerFragment extends Fragment implements CookerView, CookerDialog
         mAdapter = new CookerRecyclerAdapter(mDataSet);
 //        mPresenter = new CookerPresenter(this);
         mPresenter = new CookerMockPresenterImpl(this);
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setTitle(getString(R.string.fragment_cooker_dialog_titile));
+
     }
 
     @Override
@@ -95,6 +108,8 @@ public class CookerFragment extends Fragment implements CookerView, CookerDialog
             mDialog.show();
         });
 
+        mEmptyView = (TextView) view.findViewById(R.id.empty_view);
+
         return view;
     }
 
@@ -110,9 +125,6 @@ public class CookerFragment extends Fragment implements CookerView, CookerDialog
         mPresenter.dispose();
     }
 
-    /**
-     * 初始化RecyclerView
-     */
     private void initRecyclerView() {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
@@ -189,122 +201,110 @@ public class CookerFragment extends Fragment implements CookerView, CookerDialog
         });
     }
 
-    /**
-     * 通过dialog添加一个电饭锅信息
-     *
-     * @param map 存放电饭锅信息的map
-     */
     @Override
     public void onSave(Map<String, String> map) {
+
+        mProgressDialog.setMessage(getString(R.string.fragment_cooker_create_cooker));
+        mProgressDialog.show();
+
         String name = map.get(CookerDialog.COOKER_NAME_KEY);
         String loc = map.get(CookerDialog.COOKER_LOCATION_KEY);
+        String id = map.get(CookerDialog.COOKER_ID_KEY);
 
         CookerBean cooker = new CookerBean();
         cooker.setCookerName(name);
         cooker.setCookerLocation(loc);
+        cooker.setCookerId(Long.parseLong(id));
         cooker.setCookerStatus("free");
 
         mPresenter.insertCooker(cooker);
     }
 
-    /**
-     * 控制刷新控件的显示
-     *
-     * @param show true则显示， false则不显示
-     */
     @Override
     public void showRefreshing(boolean show) {
         Log.v("CookerFragment", "setRefresh()...");
         if (show) {
-            mSwipeLayout.setRefreshing(true);
+            if (!mSwipeLayout.isRefreshing())
+                mSwipeLayout.setRefreshing(true);
         } else {
-            mSwipeLayout.setRefreshing(false);
+            if (mSwipeLayout.isRefreshing())
+                mSwipeLayout.setRefreshing(false);
         }
     }
 
-    /**
-     * 界面上移除一个电饭锅设备
-     *
-     * @param cooker 要删除的设备
-     */
     @Override
     public void removeCooker(CookerBean cooker) {
         int position = mDataSet.indexOf(cooker);
         mDataSet.remove(cooker);
         mAdapter.notifyItemRemoved(position);
+        showEmptyView(mDataSet.size() <= 0);
     }
 
     @Override
     public void removeCookers(List<CookerBean> cookers) {
         mDataSet.removeAll(cookers);
         mAdapter.notifyDataSetChanged();
+        if (mDataSet.size() <= 0) {
+            mRecyclerView.setVisibility(View.GONE);
+            mEmptyView.setVisibility(View.VISIBLE);
+        } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyView.setVisibility(View.GONE);
+        }
     }
 
-    /**
-     * 界面上新增一个电饭锅设备
-     *
-     * @param cooker 要插入的设备
-     */
     @Override
     public void insertCooker(CookerBean cooker) {
+        mProgressDialog.dismiss();
+        Log.v(TAG, "insert cooker: " + cooker.toString());
         mDataSet.add(0, cooker);
         mAdapter.notifyItemInserted(0);
+        showEmptyView(mDataSet.size() <= 0);
     }
 
     @Override
     public void insertCookers(List<CookerBean> cookers) {
-        mDataSet.clear();
-        mDataSet.addAll(cookers);
-        mAdapter.notifyDataSetChanged();
+        updateDataSet(cookers);
     }
 
-    /**
-     * 界面上插入批量电饭锅设备，因为这个方法在数据库查询的时候调用，
-     * 所以应该先清除已有的设备信息，然后再添加，避免数据重复
-     *
-     * @param list 设备信息列表
-     */
     @Override
     public void insertCookersFromDB(List<CookerBean> list) {
-        mDataSet.clear();
-        mDataSet.addAll(list);
-        mAdapter.notifyDataSetChanged();
+        updateDataSet(list);
     }
 
-    /**
-     * 界面上更新一个设备信息
-     *
-     * @param position 再列表中的位置
-     * @param cooker   设备信息
-     */
     @Override
     public void updateCooker(int position, CookerBean cooker) {
         mDataSet.remove(position);
         mDataSet.add(position, cooker);
         mAdapter.notifyItemChanged(position);
+        showEmptyView(mDataSet.size() <= 0);
     }
 
-    /**
-     * 批量更新设备信息，在从服务器获取数据的时候调用，
-     * 应该先清除已有的数据，然后再添加，避免数据重复
-     *
-     * @param list 设备信息列表
-     */
     @Override
     public void updateCookersFromServer(List<CookerBean> list) {
-        mDataSet.clear();
-        mDataSet.addAll(list);
-        mAdapter.notifyDataSetChanged();
+        updateDataSet(list);
     }
 
-    /**
-     * 在界面显示Toast信息
-     *
-     * @param message 要显示的信息
-     */
     @Override
     public void showMessage(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateDataSet(List<CookerBean> cookers) {
+        mDataSet.clear();
+        mDataSet.addAll(cookers);
+        mAdapter.notifyDataSetChanged();
+        showEmptyView(mDataSet.size() <= 0);
+    }
+
+    private void showEmptyView(boolean show) {
+        if (show) {
+            mRecyclerView.setVisibility(View.GONE);
+            mEmptyView.setVisibility(View.VISIBLE);
+        } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyView.setVisibility(View.GONE);
+        }
     }
 
 }

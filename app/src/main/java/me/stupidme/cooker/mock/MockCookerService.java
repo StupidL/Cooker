@@ -97,20 +97,47 @@ public class MockCookerService implements CookerService {
                                                            @Field("password") String password) {
         HttpResult<List<UserBean>> result = new HttpResult<>();
         List<UserBean> list = new ArrayList<>();
-        UserBean user = new UserBean(name, password);
-        UserBean bean = mServerDbManager.insertUser(user);
+        UserBean bean = mServerDbManager.insertUser(new UserBean(name, password));
+        if (bean == null) {
+            result.setResultCode(400);
+            result.setResultMessage("Register failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).register(new UserBean());
+        }
+        if (!bean.getUserName().equals(name)
+                || !bean.getPassword().equals(password)
+                || TextUtils.isEmpty(bean.getUserId() + "")) {
+            result.setResultCode(400);
+            result.setResultMessage("Register failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).register(bean);
+        }
+
         list.add(bean);
         result.setResultCode(200);
         result.setResultMessage("Register success.");
         result.setData(list);
-        return mDelegate.returningResponse(result).register(user);
+        return mDelegate.returningResponse(result).register(bean);
     }
 
     @Override
     public Observable<HttpResult<List<CookerBean>>> queryCookers(@Path("userId") long userId) {
         HttpResult<List<CookerBean>> result = new HttpResult<>();
         List<CookerBean> list = new ArrayList<>();
-        list.addAll(mServerDbManager.queryCookers(userId));
+        List<CookerBean> cookerBeanList = mServerDbManager.queryCookers(userId);
+        if (cookerBeanList == null) {
+            result.setResultCode(400);
+            result.setResultMessage("Query Cookers failed. result is null.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).queryCookers(userId);
+        }
+        if (cookerBeanList.size() == 0) {
+            result.setResultCode(400);
+            result.setResultMessage("Query Cookers failed. result size is 0.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).queryCookers(userId);
+        }
+        list.addAll(cookerBeanList);
         result.setResultCode(200);
         result.setResultMessage("Query Cookers success.");
         result.setData(list);
@@ -122,7 +149,16 @@ public class MockCookerService implements CookerService {
                                                                 @Path("cookerId") long cookerId) {
         HttpResult<List<CookerBean>> result = new HttpResult<>();
         List<CookerBean> list = new ArrayList<>();
-        list.add(mServerDbManager.queryCooker(userId, cookerId));
+        CookerBean cookerBean = mServerDbManager.queryCooker(userId, cookerId);
+        if (cookerBean == null
+                || cookerBean.getCookerId() != cookerId
+                || cookerBean.getUserId() != userId) {
+            result.setResultCode(400);
+            result.setResultMessage("Query Cooker failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).queryCooker(userId, cookerId);
+        }
+        list.add(cookerBean);
         result.setResultCode(200);
         result.setResultMessage("Query Cookers success.");
         result.setData(list);
@@ -136,6 +172,14 @@ public class MockCookerService implements CookerService {
         HttpResult<List<CookerBean>> result = new HttpResult<>();
         List<CookerBean> list = new ArrayList<>();
         CookerBean cookerBean = mServerDbManager.updateCooker(device);
+        if (cookerBean == null
+                || cookerBean.getCookerId() != cookerId
+                || cookerBean.getUserId() != userId) {
+            result.setResultCode(400);
+            result.setResultMessage("Update Cooker failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).updateCooker(userId, cookerId, device);
+        }
         list.add(cookerBean);
         result.setResultCode(200);
         result.setResultMessage("Update Cookers success.");
@@ -149,6 +193,12 @@ public class MockCookerService implements CookerService {
         HttpResult<List<CookerBean>> result = new HttpResult<>();
         List<CookerBean> list = new ArrayList<>();
         CookerBean cookerBean = mServerDbManager.insertCooker(device);
+        if (cookerBean == null || cookerBean.getUserId() != userId) {
+            result.setResultCode(400);
+            result.setResultMessage("Insert Cooker failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).insertCooker(userId, device);
+        }
         list.add(cookerBean);
         result.setResultCode(200);
         result.setResultMessage("Insert Cookers success.");

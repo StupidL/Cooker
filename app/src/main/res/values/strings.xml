@@ -254,5 +254,10 @@
     <string name="fragment_login_failed">You have to register an account first!</string>
     <string name="fragment_login_loging">Login...</string>
     <string name="fragment_register_failed">Register failed!</string>
+    <string name="fragment_cooker_empty_text">Create a new Cooker Now!</string>
+    <string name="fragment_cooker_dialog_titile">Tips</string>
+    <string name="fragment_cooker_create_cooker">Creating cooker... Please wait a few seconds...</string>
+    <string name="dialog_cooker_title">Create a Cooker</string>
+    <string name="dialog_cooker_id">Cooker ID</string>
 
 </resources>

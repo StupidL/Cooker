@@ -55,7 +55,6 @@ public class RealmServerManager implements IServerDbManager {
     public CookerBean insertCooker(CookerBean cooker) {
         mRealm.beginTransaction();
         cooker.setUserId(SharedPreferenceUtil.getAccountUserId(0L));
-        cooker.setCookerId(new Random().nextLong());
         CookerBean bean = mRealm.copyToRealmOrUpdate(cooker);
         mRealm.commitTransaction();
         return bean;
@@ -72,7 +71,7 @@ public class RealmServerManager implements IServerDbManager {
     @Override
     public CookerBean deleteCooker(Long cookerId) {
         mRealm.beginTransaction();
-        CookerBean cookerBean = mRealm.where(CookerBean.class).equalTo("cookerId", cookerId).findFirstAsync();
+        CookerBean cookerBean = mRealm.where(CookerBean.class).equalTo("cookerId", cookerId).findFirst();
         if (cookerBean != null) {
             cookerBean.deleteFromRealm();
         }
@@ -83,7 +82,7 @@ public class RealmServerManager implements IServerDbManager {
     @Override
     public List<CookerBean> deleteCookers(Long userId) {
         mRealm.beginTransaction();
-        List<CookerBean> cookerBeanList = mRealm.where(CookerBean.class).equalTo("userId", userId).findAllAsync();
+        List<CookerBean> cookerBeanList = mRealm.where(CookerBean.class).equalTo("userId", userId).findAll();
         if (cookerBeanList.size() > 0) {
             for (CookerBean cookerBean : cookerBeanList)
                 cookerBean.deleteFromRealm();
@@ -96,7 +95,8 @@ public class RealmServerManager implements IServerDbManager {
     public CookerBean queryCooker(Long userId, Long cookerId) {
         mRealm.beginTransaction();
         CookerBean cookerBean = mRealm.where(CookerBean.class).equalTo("cookerId", cookerId)
-                .equalTo("userId", userId).findFirstAsync();
+//                .equalTo("userId", userId)
+                .findFirst();
         mRealm.commitTransaction();
         return cookerBean;
     }
@@ -104,7 +104,7 @@ public class RealmServerManager implements IServerDbManager {
     @Override
     public List<CookerBean> queryCookers(Long userId) {
         mRealm.beginTransaction();
-        List<CookerBean> cookerBeanList = mRealm.where(CookerBean.class).equalTo("userId", userId).findAllAsync();
+        List<CookerBean> cookerBeanList = mRealm.where(CookerBean.class).equalTo("userId", userId).findAll();
         mRealm.commitTransaction();
         return cookerBeanList;
     }
@@ -144,7 +144,7 @@ public class RealmServerManager implements IServerDbManager {
     @Override
     public BookBean deleteBook(Long bookId) {
         mRealm.beginTransaction();
-        BookBean bookBean = mRealm.where(BookBean.class).equalTo("bookId", bookId).findFirstAsync();
+        BookBean bookBean = mRealm.where(BookBean.class).equalTo("bookId", bookId).findFirst();
         if (bookBean != null)
             bookBean.deleteFromRealm();
         mRealm.commitTransaction();
@@ -154,7 +154,7 @@ public class RealmServerManager implements IServerDbManager {
     @Override
     public List<BookBean> deleteBooks(Long userId) {
         mRealm.beginTransaction();
-        List<BookBean> bookBeanList = mRealm.where(BookBean.class).equalTo("userId", userId).findAllAsync();
+        List<BookBean> bookBeanList = mRealm.where(BookBean.class).equalTo("userId", userId).findAll();
         if (bookBeanList.size() > 0) {
             for (BookBean bookBean : bookBeanList)
                 bookBean.deleteFromRealm();

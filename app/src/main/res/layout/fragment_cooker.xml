@@ -3,6 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:alpha="0.8"
+        android:text="@string/fragment_cooker_empty_text"
+        android:textSize="21sp" />
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/cooker_swipe_layout"
         android:layout_width="match_parent"

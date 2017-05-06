@@ -23,7 +23,7 @@ import me.stupidme.cooker.view.cooker.CookerView;
 
 public class CookerMockPresenterImpl implements CookerPresenter {
 
-    private static final String TAG = "CookerMockPresenter";
+    private static final String TAG = "CookerMockPresenterImpl";
 
     private CookerView mView;
 
@@ -46,7 +46,6 @@ public class CookerMockPresenterImpl implements CookerPresenter {
     public void deleteCooker(long cookerId) {
         mMockService.deleteCooker(SharedPreferenceUtil.getAccountUserId(0L), cookerId)
                 .subscribeOn(Schedulers.io())
-//                .doOnNext(listHttpResult -> mRealmManager.deleteCookers(RealmCookerManager.KEY_COOKER_ID, cookerId + ""))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
@@ -76,7 +75,6 @@ public class CookerMockPresenterImpl implements CookerPresenter {
     public void deleteCookers() {
         mMockService.deleteCookers(SharedPreferenceUtil.getAccountUserId(0L))
                 .subscribeOn(Schedulers.io())
-//                .doOnNext(listHttpResult -> mRealmManager.deleteCookers(RealmCookerManager.KEY_USER_ID, SharedPreferenceUtil.getAccountUserId(0L) + ""))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
@@ -106,7 +104,6 @@ public class CookerMockPresenterImpl implements CookerPresenter {
     public void insertCooker(CookerBean bean) {
         mMockService.insertCooker(SharedPreferenceUtil.getAccountUserId(0L), bean)
                 .subscribeOn(Schedulers.io())
-//                .doOnNext(listHttpResult -> mRealmManager.insertCookers(listHttpResult.getData()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
@@ -118,6 +115,9 @@ public class CookerMockPresenterImpl implements CookerPresenter {
                     public void onNext(HttpResult<List<CookerBean>> value) {
                         mRealmManager.insertCookers(value.getData());
                         mView.insertCooker(value.getData().get(0));
+                        Log.v(TAG, "value resultCode: " + value.getResultCode());
+                        Log.v(TAG, "value resultMessage: " + value.getResultMessage());
+
                         Log.v(TAG, "cooker: " + value.getData().get(0).toString());
                     }
 
@@ -153,7 +153,6 @@ public class CookerMockPresenterImpl implements CookerPresenter {
     public void updateCooker(int position, CookerBean bean) {
         mMockService.updateCooker(SharedPreferenceUtil.getAccountUserId(0L), bean.getCookerId(), bean)
                 .subscribeOn(Schedulers.io())
-//                .doOnNext(listHttpResult -> mRealmManager.updateCooker(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
@@ -185,7 +184,6 @@ public class CookerMockPresenterImpl implements CookerPresenter {
         mView.showRefreshing(true);
         mMockService.queryCooker(SharedPreferenceUtil.getAccountUserId(0L), cookerId)
                 .subscribeOn(Schedulers.io())
-//                .doOnNext(listHttpResult -> mRealmManager.updateCooker(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
@@ -215,9 +213,11 @@ public class CookerMockPresenterImpl implements CookerPresenter {
 
     @Override
     public void queryCookersFromServer() {
+        Log.v(TAG, "queryCookersFromServer...");
+        Log.v(TAG, "userId form sp: " + SharedPreferenceUtil.getAccountUserId(0L));
+        mView.showRefreshing(true);
         mMockService.queryCookers(SharedPreferenceUtil.getAccountUserId(0L))
                 .subscribeOn(Schedulers.io())
-//                .doOnNext(listHttpResult -> mRealmManager.updateCookers(listHttpResult.getData()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
@@ -227,13 +227,18 @@ public class CookerMockPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
+                        Log.v(TAG, "value resultCode: " + value.getResultCode());
+                        Log.v(TAG, "value resultMessage: " + value.getResultMessage());
+                        Log.v(TAG, "value data size: " + value.getData().size());
                         mRealmManager.updateCookers(value.getData());
                         mView.insertCookers(value.getData());
+                        mView.showRefreshing(false);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         mView.showMessage(e.toString());
+                        mView.showRefreshing(false);
                     }
 
                     @Override
