@@ -251,5 +251,7 @@
     <string name="search">Search</string>
     <string name="holder">Holder</string>
     <string name="tips_title">Tips</string>
+    <string name="fragment_login_failed">You have to register an account first!</string>
+    <string name="fragment_login_loging">Login...</string>
 
 </resources>

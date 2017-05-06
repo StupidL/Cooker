@@ -20,31 +20,55 @@ import android.widget.Toast;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.UserBean;
-import me.stupidme.cooker.presenter.UserLoginPresenter;
 import me.stupidme.cooker.presenter.UserLoginMockPresenterImpl;
+import me.stupidme.cooker.presenter.UserLoginPresenter;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
 import me.stupidme.cooker.view.cooker.CookerActivity;
 
 /**
  * Created by StupidL on 2017/3/14.
+ * <p>
+ * UI fragment to react with users to perform login or register actions.
  */
 
 public class LoginFragment extends Fragment implements LoginView {
-
+    //debug
     private static final String TAG = "LoginFragment";
 
+    /**
+     * A presenter to process all login logic, and transfer results to fragment through callback methods.
+     */
     private UserLoginPresenter mPresenter;
 
+    /**
+     * Progressbar to show when login button clicked to make a better use experience.
+     */
     private ProgressBar mProgressBar;
 
+    /**
+     * An EditText control for user input username to login's needs.
+     */
     private TextInputEditText mNameEditText;
 
+    /**
+     * An EditText control for user input password to login's needs.
+     */
     private TextInputEditText mPasswordEditText;
 
+    /**
+     * A checkbox that decides remember username and password or not when login.
+     */
     private CheckBox mCheckBox;
 
+    /**
+     * A view group contains two exit text for better UI affect especially when the device' screen
+     * too small to show input keyboard and edit text controls together.
+     */
     private ScrollView mLoginFormView;
 
+    /**
+     * A remark to decide auto login or not when login activity lunched.
+     */
     private boolean autoLogin = false;
 
     private static final String AUTO_LOGIN = "autoLogin";
@@ -68,10 +92,7 @@ public class LoginFragment extends Fragment implements LoginView {
         mPresenter = new UserLoginMockPresenterImpl(this);
         Bundle bundle = getArguments();
         autoLogin = bundle.getBoolean(AUTO_LOGIN);
-//
-//        if (autoLogin) {
-//            mPresenter.attemptAutoLogin();
-//        }
+
     }
 
     @Override
@@ -114,11 +135,6 @@ public class LoginFragment extends Fragment implements LoginView {
         }
     }
 
-    /**
-     * 记住密码
-     *
-     * @param user 用户
-     */
     @Override
     public void rememberUser(UserBean user) {
         SharedPreferenceUtil.putAccountUserName(user.getUserName());
@@ -126,9 +142,6 @@ public class LoginFragment extends Fragment implements LoginView {
         SharedPreferenceUtil.putAccountUserId(user.getUserId());
     }
 
-    /**
-     * 登陆成功时回调，进入主界面
-     */
     @Override
     public void loginSuccess() {
         Intent intent = new Intent(getActivity(), CookerActivity.class);
@@ -137,7 +150,7 @@ public class LoginFragment extends Fragment implements LoginView {
     }
 
     /**
-     * 隐藏输入法
+     * hide the soft input method when login button clicked.
      */
     private void hideSoftInputMethod() {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -145,11 +158,11 @@ public class LoginFragment extends Fragment implements LoginView {
     }
 
     /**
-     * 判断账号信息是否有效
+     * check username and password is valid or not.
      *
-     * @param name     用户名
-     * @param password 密码
-     * @return true则有效，否则无效
+     * @param name     username user inputted.
+     * @param password password user inputted.
+     * @return true if valid.
      */
     private boolean isNameAndPasswordValid(String name, String password) {
         mNameEditText.setError(null);
@@ -178,40 +191,43 @@ public class LoginFragment extends Fragment implements LoginView {
     }
 
     /**
-     * 判断用户名是否有效
+     * check username is valid or not. username must not be empty and length should at least 4.
      *
-     * @param name 用户名
-     * @return true则有效，否则无效
+     * @param name username that user inputted.
+     * @return true if username is valid.
      */
     private boolean isNameValid(String name) {
         return !TextUtils.isEmpty(name) && name.length() >= 4;
     }
 
     /**
-     * 判断密码是否有效
+     * check password is valid or not. password must not be empty and length should at least 6.
      *
-     * @param password 密码
-     * @return true则有效，否则无效
+     * @param password password that user inputted.
+     * @return true if password is valid.
      */
     private boolean isPasswordValid(String password) {
         return !TextUtils.isEmpty(password) && password.length() >= 6;
     }
 
-    /**
-     * 弹出提示信息
-     *
-     * @param message 要展示的信息
-     */
     @Override
-    public void showMessage(String message) {
-        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    public void showMessage(int what, String message) {
+        switch (what) {
+            case UserLoginPresenter.MESSAGE_WHAT_LOGIN_FAILED:
+                showToastShort(getActivity().getString(R.string.fragment_login_failed));
+                break;
+            case UserLoginPresenter.MESSAGE_WHAT_LOGIN_AUTO_FAILED:
+
+                break;
+            case UserLoginPresenter.MESSAGE_WHAT_LOGIN_SUCCESS:
+
+                break;
+            case UserLoginPresenter.MESSAGE_WHAT_LOGIN_AUTO_SUCCESS:
+
+                break;
+        }
     }
 
-    /**
-     * 控制进度条的展示
-     *
-     * @param show true则显示，否则不显示
-     */
     @Override
     public void showProgress(boolean show) {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
@@ -233,6 +249,15 @@ public class LoginFragment extends Fragment implements LoginView {
                 mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
             }
         });
+    }
+
+    /**
+     * show a toast when received message from presenter in a short time.
+     *
+     * @param message the message to be toasted.
+     */
+    private void showToastShort(CharSequence message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
 }

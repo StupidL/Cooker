@@ -1,7 +1,6 @@
 package me.stupidme.cooker.presenter;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.util.List;
 
@@ -18,14 +17,23 @@ import me.stupidme.cooker.view.login.LoginView;
 
 /**
  * Created by StupidL on 2017/4/30.
+ * <p>
+ * A mock presenter to mock server response for test.
  */
 
 public class UserLoginMockPresenterImpl implements UserLoginPresenter {
 
+    //debug
     private static final String TAG = "UserLoginMockPresenter";
 
+    /**
+     * A callback interface to transfer response from server to UI fragment.
+     */
     private LoginView mView;
 
+    /**
+     * A mock server.
+     */
     private MockCookerService mMockService;
 
     public UserLoginMockPresenterImpl(LoginView view) {
@@ -48,25 +56,30 @@ public class UserLoginMockPresenterImpl implements UserLoginPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<UserBean>> value) {
+
+                        List<UserBean> userBeanList = value.getData();
+                        if (userBeanList.size() <= 0) {
+                            mView.showProgress(false);
+                            mView.showMessage(MESSAGE_WHAT_LOGIN_FAILED, null);
+                            return;
+                        }
                         if (remember) {
-                            UserBean user = value.getData().get(0);
+                            UserBean user = userBeanList.get(0);
                             mView.rememberUser(user);
                         }
+                        mView.showMessage(MESSAGE_WHAT_LOGIN_SUCCESS, null);
                         mView.loginSuccess();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
                         mView.showProgress(false);
-                        Log.i(TAG, "onError: " + e.toString());
+                        mView.showMessage(MESSAGE_WHAT_LOGIN_FAILED, e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-                        mView.showMessage("Success!");
-                        mView.loginSuccess();
-                        Log.i(TAG, "onComplete");
+
                     }
                 });
     }
@@ -77,7 +90,7 @@ public class UserLoginMockPresenterImpl implements UserLoginPresenter {
         String userName = SharedPreferenceUtil.getAccountUserName("");
         String userPassword = SharedPreferenceUtil.getAccountUserPassword("");
         if (userId == 0L || TextUtils.isEmpty(userName) || TextUtils.isEmpty(userPassword)) {
-            mView.showMessage("Auto login failed. No username and password remembered.");
+            mView.showMessage(MESSAGE_WHAT_LOGIN_AUTO_FAILED, null);
             mView.showProgress(false);
             return;
         }
@@ -87,25 +100,29 @@ public class UserLoginMockPresenterImpl implements UserLoginPresenter {
                 .subscribe(new Observer<HttpResult<List<UserBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        Log.i(TAG, "onSubscribe: " + d.toString());
+
                     }
 
                     @Override
                     public void onNext(HttpResult<List<UserBean>> value) {
-                        Log.i(TAG, "onNext: " + value.toString());
-                        UserBean userBean = value.getData().get(0);
-                        Log.v(TAG, "user: " + userBean.toString());
+                        if (value.getResultCode() == 200) {
+                            mView.showMessage(MESSAGE_WHAT_LOGIN_AUTO_SUCCESS, null);
+                            mView.loginSuccess();
+                        } else {
+                            mView.showProgress(false);
+                            mView.showMessage(MESSAGE_WHAT_LOGIN_AUTO_FAILED, null);
+                        }
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.i(TAG, "onError: " + e.toString());
+                        mView.showProgress(false);
+                        mView.showMessage(MESSAGE_WHAT_LOGIN_AUTO_FAILED, e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-                        mView.loginSuccess();
-                        Log.i(TAG, "onComplete");
+
                     }
                 });
 

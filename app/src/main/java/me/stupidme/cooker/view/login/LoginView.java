@@ -4,33 +4,38 @@ import me.stupidme.cooker.model.UserBean;
 
 /**
  * Created by StupidL on 2017/3/14.
+ * <p>
+ * A callback interface to accept login response from server and then transfer them to UI fragment.
  */
 
 public interface LoginView {
 
     /**
-     * 弹出提示信息
+     * Show a message in fragment. Messages has many types, which defined by UserLoginPresenter.
      *
-     * @param message 要展示的信息
+     * @param what    message type.
+     * @param message message contents.
+     * @see me.stupidme.cooker.presenter.UserLoginPresenter
      */
-    void showMessage(String message);
+    void showMessage(int what, String message);
 
     /**
-     * 显示进度条
+     * Show a progressbar in fragment.
      *
-     * @param show true则显示，否则不显示
+     * @param show show progressbar with animations if true.
      */
     void showProgress(boolean show);
 
     /**
-     * 记住用户名和密码
+     * Save user's info to a SharedPreference file.
+     * This method called when login success in UserLoginPresenter.
      *
-     * @param user 用户
+     * @param user user account info including username and password and userId.
      */
     void rememberUser(UserBean user);
 
     /**
-     * 登陆成功
+     * Called in UserLoginPresenter when login success.
      */
     void loginSuccess();
 }

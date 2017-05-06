@@ -1,7 +1,6 @@
 package me.stupidme.cooker.presenter;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.util.List;
 
@@ -37,36 +36,41 @@ public class UserLoginPresenterImpl implements UserLoginPresenter {
     public void login(String name, String password, boolean remember) {
         mView.showProgress(true);
         Long userId = SharedPreferenceUtil.getAccountUserId(0L);
-        mService.login(userId,name, password)
+        mService.login(userId, name, password)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<UserBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        Log.i(TAG, "onSubscribe: " + d.toString());
+
                     }
 
                     @Override
                     public void onNext(HttpResult<List<UserBean>> value) {
-                        Log.i(TAG, "onNext: " + value.toString());
+
+                        List<UserBean> userBeanList = value.getData();
+                        if (userBeanList.size() <= 0) {
+                            mView.showProgress(false);
+                            mView.showMessage(MESSAGE_WHAT_LOGIN_FAILED, null);
+                            return;
+                        }
                         if (remember) {
-                            UserBean user = value.getData().get(0);
+                            UserBean user = userBeanList.get(0);
                             mView.rememberUser(user);
                         }
+                        mView.showMessage(MESSAGE_WHAT_LOGIN_SUCCESS, null);
+                        mView.loginSuccess();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
                         mView.showProgress(false);
-                        Log.i(TAG, "onError: " + e.toString());
+                        mView.showMessage(MESSAGE_WHAT_LOGIN_FAILED, e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-                        mView.showMessage("Success!");
-                        mView.loginSuccess();
-                        Log.i(TAG, "onComplete");
+
                     }
                 });
     }
@@ -84,23 +88,29 @@ public class UserLoginPresenterImpl implements UserLoginPresenter {
                     .subscribe(new Observer<HttpResult<List<UserBean>>>() {
                         @Override
                         public void onSubscribe(Disposable d) {
-                            Log.i(TAG, "onSubscribe: " + d.toString());
+
                         }
 
                         @Override
                         public void onNext(HttpResult<List<UserBean>> value) {
-                            Log.i(TAG, "onNext: " + value.toString());
+                            if (value.getResultCode() == 200) {
+                                mView.showMessage(MESSAGE_WHAT_LOGIN_AUTO_SUCCESS, null);
+                                mView.loginSuccess();
+                            } else {
+                                mView.showProgress(false);
+                                mView.showMessage(MESSAGE_WHAT_LOGIN_AUTO_FAILED, null);
+                            }
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            Log.i(TAG, "onError: " + e.toString());
+                            mView.showProgress(false);
+                            mView.showMessage(MESSAGE_WHAT_LOGIN_AUTO_FAILED, e.toString());
                         }
 
                         @Override
                         public void onComplete() {
-                            mView.loginSuccess();
-                            Log.i(TAG, "onComplete");
+
                         }
                     });
         }
