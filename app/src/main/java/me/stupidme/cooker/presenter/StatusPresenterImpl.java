@@ -4,8 +4,8 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import me.stupidme.cooker.model.db.CookerDbManagerSQLiteImpl;
-import me.stupidme.cooker.model.db.CookerDbManager;
+import me.stupidme.cooker.model.db.DbManagerImpl;
+import me.stupidme.cooker.model.db.DbManager;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.http.CookerRetrofit;
 import me.stupidme.cooker.model.http.CookerService;
@@ -20,13 +20,13 @@ public class StatusPresenterImpl implements StatusPresenter {
 
     private StatusView mView;
 
-    private CookerDbManager mManager;
+    private DbManager mManager;
 
     private CookerService mService;
 
     public StatusPresenterImpl(StatusView view) {
         mView = view;
-        mManager = CookerDbManagerSQLiteImpl.getInstance();
+        mManager = DbManagerImpl.getInstance();
         mService = CookerRetrofit.getInstance().getCookerService();
     }
 

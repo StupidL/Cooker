@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by StupidL on 2017/3/21.
  */
 
-public class CookerDbHelper extends SQLiteOpenHelper {
+public class DbHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "cooker_app.db";
 
@@ -35,7 +35,7 @@ public class CookerDbHelper extends SQLiteOpenHelper {
             + "time INTEGER NOT NULL"
             + ")";
 
-    CookerDbHelper(Context context) {
+    DbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 

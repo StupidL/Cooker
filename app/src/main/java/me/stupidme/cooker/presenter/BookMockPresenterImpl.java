@@ -12,8 +12,8 @@ import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.mock.MockCookerService;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.CookerBean;
-import me.stupidme.cooker.model.db.RealmBookManager;
-import me.stupidme.cooker.model.db.RealmDbManagerImpl;
+import me.stupidme.cooker.model.db.DbManager;
+import me.stupidme.cooker.model.db.DbManagerImpl;
 import me.stupidme.cooker.model.http.CookerRetrofit;
 import me.stupidme.cooker.model.http.HttpResult;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
@@ -30,24 +30,19 @@ public class BookMockPresenterImpl implements BookPresenter {
 
     private BookView mView;
 
-    private RealmBookManager mRealmManager;
+    private DbManager mDbManager;
 
     private MockCookerService mMockService;
 
     public BookMockPresenterImpl(BookView view) {
         mView = view;
-        mRealmManager = RealmDbManagerImpl.getInstance();
+        mDbManager = DbManagerImpl.getInstance();
         mMockService = CookerRetrofit.getInstance().getMockService();
     }
 
     @Override
-    public void dispose() {
-
-    }
-
-    @Override
     public void insertBook(BookBean book) {
-//        BookBean bookBean = mRealmManager.insertBook(book);
+//        BookBean bookBean = mDbManager.insertBook(book);
 //        mView.insertBook(bookBean);
 //        Log.v(TAG, "BookBean: " + bookBean.toString());
 
@@ -63,7 +58,7 @@ public class BookMockPresenterImpl implements BookPresenter {
                     @Override
                     public void onNext(HttpResult<List<BookBean>> value) {
                         if (value.getResultCode() == 200) {
-                            mRealmManager.insertBook(value.getData().get(0));
+                            mDbManager.insertBook(value.getData().get(0));
                             mView.insertBook(value.getData().get(0));
                         }
                     }
@@ -82,7 +77,7 @@ public class BookMockPresenterImpl implements BookPresenter {
 
     @Override
     public void insertBooks(List<BookBean> books) {
-        mRealmManager.insertBooks(books);
+        mDbManager.insertBooks(books);
         mView.insertBooks(books);
     }
 
@@ -94,7 +89,7 @@ public class BookMockPresenterImpl implements BookPresenter {
         int riceWeight = Integer.parseInt(map.get(BookDialog.KEY_RICE_WEIGHT));
         String time = map.get(BookDialog.KEY_BOOK_TIME);
         BookBean bookBean = new BookBean();
-        CookerBean cookerBean = mRealmManager.queryCooker(RealmBookManager.KEY_COOKER_NAME, cookerName);
+        CookerBean cookerBean = mDbManager.queryCooker(DbManager.KEY_COOKER_NAME, cookerName);
         bookBean.setBookId(new Random().nextLong());
         bookBean.setUserId(SharedPreferenceUtil.getAccountUserId(0L));
         bookBean.setCookerId(cookerBean.getCookerId());
@@ -134,7 +129,7 @@ public class BookMockPresenterImpl implements BookPresenter {
                             cookerBean.setCookerName(bookBean1.getCookerName());
                             cookerBean.setCookerLocation(bookBean1.getCookerLocation());
                             cookerBean.setCookerStatus("Booking");
-                            mRealmManager.updateCookerStatus(cookerBean);
+                            mDbManager.updateCooker(cookerBean);
                             mView.insertBook(bookBean1);
                         }
                     }
@@ -151,7 +146,7 @@ public class BookMockPresenterImpl implements BookPresenter {
                 });
 
         //update local cooker status
-//        mRealmManager.updateCookerStatus(cookerBean);
+//        mDbManager.updateCookerStatus(cookerBean);
 
         //update server cooker status
 
@@ -160,7 +155,7 @@ public class BookMockPresenterImpl implements BookPresenter {
 
     @Override
     public void deleteBook(BookBean book) {
-        mRealmManager.deleteBooks(RealmBookManager.KEY_BOOK_ID, book.getBookId());
+        mDbManager.deleteBooks(DbManager.KEY_BOOK_ID, book.getBookId());
         mView.removeBook(book);
     }
 
@@ -171,12 +166,12 @@ public class BookMockPresenterImpl implements BookPresenter {
 
     @Override
     public void queryBookFromDB(long bookId) {
-        mView.insertBooks(mRealmManager.queryBooks(RealmBookManager.KEY_BOOK_ID, bookId + ""));
+        mView.insertBooks(mDbManager.queryBooks(DbManager.KEY_BOOK_ID, bookId));
     }
 
     @Override
     public void queryBooksFromDB() {
-        mView.insertBooks(mRealmManager.queryBooks(RealmBookManager.KEY_USER_ID, SharedPreferenceUtil.getAccountUserId(0L)));
+        mView.insertBooks(mDbManager.queryBooks(DbManager.KEY_USER_ID, SharedPreferenceUtil.getAccountUserId(0L)));
     }
 
     @Override
@@ -238,7 +233,7 @@ public class BookMockPresenterImpl implements BookPresenter {
 
     @Override
     public List<String> queryCookerNamesFromDB() {
-        return mRealmManager.queryCookerNamesAll(RealmBookManager.KEY_USER_ID,
+        return mDbManager.queryCookerNamesAll(DbManager.KEY_USER_ID,
                 SharedPreferenceUtil.getAccountUserId(0L));
     }
 }

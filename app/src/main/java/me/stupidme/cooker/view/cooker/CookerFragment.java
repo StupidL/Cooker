@@ -118,13 +118,6 @@ public class CookerFragment extends Fragment implements CookerView, CookerDialog
         mPresenter.queryCookersFromDB();
     }
 
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mPresenter.dispose();
-    }
-
     private void initRecyclerView() {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);

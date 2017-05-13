@@ -11,8 +11,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.model.CookerBean;
-import me.stupidme.cooker.model.CookerDbModelImpl;
-import me.stupidme.cooker.model.CookerDbModel;
+import me.stupidme.cooker.model.db.DbManager;
+import me.stupidme.cooker.model.db.DbManagerImpl;
 import me.stupidme.cooker.model.http.CookerRetrofit;
 import me.stupidme.cooker.model.http.CookerService;
 import me.stupidme.cooker.model.http.HttpResult;
@@ -29,7 +29,7 @@ public class CookerPresenterImpl implements CookerPresenter {
 
     private CookerView mView;
 
-    private CookerDbModel mModel;
+    private DbManager mDbManager;
 
     private CookerService mService;
 
@@ -37,7 +37,7 @@ public class CookerPresenterImpl implements CookerPresenter {
 
     public CookerPresenterImpl(CookerView view) {
         mView = view;
-        mModel = CookerDbModelImpl.getInstance();
+        mDbManager = DbManagerImpl.getInstance();
         mService = CookerRetrofit.getInstance().getCookerService();
         mCompositeDisposable = new CompositeDisposable();
     }
@@ -50,7 +50,7 @@ public class CookerPresenterImpl implements CookerPresenter {
 
         mService.deleteCooker(SharedPreferenceUtil.getAccountUserId(0L), cookerId)
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.deleteCooker(cookerId))
+                .doOnNext(listHttpResult -> mDbManager.deleteCooker(DbManager.KEY_COOKER_ID, cookerId))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
@@ -86,7 +86,8 @@ public class CookerPresenterImpl implements CookerPresenter {
 
         mService.deleteCookers(SharedPreferenceUtil.getAccountUserId(0L))
                 .observeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.deleteCookers())
+                .doOnNext(listHttpResult -> mDbManager.deleteCookers(DbManager.KEY_USER_ID,
+                        SharedPreferenceUtil.getAccountUserId(0L)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
@@ -126,7 +127,7 @@ public class CookerPresenterImpl implements CookerPresenter {
 
         mService.insertCooker(SharedPreferenceUtil.getAccountUserId(0L), bean)
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.insertCooker(listHttpResult.getData().get(0)))
+                .doOnNext(listHttpResult -> mDbManager.insertCooker(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
@@ -164,13 +165,13 @@ public class CookerPresenterImpl implements CookerPresenter {
 
     @Override
     public void queryCookerFromDB(long cookerId) {
-        mView.insertCooker(mModel.queryCooker(cookerId));
+        mView.insertCooker(mDbManager.queryCooker(DbManager.KEY_COOKER_ID, cookerId));
     }
 
     @Override
     public void queryCookersFromDB() {
 
-//        mView.insertCookersFromDB(mModel.queryCookers());
+//        mView.insertCookersFromDB(mDbManager.queryCookers());
 
         //just a test
         List<CookerBean> list = new ArrayList<>();
@@ -192,7 +193,7 @@ public class CookerPresenterImpl implements CookerPresenter {
 
         mService.updateCooker(SharedPreferenceUtil.getAccountUserId(0L), bean.getCookerId(), bean)
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.updateCooker(listHttpResult.getData().get(0)))
+                .doOnNext(listHttpResult -> mDbManager.updateCooker(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
@@ -228,7 +229,7 @@ public class CookerPresenterImpl implements CookerPresenter {
 
         mService.queryCooker(SharedPreferenceUtil.getAccountUserId(0L), cookerId)
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.updateCooker(listHttpResult.getData().get(0)))
+                .doOnNext(listHttpResult -> mDbManager.updateCooker(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
@@ -268,7 +269,7 @@ public class CookerPresenterImpl implements CookerPresenter {
 
         mService.queryCookers(SharedPreferenceUtil.getAccountUserId(0L))
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.updateCookers(listHttpResult.getData()))
+                .doOnNext(listHttpResult -> mDbManager.updateCookers(listHttpResult.getData()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
@@ -299,8 +300,4 @@ public class CookerPresenterImpl implements CookerPresenter {
                 });
     }
 
-    @Override
-    public void dispose() {
-        mCompositeDisposable.clear();
-    }
 }

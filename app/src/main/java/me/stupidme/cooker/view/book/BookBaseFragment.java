@@ -102,7 +102,6 @@ public abstract class BookBaseFragment extends Fragment implements BookView {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mPresenter.dispose();
         Log.v(getClass().getCanonicalName(), "mPresenter dispose...");
         Log.v(getClass().getCanonicalName(), "onDestroy()");
     }

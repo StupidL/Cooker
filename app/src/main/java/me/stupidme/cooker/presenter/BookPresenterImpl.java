@@ -12,8 +12,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.model.BookBean;
-import me.stupidme.cooker.model.BookDbModelImpl;
-import me.stupidme.cooker.model.BookDbModel;
+import me.stupidme.cooker.model.db.DbManager;
+import me.stupidme.cooker.model.db.DbManagerImpl;
 import me.stupidme.cooker.model.http.CookerRetrofit;
 import me.stupidme.cooker.model.http.CookerService;
 import me.stupidme.cooker.model.http.HttpResult;
@@ -30,7 +30,7 @@ public class BookPresenterImpl implements BookPresenter {
 
     private BookView mView;
 
-    private BookDbModel mModel;
+    private DbManager mDbManager;
 
     private CookerService mService;
 
@@ -38,7 +38,7 @@ public class BookPresenterImpl implements BookPresenter {
 
     public BookPresenterImpl(BookView view) {
         mView = view;
-        mModel = BookDbModelImpl.getInstance();
+        mDbManager = DbManagerImpl.getInstance();
         mService = CookerRetrofit.getInstance().getCookerService();
         mCompositeDisposable = new CompositeDisposable();
     }
@@ -48,7 +48,7 @@ public class BookPresenterImpl implements BookPresenter {
 
         mService.insertBook(SharedPreferenceUtil.getAccountUserId(0L), book)
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.insertBook(listHttpResult.getData().get(0)))
+                .doOnNext(listHttpResult -> mDbManager.insertBook(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<BookBean>>>() {
                     @Override
@@ -94,7 +94,7 @@ public class BookPresenterImpl implements BookPresenter {
 
         mService.deleteBook(SharedPreferenceUtil.getAccountUserId(0L), book.getBookId())
                 .subscribeOn(Schedulers.io())
-                .doOnNext(bean -> mModel.deleteBook(bean))
+                .doOnNext(bean -> mDbManager.deleteBook(DbManager.KEY_BOOK_ID, book.getBookId()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<BookBean>() {
                     @Override
@@ -132,7 +132,7 @@ public class BookPresenterImpl implements BookPresenter {
 
     @Override
     public void queryBookFromDB(long bookId) {
-        mView.insertBook(mModel.queryBook(bookId));
+        mView.insertBook(mDbManager.queryBook(DbManager.KEY_BOOK_ID, bookId));
     }
 
     @Override
@@ -163,7 +163,7 @@ public class BookPresenterImpl implements BookPresenter {
 
         mService.queryBook(SharedPreferenceUtil.getAccountUserId(0L), bookId)
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.updateBook(listHttpResult.getData().get(0)))
+                .doOnNext(listHttpResult -> mDbManager.updateBook(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<BookBean>>>() {
                     @Override
@@ -200,7 +200,7 @@ public class BookPresenterImpl implements BookPresenter {
 
         mService.queryBooks(SharedPreferenceUtil.getAccountUserId(0L))
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.updateBooks(listHttpResult.getData()))
+                .doOnNext(listHttpResult -> mDbManager.updateBooks(listHttpResult.getData()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<BookBean>>>() {
                     @Override
@@ -236,8 +236,4 @@ public class BookPresenterImpl implements BookPresenter {
         return null;
     }
 
-    @Override
-    public void dispose() {
-        mCompositeDisposable.clear();
-    }
 }

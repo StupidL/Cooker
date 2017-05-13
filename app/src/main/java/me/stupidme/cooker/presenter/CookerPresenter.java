@@ -10,7 +10,7 @@ import me.stupidme.cooker.model.CookerBean;
  * 该类定义了所有关于电饭锅信息的操作，同时影响服务器数据和本地数据库
  */
 
-public interface CookerPresenter extends DisposablePresenter{
+public interface CookerPresenter {
 
     /**
      * 删除关于该电饭锅的信息

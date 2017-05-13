@@ -10,8 +10,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.mock.MockCookerService;
 import me.stupidme.cooker.model.CookerBean;
-import me.stupidme.cooker.model.db.RealmCookerManager;
-import me.stupidme.cooker.model.db.RealmDbManagerImpl;
+import me.stupidme.cooker.model.db.DbManager;
+import me.stupidme.cooker.model.db.DbManagerImpl;
 import me.stupidme.cooker.model.http.CookerRetrofit;
 import me.stupidme.cooker.model.http.HttpResult;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
@@ -27,19 +27,14 @@ public class CookerMockPresenterImpl implements CookerPresenter {
 
     private CookerView mView;
 
-    private RealmCookerManager mRealmManager;
+    private DbManager mDbManager;
 
     private MockCookerService mMockService;
 
     public CookerMockPresenterImpl(CookerView view) {
         mView = view;
-        mRealmManager = RealmDbManagerImpl.getInstance();
+        mDbManager = DbManagerImpl.getInstance();
         mMockService = CookerRetrofit.getInstance().getMockService();
-    }
-
-    @Override
-    public void dispose() {
-
     }
 
     @Override
@@ -55,7 +50,7 @@ public class CookerMockPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mRealmManager.deleteCookers(RealmCookerManager.KEY_COOKER_ID, cookerId);
+                        mDbManager.deleteCookers(DbManager.KEY_COOKER_ID, cookerId);
                         mView.removeCooker(value.getData().get(0));
                     }
 
@@ -84,7 +79,7 @@ public class CookerMockPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mRealmManager.deleteCookers(RealmCookerManager.KEY_USER_ID, SharedPreferenceUtil.getAccountUserId(0L));
+                        mDbManager.deleteCookers(DbManager.KEY_USER_ID, SharedPreferenceUtil.getAccountUserId(0L));
                         mView.removeCookers(value.getData());
                     }
 
@@ -113,7 +108,7 @@ public class CookerMockPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mRealmManager.insertCookers(value.getData());
+                        mDbManager.insertCookers(value.getData());
                         mView.insertCooker(value.getData().get(0));
                         Log.v(TAG, "value resultCode: " + value.getResultCode());
                         Log.v(TAG, "value resultMessage: " + value.getResultMessage());
@@ -140,12 +135,12 @@ public class CookerMockPresenterImpl implements CookerPresenter {
 
     @Override
     public void queryCookerFromDB(long cookerId) {
-        mView.insertCooker(mRealmManager.queryCookers(RealmCookerManager.KEY_COOKER_ID, cookerId).get(0));
+        mView.insertCooker(mDbManager.queryCookers(DbManager.KEY_COOKER_ID, cookerId).get(0));
     }
 
     @Override
     public void queryCookersFromDB() {
-        mView.insertCookers(mRealmManager.queryCookers(RealmCookerManager.KEY_USER_ID,
+        mView.insertCookers(mDbManager.queryCookers(DbManager.KEY_USER_ID,
                 SharedPreferenceUtil.getAccountUserId(0L)));
     }
 
@@ -162,7 +157,7 @@ public class CookerMockPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mRealmManager.updateCooker(value.getData().get(0));
+                        mDbManager.updateCooker(value.getData().get(0));
                         mView.updateCooker(position, value.getData().get(0));
                     }
 
@@ -193,7 +188,7 @@ public class CookerMockPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mRealmManager.updateCooker(value.getData().get(0));
+                        mDbManager.updateCooker(value.getData().get(0));
                         mView.insertCooker(value.getData().get(0));
                         mView.showRefreshing(false);
                     }
@@ -230,7 +225,7 @@ public class CookerMockPresenterImpl implements CookerPresenter {
                         Log.v(TAG, "value resultCode: " + value.getResultCode());
                         Log.v(TAG, "value resultMessage: " + value.getResultMessage());
                         Log.v(TAG, "value data size: " + value.getData().size());
-                        mRealmManager.updateCookers(value.getData());
+                        mDbManager.updateCookers(value.getData());
                         mView.insertCookers(value.getData());
                         mView.showRefreshing(false);
                     }
