@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -80,6 +81,11 @@ public class BookPresenterImpl implements BookPresenter {
 
     @Override
     public void insertBooks(List<BookBean> books) {
+
+    }
+
+    @Override
+    public void insertBook(Map<String, String> map) {
 
     }
 
@@ -223,6 +229,11 @@ public class BookPresenterImpl implements BookPresenter {
                         Log.i(TAG, "onComplete: ");
                     }
                 });
+    }
+
+    @Override
+    public List<String> queryCookerNamesFromDB() {
+        return null;
     }
 
     @Override

@@ -259,5 +259,6 @@
     <string name="fragment_cooker_create_cooker">Creating cooker... Please wait a few seconds...</string>
     <string name="dialog_cooker_title">Create a Cooker</string>
     <string name="dialog_cooker_id">Cooker ID</string>
+    <string name="fragment_book_now_empty_text">Create a book Now~</string>
 
 </resources>

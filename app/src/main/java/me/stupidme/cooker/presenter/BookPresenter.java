@@ -1,6 +1,7 @@
 package me.stupidme.cooker.presenter;
 
 import java.util.List;
+import java.util.Map;
 
 import me.stupidme.cooker.model.BookBean;
 
@@ -8,7 +9,7 @@ import me.stupidme.cooker.model.BookBean;
  * Created by StupidL on 2017/3/8.
  */
 
-public interface BookPresenter extends DisposablePresenter{
+public interface BookPresenter extends DisposablePresenter {
 
     /**
      * 插入一条预约信息，本地数据库和服务器均要插入
@@ -23,6 +24,8 @@ public interface BookPresenter extends DisposablePresenter{
      * @param books 预约信息列表
      */
     void insertBooks(List<BookBean> books);
+
+    void insertBook(Map<String, String> map);
 
     /**
      * 删除一个预约，本地数据库和服务器均要删除
@@ -61,4 +64,7 @@ public interface BookPresenter extends DisposablePresenter{
      * 从服务器同步最新的预约信息，同时要更新本地数据库和界面
      */
     void queryBooksFromServer();
+
+    List<String> queryCookerNamesFromDB();
+
 }

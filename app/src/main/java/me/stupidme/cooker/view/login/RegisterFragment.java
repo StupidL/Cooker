@@ -228,7 +228,7 @@ public class RegisterFragment extends Fragment implements RegisterView {
     }
 
     /**
-     * show a toast when received message from presenter in a short time.
+     * show a toast_backgroud when received message from presenter in a short time.
      *
      * @param message the message to be toasted.
      */

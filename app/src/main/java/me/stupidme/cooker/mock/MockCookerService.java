@@ -271,6 +271,13 @@ public class MockCookerService implements CookerService {
         HttpResult<List<BookBean>> result = new HttpResult<>();
         List<BookBean> list = new ArrayList<>();
         list.add(mServerDbManager.insertBook(book));
+        CookerBean cookerBean = new CookerBean();
+        cookerBean.setUserId(book.getUserId());
+        cookerBean.setCookerId(book.getCookerId());
+        cookerBean.setCookerName(book.getCookerName());
+        cookerBean.setCookerLocation(book.getCookerLocation());
+        cookerBean.setCookerStatus("Booking");
+        mServerDbManager.updateCooker(cookerBean);
         result.setResultCode(200);
         result.setResultMessage("Insert Book success.");
         result.setData(list);

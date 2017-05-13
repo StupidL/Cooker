@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -51,12 +52,14 @@ public abstract class BookBaseFragment extends Fragment implements BookView {
     /**
      * 下拉刷新控件
      */
-    private SwipeRefreshLayout mSwipeLayout;
+    protected SwipeRefreshLayout mSwipeLayout;
 
     /**
      * 添加预约悬浮按钮
      */
     protected FloatingActionButton mFab;
+
+    protected TextView mEmptyView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,6 +87,8 @@ public abstract class BookBaseFragment extends Fragment implements BookView {
         initRecyclerView();
 
         Log.v(getClass().getCanonicalName(), "onCreateView()");
+
+        mEmptyView = (TextView) view.findViewById(R.id.empty_view);
 
         return view;
     }
@@ -124,11 +129,6 @@ public abstract class BookBaseFragment extends Fragment implements BookView {
         Log.v(getClass().getCanonicalName(), "initRecyclerView()");
     }
 
-    /**
-     * 刷新控件显示与否
-     *
-     * @param show true则显示，false则不显示
-     */
     @Override
     public void setRefreshing(boolean show) {
         if (show) {
@@ -140,81 +140,60 @@ public abstract class BookBaseFragment extends Fragment implements BookView {
         }
     }
 
-    /**
-     * 界面上移除一个预定
-     *
-     * @param book 要移除的预约项目
-     */
     @Override
     public void removeBook(BookBean book) {
         int position = mDataSet.indexOf(book);
         mDataSet.remove(book);
         mAdapter.notifyItemRemoved(position);
+        showEmptyView(mDataSet.size() <= 0);
     }
 
-    /**
-     * 界面上要插入一个预约信息
-     *
-     * @param book 要插入的项目
-     */
     @Override
     public void insertBook(BookBean book) {
         mDataSet.add(0, book);
         mAdapter.notifyItemInserted(0);
+        showEmptyView(mDataSet.size() <= 0);
     }
 
-    /**
-     * 批量插入预约信息，在从数据库获取数据的时候调用，
-     * 要先清空已有的信息，再全部加入，避免数据重复
-     *
-     * @param list 项目列表
-     */
     @Override
     public void insertBooks(List<BookBean> list) {
-        if (mDataSet == null)
-            mDataSet = new ArrayList<>();
-        mDataSet.clear();
-        mDataSet.addAll(list);
-        if (mAdapter == null)
-            mAdapter = new BookRecyclerAdapter(mDataSet);
-        mAdapter.notifyDataSetChanged();
+        updateDataSet(list);
         Log.v(getClass().getCanonicalName(), "insert List Size: " + list.size());
     }
 
-    /**
-     * 更新某个具体的预约信息
-     *
-     * @param position 预约项在适配器的位置
-     * @param book     更新后的预约项
-     */
     @Override
     public void updateBook(int position, BookBean book) {
         mDataSet.remove(position);
         mDataSet.add(position, book);
         mAdapter.notifyItemInserted(position);
+        showEmptyView(mDataSet.size() <= 0);
     }
 
-    /**
-     * 批量更新预约信息，再从服务器获取数据的时候调用，
-     * 要先清空列表，再加入，避免数据重复
-     *
-     * @param list 项目列表
-     */
     @Override
     public void updateBooks(List<BookBean> list) {
-        mDataSet.clear();
-        mDataSet.addAll(list);
-        mAdapter.notifyDataSetChanged();
+        updateDataSet(list);
     }
 
-    /**
-     * 弹出Toast信息
-     *
-     * @param message 信息内容
-     */
     @Override
     public void showMessage(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    protected void updateDataSet(List<BookBean> list) {
+        mDataSet.clear();
+        mDataSet.addAll(list);
+        mAdapter.notifyDataSetChanged();
+        showEmptyView(mDataSet.size() <= 0);
+    }
+
+    protected void showEmptyView(boolean show) {
+        if (show) {
+            mRecyclerView.setVisibility(View.GONE);
+            mEmptyView.setVisibility(View.VISIBLE);
+            return;
+        }
+        mRecyclerView.setVisibility(View.VISIBLE);
+        mEmptyView.setVisibility(View.GONE);
     }
 
 }

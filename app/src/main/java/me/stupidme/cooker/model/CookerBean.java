@@ -37,6 +37,17 @@ public class CookerBean extends RealmObject {
      */
     private String cookerStatus;
 
+    public CookerBean() {
+    }
+
+    public CookerBean(CookerBean cookerBean) {
+        this.cookerId = cookerBean.getCookerId();
+        this.userId = cookerBean.getUserId();
+        this.cookerName = cookerBean.getCookerName();
+        this.cookerLocation = cookerBean.getCookerLocation();
+        this.cookerStatus = cookerBean.getCookerStatus();
+    }
+
     /**
      * 获取设备ID值
      *

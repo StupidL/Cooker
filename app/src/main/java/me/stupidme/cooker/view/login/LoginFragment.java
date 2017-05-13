@@ -252,7 +252,7 @@ public class LoginFragment extends Fragment implements LoginView {
     }
 
     /**
-     * show a toast when received message from presenter in a short time.
+     * show a toast_backgroud when received message from presenter in a short time.
      *
      * @param message the message to be toasted.
      */

@@ -166,4 +166,32 @@ public class RealmDbManagerImpl implements RealmCookerManager, RealmBookManager 
         return list;
     }
 
+    @Override
+    public List<String> queryCookerNamesAll(String where, Long equalTo) {
+        List<String> list = new ArrayList<>();
+        mRealm.executeTransaction(realm -> {
+            List<CookerBean> cookerBeanList = realm.where(CookerBean.class).equalTo(where, equalTo).findAll();
+            for (CookerBean cookerBean : cookerBeanList) {
+                if (!list.contains(cookerBean.getCookerName()))
+                    list.add(cookerBean.getCookerName());
+            }
+        });
+        return list;
+    }
+
+    @Override
+    public CookerBean queryCooker(String where, String equalTo) {
+        final CookerBean[] cookerBeans = {null};
+        mRealm.executeTransaction(realm -> cookerBeans[0] = realm.where(CookerBean.class).equalTo(where, equalTo).findFirst());
+        return cookerBeans[0];
+    }
+
+    @Override
+    public void updateCookerStatus(CookerBean cookerBean) {
+        mRealm.executeTransaction(realm -> {
+//            cookerBean.setCookerStatus("Booking");
+            realm.copyToRealmOrUpdate(cookerBean);
+        });
+    }
+
 }

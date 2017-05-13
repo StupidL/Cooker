@@ -3,6 +3,7 @@ package me.stupidme.cooker.model.db;
 import java.util.List;
 
 import me.stupidme.cooker.model.BookBean;
+import me.stupidme.cooker.model.CookerBean;
 
 /**
  * Created by StupidL on 2017/4/30.
@@ -37,4 +38,9 @@ public interface RealmBookManager {
 
     List<BookBean> queryBooks(String where, Long equalTo);
 
+    List<String> queryCookerNamesAll(String where, Long equalTo);
+
+    CookerBean queryCooker(String where, String equalTo);
+
+    void updateCookerStatus(CookerBean cookerBean);
 }
