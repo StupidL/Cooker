@@ -19,12 +19,19 @@ import java.util.List;
 import java.util.Map;
 
 import me.stupidme.cooker.R;
+import me.stupidme.cooker.util.ToastUtil;
 
 /**
  * Created by StupidL on 2017/3/10.
  */
 
 public class BookDialog extends Dialog {
+
+    public static final String KEY_COOKER_NAME = "CookerName";
+    public static final String KEY_TASTE = "Taste";
+    public static final String KEY_PEOPLE_COUNT = "PeopleCount";
+    public static final String KEY_RICE_WEIGHT = "RiceWeight";
+    public static final String KEY_BOOK_TIME = "BookTime";
 
     private Spinner mCookerNameSpinner;
 
@@ -70,6 +77,18 @@ public class BookDialog extends Dialog {
         cancel.setOnClickListener(v -> dismiss());
 
         ok.setOnClickListener(v -> {
+            if (mNamesList.size() <= 0) {
+                dismiss();
+                ToastUtil.showToastShort(context, "No Cooker Selected! You should create a cooker first!");
+                return;
+            }
+
+            if (mBookTimeEditText.getText().toString().isEmpty()
+                    || !mBookTimeEditText.getText().toString().contains(":")) {
+                mBookTimeEditText.setError("Format error or empty!");
+                return;
+            }
+
             if (checkContent() != null) {
                 mListener.onSave(checkContent());
                 dismiss();
@@ -97,13 +116,13 @@ public class BookDialog extends Dialog {
         mCookerNameSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mInfoMap.put("CookerName", mNamesList.get(position));
+                mInfoMap.put(KEY_COOKER_NAME, mNamesList.get(position));
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 if (TextUtils.isEmpty(mNamesList.get(0)))
-                    mInfoMap.put("CookerName", mNamesList.get(0));
+                    mInfoMap.put(KEY_COOKER_NAME, mNamesList.get(0));
             }
         });
         TextView view = new TextView(mContext);
@@ -121,13 +140,13 @@ public class BookDialog extends Dialog {
         mTasteSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mInfoMap.put("Taste", mTastesList.get(position));
+                mInfoMap.put(KEY_TASTE, mTastesList.get(position));
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 if (TextUtils.isEmpty(mTastesList.get(0))) {
-                    mInfoMap.put("Taste", mTastesList.get(0));
+                    mInfoMap.put(KEY_TASTE, mTastesList.get(0));
                 }
             }
         });
@@ -169,11 +188,20 @@ public class BookDialog extends Dialog {
             return null;
         }
 
-        mInfoMap.put("peopleCount", peopleCount);
-        mInfoMap.put("riceWeight", riceWeight);
-        mInfoMap.put("bookTime", bookTime);
+        mInfoMap.put(KEY_PEOPLE_COUNT, peopleCount);
+        mInfoMap.put(KEY_RICE_WEIGHT, riceWeight);
+        mInfoMap.put(KEY_BOOK_TIME, bookTime);
 
         return mInfoMap;
+    }
+
+    public void reset() {
+        mPeopleCountEditText.setText("");
+        mPeopleCountEditText.setHint("5");
+        mRiceWeightEditText.setText("");
+        mRiceWeightEditText.setHint("5");
+        mBookTimeEditText.setText("");
+        mBookTimeEditText.setHint("17:30");
     }
 
     /**

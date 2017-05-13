@@ -5,6 +5,16 @@
     android:layout_height="match_parent"
     tools:context="me.stupidme.cooker.view.book.BookHistoryFragment">
 
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:alpha="0.8"
+        android:gravity="center"
+        android:text="@string/fragment_book_now_empty_text"
+        android:textSize="21sp" />
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/book_fragment_swipe_layout"
         android:layout_width="match_parent"

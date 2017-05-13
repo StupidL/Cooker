@@ -6,7 +6,7 @@ import me.stupidme.cooker.model.BookBean;
  * Created by StupidL on 2017/4/5.
  */
 
-public interface IStatusView {
+public interface StatusView {
 
 //    void updateBook(BookBean book);
 

@@ -1,69 +1,28 @@
 package me.stupidme.cooker.presenter;
 
-import android.util.Log;
-
-import java.util.List;
-
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import me.stupidme.cooker.model.UserBean;
-import me.stupidme.cooker.model.http.CookerRetrofit;
-import me.stupidme.cooker.model.http.CookerService;
-import me.stupidme.cooker.model.http.HttpResult;
-import me.stupidme.cooker.view.login.IRegisterView;
-
 /**
  * Created by StupidL on 2017/3/14.
+ * <p>
+ * A interface to determine what register presenter should do.
  */
 
-public class UserRegisterPresenter implements IUserRegisterPresenter {
+public interface UserRegisterPresenter {
 
-    private static final String TAG = "UserRegisterPresenter";
+    /**
+     * A message type that means register success.
+     */
+    int MESSAGE_WHAT_REGISTER_SUCCESS = 0x01;
 
-    private IRegisterView mView;
+    /**
+     * A message type that means register failed.
+     */
+    int MESSAGE_WHAT_REGISTER_FAILED = 0x02;
 
-    private CookerService mService;
-
-    public UserRegisterPresenter(IRegisterView view) {
-        mView = view;
-        mService = CookerRetrofit.getInstance().getCookerService();
-    }
-
-    @Override
-    public void register(String name, String password) {
-        mView.showProgress(true);
-        mService.register(new UserBean(name, password))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<HttpResult<List<UserBean>>>() {
-
-                    UserBean userBean;
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        Log.v(TAG, "onSubscribe: " + d.toString());
-                    }
-
-                    @Override
-                    public void onNext(HttpResult<List<UserBean>> value) {
-                        userBean = value.getData().get(0);
-                        mView.registerSuccess(userBean);
-                        Log.v(TAG, "onNext: " + value.toString());
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mView.showProgress(false);
-                        mView.showMessage(e.toString());
-                        Log.v(TAG, "onError: " + e.toString());
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.v(TAG, "onComplete");
-                    }
-                });
-    }
+    /**
+     * Register action. Called in register fragment when register button clicked.
+     *
+     * @param name     username that user inputted.
+     * @param password password that user inputted.
+     */
+    void register(String name, String password);
 }

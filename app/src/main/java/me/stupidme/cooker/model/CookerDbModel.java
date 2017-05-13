@@ -8,7 +8,7 @@ import java.util.List;
  * 该类定义了本地数据库对<code>CookerBean</code>的所有操作，所有的变动只影响本地数据库，不影响服务器。
  */
 
-public interface ICookerModel {
+public interface CookerDbModel {
 
     /**
      * 删除数据库的关于该电饭锅记录

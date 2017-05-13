@@ -9,7 +9,7 @@ import me.stupidme.cooker.model.CookerBean;
  * Created by StupidL on 2017/3/29.
  */
 
-public interface IDBManager {
+public interface CookerDbManager {
 
     boolean insertCooker(CookerBean cooker);
 

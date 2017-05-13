@@ -8,7 +8,7 @@ import me.stupidme.cooker.model.BookBean;
  * Created by StupidL on 2017/3/10.
  */
 
-public interface IBookView {
+public interface BookView {
 
     /**
      * 控制刷新控件的显示与否。

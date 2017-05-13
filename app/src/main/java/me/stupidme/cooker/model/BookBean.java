@@ -14,12 +14,17 @@ public class BookBean extends RealmObject {
      * 该预定的唯一ID，在服务器成功创建预约的时候，会返回改预约信息，此时可以获取ID，在此之前ID都为空
      */
     @PrimaryKey
-    private long bookId;
+    private Long bookId;
+
+    /**
+     * 用户ID
+     */
+    private Long userId;
 
     /**
      * 该预定所选则的电饭锅设备的ID
      */
-    private long cookerId;
+    private Long cookerId;
 
     /**
      * 该预约所选定的电饭锅的名称
@@ -56,20 +61,29 @@ public class BookBean extends RealmObject {
      */
     private String taste;
 
-    public BookBean setBookId(long id) {
+    public BookBean setBookId(Long id) {
         this.bookId = id;
         return this;
     }
 
-    public long getBookId() {
+    public Long getBookId() {
         return bookId;
     }
 
-    public long getCookerId() {
+    public Long getUserId() {
+        return userId;
+    }
+
+    public BookBean setUserId(Long userId) {
+        this.userId = userId;
+        return this;
+    }
+
+    public Long getCookerId() {
         return cookerId;
     }
 
-    public BookBean setCookerId(long cookerId) {
+    public BookBean setCookerId(Long cookerId) {
         this.cookerId = cookerId;
         return this;
     }
@@ -139,14 +153,10 @@ public class BookBean extends RealmObject {
 
     @Override
     public String toString() {
-        return "bookId: " + bookId
-                + "cookerId: " + cookerId + "\n "
-                + "cookerName: " + cookerName + "\n"
-                + "cookerLocation: " + cookerLocation + "\n"
-                + "riceWeight: " + riceWeight + "\n"
-                + "peopleCount: " + peopleCount + "\n"
-                + "taste: " + taste + "\n"
-                + "time: " + time + "\n"
-                + "cookerStatus: " + cookerStatus + "\n";
+        return String.format("[useId:%s, bookId:%s, cookerId:%s, cookerName:%s, cookerLocation:%s, " +
+                        "cookerStatus:%s, riceWeight:%s, peopleCount:%s, taste:%s, time:%s]",
+                userId, bookId, cookerId, cookerName, cookerLocation,
+                cookerStatus, riceWeight, peopleCount, taste, time);
     }
+
 }

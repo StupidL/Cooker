@@ -8,14 +8,14 @@ import me.stupidme.cooker.model.CookerBean;
  * Created by StupidL on 2017/3/9.
  */
 
-public interface ICookerView {
+public interface CookerView {
 
     /**
      * 控制刷新控件的显示
      *
      * @param show true则显示，false则不显示
      */
-    void setRefreshing(boolean show);
+    void showRefreshing(boolean show);
 
     /**
      * 界面上移除一个设备信息
@@ -25,11 +25,25 @@ public interface ICookerView {
     void removeCooker(CookerBean cooker);
 
     /**
+     * 批量删除设备信息
+     *
+     * @param cookers 设备集合
+     */
+    void removeCookers(List<CookerBean> cookers);
+
+    /**
      * 插入一个设备信息
      *
      * @param cooker 要插入的设备信息
      */
     void insertCooker(CookerBean cooker);
+
+    /**
+     * 批量插入设备信息
+     *
+     * @param cookers 设备集合
+     */
+    void insertCookers(List<CookerBean> cookers);
 
     /**
      * 界面上批量插入设备信息，在从数据库获取数据的时候调用

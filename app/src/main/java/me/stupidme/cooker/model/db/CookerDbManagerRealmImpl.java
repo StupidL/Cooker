@@ -10,21 +10,21 @@ import me.stupidme.cooker.model.CookerBean;
  * Created by StupidL on 2017/4/15.
  */
 
-public class RealmManager implements IDBManager {
+public class CookerDbManagerRealmImpl implements CookerDbManager {
 
-    private static volatile RealmManager sInstance;
+    private static volatile CookerDbManagerRealmImpl sInstance;
 
     private Realm mRealm;
 
-    private RealmManager() {
+    private CookerDbManagerRealmImpl() {
         mRealm = Realm.getDefaultInstance();
     }
 
-    public static RealmManager getInstance() {
+    public static CookerDbManagerRealmImpl getInstance() {
         if (sInstance == null) {
-            synchronized (RealmManager.class) {
+            synchronized (CookerDbManagerRealmImpl.class) {
                 if (sInstance == null)
-                    sInstance = new RealmManager();
+                    sInstance = new CookerDbManagerRealmImpl();
             }
         }
         return sInstance;

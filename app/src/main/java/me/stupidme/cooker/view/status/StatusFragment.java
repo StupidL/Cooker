@@ -16,13 +16,13 @@ import java.util.List;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
-import me.stupidme.cooker.presenter.IStatusPresenter;
 import me.stupidme.cooker.presenter.StatusPresenter;
+import me.stupidme.cooker.presenter.StatusPresenterImpl;
 import me.stupidme.cooker.view.custom.SpaceItemDecoration;
 import me.stupidme.cooker.view.base.BaseFragment;
 import me.stupidme.cooker.view.cooker.CookerActivity;
 
-public class StatusFragment extends BaseFragment implements IStatusView {
+public class StatusFragment extends BaseFragment implements StatusView {
 
     private RecyclerView mRecyclerView;
 
@@ -30,7 +30,7 @@ public class StatusFragment extends BaseFragment implements IStatusView {
 
     private List<BookBean> mDataSet;
 
-    private IStatusPresenter mPresenter;
+    private StatusPresenter mPresenter;
 
     public StatusFragment() {
         // Required empty public constructor
@@ -49,7 +49,7 @@ public class StatusFragment extends BaseFragment implements IStatusView {
 
         mDataSet = new ArrayList<>();
         mAdapter = new StatusRecyclerAdapter(mDataSet);
-        mPresenter = new StatusPresenter(this);
+        mPresenter = new StatusPresenterImpl(this);
         mAdapter.setPresenter(mPresenter);
 
     }

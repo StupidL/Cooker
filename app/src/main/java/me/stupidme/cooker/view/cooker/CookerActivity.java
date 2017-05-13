@@ -60,12 +60,6 @@ public class CookerActivity extends AppCompatActivity
         });
         TextView name = (TextView) view.findViewById(R.id.user_name);
         name.setText(SharedPreferenceUtil.getAccountUserName("Cooker"));
-//
-//        String imageUrl = SharedPreferenceUtil.getAvatarImageUrl(null);
-//        if (imageUrl != null) {
-//            mCircleImageView.setImageBitmap(BitmapUtil.decodeSampledBitmap(imageUrl,
-//                    mCircleImageView.getWidth(), mCircleImageView.getHeight()));
-//        }
 
         CookerFragment cookerFragment = CookerFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
@@ -84,16 +78,6 @@ public class CookerActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-//
-//    @Override
-//    public void onRestart() {
-//        super.onRestart();
-//        if (getIntent() != null) {
-//            String url = getIntent().getStringExtra(SharedPreferenceUtil.KEY_AVATAR_IMAGE_URL);
-//            mCircleImageView.setImageBitmap(BitmapUtil.decodeSampledBitmap(url,
-//                    mCircleImageView.getWidth(), mCircleImageView.getHeight()));
-//        }
-//    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {

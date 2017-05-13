@@ -40,7 +40,8 @@ public interface CookerService {
      */
     @FormUrlEncoded
     @POST("/user/login")
-    Observable<HttpResult<List<UserBean>>> login(@Field("username") String name,
+    Observable<HttpResult<List<UserBean>>> login(@Field("userId") Long userId,
+                                                 @Field("username") String name,
                                                  @Field("password") String password);
 
     /**

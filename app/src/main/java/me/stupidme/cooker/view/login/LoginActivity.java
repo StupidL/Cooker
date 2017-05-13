@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
                 break;
 
             default:
-                mFragment = LoginFragment.newInstance(false);
+                mFragment = LoginFragment.newInstance(true);
                 break;
         }
     }

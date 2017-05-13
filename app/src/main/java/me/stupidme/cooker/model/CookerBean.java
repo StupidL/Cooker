@@ -15,7 +15,12 @@ public class CookerBean extends RealmObject {
      * 该ID值在服务器增加该设备成功的时候会返回，在此之前，设备无ID。若服务器添加失败，则该设备创建失败。
      */
     @PrimaryKey
-    private long cookerId;
+    private Long cookerId;
+
+    /**
+     * 用户ID
+     */
+    private Long userId;
 
     /**
      * 该电饭锅设备的名字，不保证唯一。
@@ -32,12 +37,23 @@ public class CookerBean extends RealmObject {
      */
     private String cookerStatus;
 
+    public CookerBean() {
+    }
+
+    public CookerBean(CookerBean cookerBean) {
+        this.cookerId = cookerBean.getCookerId();
+        this.userId = cookerBean.getUserId();
+        this.cookerName = cookerBean.getCookerName();
+        this.cookerLocation = cookerBean.getCookerLocation();
+        this.cookerStatus = cookerBean.getCookerStatus();
+    }
+
     /**
      * 获取设备ID值
      *
      * @return 设备ID值
      */
-    public long getCookerId() {
+    public Long getCookerId() {
         return cookerId;
     }
 
@@ -47,8 +63,17 @@ public class CookerBean extends RealmObject {
      * @param cookerId 设备的唯一ID值
      * @return 自身引用，支持链式调用
      */
-    public CookerBean setCookerId(long cookerId) {
+    public CookerBean setCookerId(Long cookerId) {
         this.cookerId = cookerId;
+        return this;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public CookerBean setUserId(Long userId) {
+        this.userId = userId;
         return this;
     }
 
@@ -114,10 +139,8 @@ public class CookerBean extends RealmObject {
 
     @Override
     public String toString() {
-        return "cookerId: " + cookerId
-                + "cookerName: " + cookerName
-                + " cookerLocation: " + cookerLocation
-                + " cookerStatus: " + cookerStatus;
+        return String.format("[userId:%s, cookerId:%s, cookerName:%s, cookerLocation:%s, cookerStatus:%s]",
+                userId, cookerId, cookerName, cookerLocation, cookerStatus);
     }
 
 }

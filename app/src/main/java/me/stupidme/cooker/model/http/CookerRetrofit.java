@@ -9,10 +9,14 @@ import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersisto
 
 import java.lang.ref.WeakReference;
 
+import me.stupidme.cooker.mock.MockCookerService;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.mock.BehaviorDelegate;
+import retrofit2.mock.MockRetrofit;
+import retrofit2.mock.NetworkBehavior;
 
 /**
  * Created by StupidL on 2017/3/8.
@@ -50,6 +54,8 @@ public class CookerRetrofit {
      */
     private ClearableCookieJar mCookieJar;
 
+    private MockCookerService mMockService;
+
     /**
      * 静态方法，用来获取Application Context，并且本类持有该Context的弱引用
      *
@@ -69,12 +75,22 @@ public class CookerRetrofit {
             mClient = new OkHttpClient.Builder()
                     .cookieJar(mCookieJar)
                     .build();
+
+            NetworkBehavior behavior = NetworkBehavior.create();
             mRetrofit = new Retrofit.Builder()
                     .baseUrl(CookerService.BASE_URL)
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(mClient)
                     .build();
+
+            MockRetrofit mockRetrofit = new MockRetrofit.Builder(mRetrofit)
+                    .networkBehavior(behavior)
+                    .build();
+
+            BehaviorDelegate<CookerService> behaviorDelegate = mockRetrofit.create(CookerService.class);
+            mMockService = new MockCookerService(behaviorDelegate);
+
             mService = mRetrofit.create(CookerService.class);
         }
     }
@@ -128,5 +144,9 @@ public class CookerRetrofit {
      */
     public ClearableCookieJar getCookieJar() {
         return mCookieJar;
+    }
+
+    public MockCookerService getMockService() {
+        return mMockService;
     }
 }

@@ -16,7 +16,7 @@
 
     <string name="checkbox">Remember password</string>
     <string name="toast_register_success">Register success and you can login now!</string>
-    <string name="title_activity_register">Sign Up</string>
+    <string name="title_activity_register">Register</string>
     <string name="prompt_password_repeat">Password repeat</string>
     <string name="action_sign_up_ok">Finish</string>
     <string name="error_password_different">Passwords are different</string>
@@ -250,5 +250,15 @@
     <string name="dialog_take_from_camera">Take From Camera</string>
     <string name="search">Search</string>
     <string name="holder">Holder</string>
+    <string name="tips_title">Tips</string>
+    <string name="fragment_login_failed">You have to register an account first!</string>
+    <string name="fragment_login_loging">Login...</string>
+    <string name="fragment_register_failed">Register failed!</string>
+    <string name="fragment_cooker_empty_text">Create a new Cooker Now!</string>
+    <string name="fragment_cooker_dialog_titile">Tips</string>
+    <string name="fragment_cooker_create_cooker">Creating cooker... Please wait a few seconds...</string>
+    <string name="dialog_cooker_title">Create a Cooker</string>
+    <string name="dialog_cooker_id">Cooker ID</string>
+    <string name="fragment_book_now_empty_text">Create a book Now~</string>
 
 </resources>
