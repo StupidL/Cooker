@@ -32,6 +32,7 @@ public class BookRecyclerAdapter extends RecyclerView.Adapter<BookRecyclerAdapte
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.id.setText("ID: " + mDataSet.get(position).getCookerId());
+        holder.cookerId.setText(mDataSet.get(position).getCookerId() + "");
         holder.name.setText("Name: " + mDataSet.get(position).getCookerName());
         holder.place.setText("Place: " + mDataSet.get(position).getCookerLocation());
         holder.count.setText("Count: " + mDataSet.get(position).getPeopleCount());
@@ -53,6 +54,7 @@ public class BookRecyclerAdapter extends RecyclerView.Adapter<BookRecyclerAdapte
     class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView id;
+        TextView cookerId;
         TextView name;
         TextView place;
         TextView weight;
@@ -64,6 +66,7 @@ public class BookRecyclerAdapter extends RecyclerView.Adapter<BookRecyclerAdapte
         public ViewHolder(View itemView) {
             super(itemView);
             id = (TextView) itemView.findViewById(R.id.book_id);
+            cookerId = (TextView) itemView.findViewById(R.id.book_cooker_id);
             name = (TextView) itemView.findViewById(R.id.book_name);
             place = (TextView) itemView.findViewById(R.id.book_place);
             weight = (TextView) itemView.findViewById(R.id.book_weight);

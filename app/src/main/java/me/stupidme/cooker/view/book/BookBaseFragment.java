@@ -1,5 +1,6 @@
 package me.stupidme.cooker.view.book;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -12,15 +13,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.presenter.BookMockPresenterImpl;
 import me.stupidme.cooker.presenter.BookPresenter;
+import me.stupidme.cooker.util.ToastUtil;
 import me.stupidme.cooker.view.custom.SpaceItemDecoration;
 
 /**
@@ -61,18 +63,17 @@ public abstract class BookBaseFragment extends Fragment implements BookView {
 
     protected TextView mEmptyView;
 
+    protected ProgressDialog mProgressDialog;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (mDataSet == null)
-            mDataSet = new ArrayList<>();
-        if (mAdapter == null)
-            mAdapter = new BookRecyclerAdapter(mDataSet);
+        mDataSet = new ArrayList<>();
+        mAdapter = new BookRecyclerAdapter(mDataSet);
 //        mPresenter = new BookPresenter(this);
         mPresenter = new BookMockPresenterImpl(this);
-        Log.v(getClass().getCanonicalName(), "onCreate()");
-
-        Log.v(getClass().getCanonicalName(), "DataSet Size: " + mDataSet.size());
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setTitle(getActivity().getString(R.string.fragment_book_dialog_title));
     }
 
     @Override
@@ -140,6 +141,15 @@ public abstract class BookBaseFragment extends Fragment implements BookView {
     }
 
     @Override
+    public void showDialog(boolean show) {
+        if (show) {
+            mProgressDialog.show();
+            return;
+        }
+        mProgressDialog.dismiss();
+    }
+
+    @Override
     public void removeBook(BookBean book) {
         int position = mDataSet.indexOf(book);
         mDataSet.remove(book);
@@ -151,6 +161,17 @@ public abstract class BookBaseFragment extends Fragment implements BookView {
     public void insertBook(BookBean book) {
         mDataSet.add(0, book);
         mAdapter.notifyItemInserted(0);
+        showEmptyView(mDataSet.size() <= 0);
+    }
+
+    @Override
+    public void removeBook(Long bookId) {
+        Iterator<BookBean> iterator = mDataSet.iterator();
+        while (iterator.hasNext()) {
+            BookBean bookBean = iterator.next();
+            if (bookBean.getBookId() == (long) bookId)
+                iterator.remove();
+        }
         showEmptyView(mDataSet.size() <= 0);
     }
 
@@ -169,13 +190,43 @@ public abstract class BookBaseFragment extends Fragment implements BookView {
     }
 
     @Override
-    public void updateBooks(List<BookBean> list) {
-        updateDataSet(list);
-    }
+    public void showMessage(int what, CharSequence message) {
+        switch (what) {
+            case BookPresenter.MESSAGE_DELETE_BOOK_ERROR:
+            case BookPresenter.MESSAGE_INSERT_BOOK_ERROR:
+            case BookPresenter.MESSAGE_QUERY_BOOK_ERROR:
+                showToastShort(message);
+                break;
 
-    @Override
-    public void showMessage(String message) {
-        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            case BookPresenter.MESSAGE_DELETE_BOOK_SUCCESS:
+            case BookPresenter.MESSAGE_DELETE_BOOK_SUCCESS_BUT_EMPTY:
+            case BookPresenter.MESSAGE_INSERT_BOOK_SUCCESS:
+            case BookPresenter.MESSAGE_INSERT_BOOK_SUCCESS_BUT_EMPTY:
+            case BookPresenter.MESSAGE_QUERY_BOOK_SUCCESS_BUT_EMPTY:
+                break;
+
+            case BookPresenter.MESSAGE_INSERT_BOOK_DB_FAILED:
+                showToastShort("Insert Book DB failed.");
+                break;
+            case BookPresenter.MESSAGE_INSERT_BOOK_FAILED:
+                showToastShort("Insert Book failed.");
+                break;
+            case BookPresenter.MESSAGE_QUERY_BOOK_FAILED:
+                showToastShort("Query Book failed.");
+                break;
+            case BookPresenter.MESSAGE_UPDATE_BOOK_DB_FAILED:
+                showToastShort("Update Book DB failed.");
+                break;
+            case BookPresenter.MESSAGE_UPDATE_COOKER_FAILED:
+                showToastShort("Update Book failed.");
+                break;
+            case BookPresenter.MESSAGE_DELETE_BOOK_DB_FAILED:
+                showToastShort("Delete Book DB failed.");
+                break;
+            case BookPresenter.MESSAGE_DELETE_BOOK_FAILED:
+                showToastShort("Delete Book failed.");
+                break;
+        }
     }
 
     protected void updateDataSet(List<BookBean> list) {
@@ -193,6 +244,10 @@ public abstract class BookBaseFragment extends Fragment implements BookView {
         }
         mRecyclerView.setVisibility(View.VISIBLE);
         mEmptyView.setVisibility(View.GONE);
+    }
+
+    private void showToastShort(CharSequence message) {
+        ToastUtil.showToastShort(getActivity(), message);
     }
 
 }

@@ -202,7 +202,7 @@ public interface CookerService {
      * @return HttpResult对象，包含一个要预约信息列表，列表最多包含一项预约信息
      */
     @DELETE("/user/{userId}/books/{bookId}")
-    Observable<BookBean> deleteBook(@Path("userId") long userId,
+    Observable<HttpResult<List<BookBean>>> deleteBook(@Path("userId") long userId,
                                     @Path("bookId") long bookId);
 
     /**
@@ -212,7 +212,7 @@ public interface CookerService {
      * @return HttpResult对象，包含一个要预约信息列表，列表最多包含一项预约信息
      */
     @DELETE("/user/{userId}/books")
-    Observable<BookBean> deleteBooks(@Path("userId") long userId);
+    Observable<HttpResult<List<BookBean>>> deleteBooks(@Path("userId") long userId);
 
 
     @GET("/update/onResult")

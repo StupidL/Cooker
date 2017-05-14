@@ -15,10 +15,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +26,7 @@ import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.presenter.CookerMockPresenterImpl;
 import me.stupidme.cooker.presenter.CookerPresenter;
+import me.stupidme.cooker.util.ToastUtil;
 import me.stupidme.cooker.view.custom.SpaceItemDecoration;
 
 /**
@@ -39,22 +40,16 @@ public class CookerFragment extends Fragment implements CookerView, CookerDialog
 
     private static final String TAG = "CookerFragment";
 
-    //RecyclerView控件，展示所有的Cooker设备信息
     private RecyclerView mRecyclerView;
 
-    //存放所有设备信息的集合
     private List<CookerBean> mDataSet;
 
-    //RecyclerView的适配器，决定每一个子项目的行为和外观
     private CookerRecyclerAdapter mAdapter;
 
-    //Presenter，控制网络请求和数据库读写
     private CookerPresenter mPresenter;
 
-    //对话框，在添加设备的时候会显示
     private CookerDialog mDialog;
 
-    //下拉刷新控件
     private SwipeRefreshLayout mSwipeLayout;
 
     private FloatingActionButton mFab;
@@ -234,6 +229,17 @@ public class CookerFragment extends Fragment implements CookerView, CookerDialog
     }
 
     @Override
+    public void removeCooker(Long cookerId) {
+        Iterator<CookerBean> iterator = mDataSet.iterator();
+        while (iterator.hasNext()) {
+            CookerBean cookerBean = iterator.next();
+            if ((long) cookerBean.getCookerId() == cookerId)
+                iterator.remove();
+        }
+        showEmptyView(mDataSet.size() <= 0);
+    }
+
+    @Override
     public void removeCookers(List<CookerBean> cookers) {
         mDataSet.removeAll(cookers);
         mAdapter.notifyDataSetChanged();
@@ -261,11 +267,6 @@ public class CookerFragment extends Fragment implements CookerView, CookerDialog
     }
 
     @Override
-    public void insertCookersFromDB(List<CookerBean> list) {
-        updateDataSet(list);
-    }
-
-    @Override
     public void updateCooker(int position, CookerBean cooker) {
         mDataSet.remove(position);
         mDataSet.add(position, cooker);
@@ -274,13 +275,54 @@ public class CookerFragment extends Fragment implements CookerView, CookerDialog
     }
 
     @Override
-    public void updateCookersFromServer(List<CookerBean> list) {
-        updateDataSet(list);
+    public void showMessage(int what, CharSequence message) {
+        switch (what) {
+            case CookerPresenter.MESSAGE_DELETE_COOKER_ERROR:
+                showToastShort(message);
+                break;
+            case CookerPresenter.MESSAGE_DELETE_COOKER_FAILED:
+                showToastShort("Delete cooker failed.");
+                break;
+            case CookerPresenter.MESSAGE_DELETE_DB_COOKER_FAILED:
+                showToastShort("Delete cooker from db failed.");
+                break;
+            case CookerPresenter.MESSAGE_INSERT_COOKER_ERROR:
+                showToastShort(message);
+                break;
+            case CookerPresenter.MESSAGE_INSERT_COOKER_FAILED:
+                showToastShort("Insert cooker failed.");
+                break;
+            case CookerPresenter.MESSAGE_INSERT_DB_COOKER_FAILED:
+                showToastShort("Insert cooker to db failed.");
+                break;
+            case CookerPresenter.MESSAGE_QUERY_SERVER_COOKER_ERROR:
+                showToastShort(message);
+                break;
+            case CookerPresenter.MESSAGE_QUERY_SERVER_COOKER_FAILED:
+                showToastShort("Query cooker from server failed.");
+                break;
+            case CookerPresenter.MESSAGE_UPDATE_COOKER_ERROR:
+                showToastShort(message);
+                break;
+            case CookerPresenter.MESSAGE_UPDATE_COOKER_FAILED:
+                showToastShort("Update cooker failed.");
+                break;
+            case CookerPresenter.MESSAGE_UPDATE_DB_COOKER_FAILED:
+                showToastShort("Update cooker to db failed.");
+                break;
+            case CookerPresenter.MESSAGE_QUERY_SERVER_COOKER_SUCCESS:
+                showToastShort("Query cooker success. But no data in server.");
+                break;
+        }
     }
 
     @Override
-    public void showMessage(String message) {
-        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    public void showDialog(boolean show) {
+        if (show) {
+            mProgressDialog.setMessage(getString(R.string.fragment_cooker_dialog_tips));
+            mProgressDialog.show();
+        } else
+            mProgressDialog.dismiss();
     }
 
     private void updateDataSet(List<CookerBean> cookers) {
@@ -298,6 +340,10 @@ public class CookerFragment extends Fragment implements CookerView, CookerDialog
             mRecyclerView.setVisibility(View.VISIBLE);
             mEmptyView.setVisibility(View.GONE);
         }
+    }
+
+    private void showToastShort(CharSequence message) {
+        ToastUtil.showToastShort(getActivity(), message);
     }
 
 }

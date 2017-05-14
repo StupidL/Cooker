@@ -53,13 +53,7 @@ public class UserRegisterPresenterImpl implements UserRegisterPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<UserBean>> value) {
-                        if (value.getResultCode() != 200) {
-                            mView.showProgress(false);
-                            mView.showMessage(MESSAGE_WHAT_REGISTER_FAILED, null);
-                            return;
-                        }
-
-                        if (value.getData().size() <= 0) {
+                        if (value == null || value.getData().size() <= 0 || value.getResultCode() != 200) {
                             mView.showProgress(false);
                             mView.showMessage(MESSAGE_WHAT_REGISTER_FAILED, null);
                             return;

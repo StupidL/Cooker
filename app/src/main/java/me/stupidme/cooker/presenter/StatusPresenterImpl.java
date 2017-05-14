@@ -33,33 +33,33 @@ public class StatusPresenterImpl implements StatusPresenter {
     @Override
     public void cancelBook(long bookId) {
         mService.deleteBook(SharedPreferenceUtil.getAccountUserId(0L), bookId)
-                .subscribeOn(Schedulers.io())
-                .doOnNext(bean -> {
-                    bean.setCookerStatus("finished");
-                    mManager.updateBook(bean);
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<BookBean>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(BookBean value) {
-                        mView.removeBook(value.getBookId());
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        mView.showMessage("Cancel Success!");
-                    }
-                });
+                .subscribeOn(Schedulers.io());
+//                .doOnNext(bean -> {
+//                    bean.setCookerStatus("finished");
+//                    mManager.updateBook(bean);
+//                })
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Observer<BookBean>() {
+//                    @Override
+//                    public void onSubscribe(Disposable d) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onNext(BookBean value) {
+//                        mView.removeBook(value.getBookId());
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        mView.showMessage(e.toString());
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//                        mView.showMessage("Cancel Success!");
+//                    }
+//                });
     }
 
 //    @Override

@@ -7,64 +7,83 @@ import me.stupidme.cooker.model.BookBean;
 
 /**
  * Created by StupidL on 2017/3/8.
+ * <p>
+ * Presenter of book activity or fragment. Manage all books.
  */
 
 public interface BookPresenter {
 
+    int MESSAGE_INSERT_BOOK_ERROR = 0x10;
+    int MESSAGE_INSERT_BOOK_FAILED = 0x11;
+    int MESSAGE_INSERT_BOOK_SUCCESS = 0x12;
+    int MESSAGE_INSERT_BOOK_SUCCESS_BUT_EMPTY = 0x13;
+    int MESSAGE_INSERT_BOOK_DB_FAILED = 0x14;
+
+    int MESSAGE_DELETE_BOOK_ERROR = 0x20;
+    int MESSAGE_DELETE_BOOK_FAILED = 0x21;
+    int MESSAGE_DELETE_BOOK_SUCCESS = 0x22;
+    int MESSAGE_DELETE_BOOK_SUCCESS_BUT_EMPTY = 0x23;
+    int MESSAGE_DELETE_BOOK_DB_FAILED = 0x24;
+
+    int MESSAGE_QUERY_BOOK_ERROR = 0x30;
+    int MESSAGE_QUERY_BOOK_FAILED = 0x31;
+    int MESSAGE_QUERY_BOOK_SUCCESS_BUT_EMPTY = 0x32;
+
+    int MESSAGE_UPDATE_BOOK_DB_FAILED = 0x41;
+
+    int MESSAGE_UPDATE_COOKER_FAILED = 0x50;
+
     /**
-     * 插入一条预约信息，本地数据库和服务器均要插入
+     * Insert a single book.
      *
-     * @param book 预约
+     * @param book book to be inserted
      */
     void insertBook(BookBean book);
 
     /**
-     * 批量插入数据，本地数据库和服务器均要更新
+     * Insert a book by key-value pairs both in local db and server.
      *
-     * @param books 预约信息列表
+     * @param map key-value pairs
      */
-    void insertBooks(List<BookBean> books);
-
     void insertBook(Map<String, String> map);
 
     /**
-     * 删除一个预约，本地数据库和服务器均要删除
+     * Delete a single book both in local db and server.
      *
-     * @param book 预约
+     * @param book book to be deleted
      */
     void deleteBook(BookBean book);
 
     /**
-     * 批量删除预约信息，本地数据库和服务器均要删除
+     * Query a specified book by id from local db.
      *
-     * @param books 批量预约信息
-     */
-    void deleteBooks(List<BookBean> books);
-
-    /**
-     * 从本地数据库查询单个预约信息
-     *
-     * @param bookId 预约信息ID
+     * @param bookId id of book
      */
     void queryBookFromDB(long bookId);
 
     /**
-     * 从本地数据库查找所有预约信息，在界面第一次加载的时候使用
+     * Query book from local db. Used when first enter the activity or fragment.
      */
     void queryBooksFromDB();
 
     /**
-     * 从服务器查询单个预约信息
+     * Query a specified book by id from server, and update local db at the same time.
      *
-     * @param bookId 预约
+     * @param bookId id of book
      */
     void queryBookFromServer(long bookId);
 
     /**
-     * 从服务器同步最新的预约信息，同时要更新本地数据库和界面
+     * Query books from server, and update local db at the same time.
      */
     void queryBooksFromServer();
 
+    /**
+     * Query all cooker names. When create a book, we need choose a existed cooker.
+     * So we must know what cookers we have first.
+     *
+     * @return names of cookers
+     */
     List<String> queryCookerNamesFromDB();
 
 }

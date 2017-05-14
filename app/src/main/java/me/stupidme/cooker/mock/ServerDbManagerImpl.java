@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -294,7 +295,7 @@ public class ServerDbManagerImpl implements ServerDbManager {
         ContentValues values = new ContentValues();
         values.put(KEY_USER_ID_SERVER, cookerBean.getUserId());
         values.put(KEY_COOKER_ID_SERVER, cookerBean.getCookerId());
-        values.put(KEY_COOKER_NAME_SERVER, cookerBean.getCookerId());
+        values.put(KEY_COOKER_NAME_SERVER, cookerBean.getCookerName());
         values.put(KEY_COOKER_LOCATION_SERVER, cookerBean.getCookerLocation());
         values.put(KEY_COOKER_STATUS_SERVER, cookerBean.getCookerStatus());
         return values;

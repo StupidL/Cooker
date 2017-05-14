@@ -92,17 +92,6 @@ public class BookNowFragment extends BookBaseFragment implements BookDialog.Book
                         BookBean bean = mDataSet.get(position);
                         mDataSet.remove(position);
                         mAdapter.notifyItemRemoved(position);
-//
-//                        Snackbar.make(viewHolder.itemView,
-//                                getString(R.string.snackbar_text_cooker_fragment),
-//                                1000)
-//                                .setAction("DELETE", v -> {
-//                                    mPresenter.deleteBook(bean);
-//                                }).show();
-//
-//                        mDataSet.add(position, bean);
-//                        mAdapter.notifyItemInserted(position);
-//
 
                         new AlertDialog.Builder(viewHolder.itemView.getContext())
                                 .setMessage(getString(R.string.snackbar_text_cooker_fragment))
@@ -132,16 +121,6 @@ public class BookNowFragment extends BookBaseFragment implements BookDialog.Book
                 }
             }
         });
-    }
-
-    @Override
-    public void insertBooks(List<BookBean> books) {
-        mDataSet.clear();
-        for (BookBean book : books) {
-            if ("booking".equals(book.getCookerStatus()))
-                mDataSet.add(book);
-        }
-        mAdapter.notifyDataSetChanged();
     }
 
     @Override

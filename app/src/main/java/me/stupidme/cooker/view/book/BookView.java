@@ -6,60 +6,68 @@ import me.stupidme.cooker.model.BookBean;
 
 /**
  * Created by StupidL on 2017/3/10.
+ * <p>
+ * Callback interface for presenter to communicate with activity or fragment.
  */
 
 public interface BookView {
 
     /**
-     * 控制刷新控件的显示与否。
-     * 当进行网络请求的时候为true。网络请求结束或者错误的时候为false。
+     * Show a refresh control
      *
-     * @param show 是否显示
+     * @param show show control if true
      */
     void setRefreshing(boolean show);
 
     /**
-     * 界面上移除一个项目
+     * Show a tips dialog.
      *
-     * @param book 要移除的预约项目
+     * @param show show dialog if true
+     */
+    void showDialog(boolean show);
+
+    /**
+     * Remove a specified book.
+     *
+     * @param book book
      */
     void removeBook(BookBean book);
 
     /**
-     * 界面上插入一个预约项目
+     * Remove a specified book.
      *
-     * @param book 要插入的项目
+     * @param bookId id of book
+     */
+    void removeBook(Long bookId);
+
+    /**
+     * Insert a single book to a activity or fragment.
+     *
+     * @param book book
      */
     void insertBook(BookBean book);
 
     /**
-     * 界面上批量插入预约项目,在数据库获取信息的情况下使用
+     * Insert books to activity or fragment.
      *
-     * @param list 项目列表
+     * @param list books
      */
     void insertBooks(List<BookBean> list);
 
     /**
-     * 更新某个具体的预约项目。当该预约的状态为booking的时候，
-     * 使用该方法可以定时刷新状态。
+     * Update a specified book.
      *
-     * @param position 预约项在适配器的位置
-     * @param book     更新后的预约项
+     * @param position position in adapter
+     * @param book     book
      */
     void updateBook(int position, BookBean book);
 
     /**
-     * 批量更新预约项目。在服务器获取信息的情况下使用
+     * Toast a message.
      *
-     * @param list 项目列表
+     * @param what    message type
+     * @param message message content
      */
-    void updateBooks(List<BookBean> list);
-
-    /**
-     * 界面弹出提示信息
-     *
-     * @param message 信息内容
-     */
-    void showMessage(String message);
+    void showMessage(int what, CharSequence message);
 
 }

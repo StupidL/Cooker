@@ -137,7 +137,7 @@ public class DbManagerImpl implements DbManager {
         mWritableDB.beginTransaction();
         for (CookerBean cooker : cookers) {
             ContentValues values = createContentValues(cooker);
-            long r = mWritableDB.insert(TABLE_NAME_COOKER, null, values);
+            long r = mWritableDB.replace(TABLE_NAME_COOKER, null, values);
             if (r == -1) {
                 mWritableDB.endTransaction();
                 return false;
