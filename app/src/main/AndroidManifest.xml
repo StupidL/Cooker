@@ -38,7 +38,7 @@
             android:label="@string/title_activity_book"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.AboutActivity"
+            android:name=".view.about.AboutActivity"
             android:label="@string/title_activity_about"
             android:theme="@style/AppTheme.NoActionBar" />
 
