@@ -35,6 +35,19 @@ public class DbHelper extends SQLiteOpenHelper {
             + "time INTEGER NOT NULL"
             + ")";
 
+    private static final String CREATE_TABLE_HISTORY = "CREATE TABLE book_history("
+            + "userId INTEGER NOT NULL, "
+            + "bookId INTEGER UNIQUE NOT NULL, "
+            + "cookerId INTEGER NOT NULL, "
+            + "cookerName VARCHAR(20) NOT NULL, "
+            + "cookerLocation VARCHAR(20) NOT NULL, "
+            + "cookerStatus VARCHAR(10) NOT NULL, "
+            + "riceWeight INTEGER NOT NULL, "
+            + "peopleCount INTEGER NOT NULL, "
+            + "taste VARCHAR(10) NOT NULL, "
+            + "time INTEGER NOT NULL"
+            + ")";
+
     DbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
@@ -43,6 +56,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_COOKER);
         db.execSQL(CREATE_TABLE_BOOK);
+        db.execSQL(CREATE_TABLE_HISTORY);
     }
 
     @Override

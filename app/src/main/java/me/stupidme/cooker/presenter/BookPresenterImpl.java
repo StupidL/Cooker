@@ -72,6 +72,12 @@ public class BookPresenterImpl implements BookPresenter {
                             mView.showMessage(MESSAGE_INSERT_BOOK_DB_FAILED, null);
                             return;
                         }
+                        boolean success2 = mDbManager.insertBookHistory(value.getData().get(0));
+                        if (!success2) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_INSERT_BOOK_HISTORY_FAILED, null);
+                            return;
+                        }
                         mView.insertBook(value.getData().get(0));
                         Log.i(TAG, "onNext: " + value.toString());
                     }
@@ -154,14 +160,21 @@ public class BookPresenterImpl implements BookPresenter {
                             mView.showMessage(MESSAGE_INSERT_BOOK_DB_FAILED, null);
                             return;
                         }
+                        bookBean1.setCookerStatus("Booking");
+                        boolean success2 = mDbManager.insertBookHistory(bookBean1);
+                        if (!success2) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_INSERT_BOOK_HISTORY_FAILED, null);
+                            return;
+                        }
 
                         CookerBean cookerBean1 = new CookerBean();
                         cookerBean1.setCookerId(bookBean1.getCookerId());
                         cookerBean1.setCookerName(bookBean1.getCookerName());
                         cookerBean1.setCookerLocation(bookBean1.getCookerLocation());
                         cookerBean1.setCookerStatus("Booking");
-                        boolean success2 = mDbManager.updateCooker(cookerBean1);
-                        if (!success2) {
+                        boolean success3 = mDbManager.updateCooker(cookerBean1);
+                        if (!success3) {
                             mView.showDialog(false);
                             mView.showMessage(MESSAGE_UPDATE_COOKER_FAILED, null);
                             return;
@@ -235,6 +248,16 @@ public class BookPresenterImpl implements BookPresenter {
                         Log.i(TAG, "onComplete: ");
                     }
                 });
+    }
+
+    @Override
+    public void deleteBookHistory(BookBean book) {
+        boolean success = mDbManager.deleteBookHistory(DbManager.KEY_BOOK_ID, book.getBookId());
+        if (!success) {
+            mView.showMessage(0, "Db delete history failed!");
+            return;
+        }
+        mView.removeBook(book);
     }
 
     @Override

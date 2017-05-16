@@ -18,12 +18,14 @@ public interface BookPresenter {
     int MESSAGE_INSERT_BOOK_SUCCESS = 0x12;
     int MESSAGE_INSERT_BOOK_SUCCESS_BUT_EMPTY = 0x13;
     int MESSAGE_INSERT_BOOK_DB_FAILED = 0x14;
+    int MESSAGE_INSERT_BOOK_HISTORY_FAILED = 0x15;
 
     int MESSAGE_DELETE_BOOK_ERROR = 0x20;
     int MESSAGE_DELETE_BOOK_FAILED = 0x21;
     int MESSAGE_DELETE_BOOK_SUCCESS = 0x22;
     int MESSAGE_DELETE_BOOK_SUCCESS_BUT_EMPTY = 0x23;
     int MESSAGE_DELETE_BOOK_DB_FAILED = 0x24;
+    int MESSAGE_DELETE_BOOK_HISTORY_FAILED = 0x25;
 
     int MESSAGE_QUERY_BOOK_ERROR = 0x30;
     int MESSAGE_QUERY_BOOK_FAILED = 0x31;
@@ -53,6 +55,13 @@ public interface BookPresenter {
      * @param book book to be deleted
      */
     void deleteBook(BookBean book);
+
+    /**
+     * Delete a book in table history in local db.
+     *
+     * @param book book
+     */
+    void deleteBookHistory(BookBean book);
 
     /**
      * Query a specified book by id from local db.

@@ -22,6 +22,8 @@ public class DbManagerImpl implements DbManager {
     private static final String RESET_COOKER_SEQUENCE = "UPDATE sqlite_sequence SET seq = 0 WHERE name = 'cooker'";
     private static final String DELETE_BOOK_TABLE = "DELETE FROM book";
     private static final String RESET_BOOK_SEQUENCE = "UPDATE sqlite_sequence SET seq = 0 WHERE name = 'book'";
+    private static final String DELETE_BOOK_HISTORY_TABLE = "DELETE FROM book_history";
+    private static final String RESET_BOOK_HISTORY_SEQUENCE = "UPDATE sqlite_sequence SET seq = 0 WHERE name = 'book_history'";
 
     private volatile static DbManagerImpl sInstance;
 
@@ -252,6 +254,95 @@ public class DbManagerImpl implements DbManager {
             cursor.moveToNext();
         }
         return list;
+    }
+
+    @Override
+    public boolean insertBookHistory(BookBean book) {
+        ContentValues values = createContentValues(book);
+        long r = mWritableDB.replace(TABLE_NAME_HISTORY, null, values);
+        return r != -1;
+    }
+
+    @Override
+    public boolean insertBooksHistory(List<BookBean> books) {
+        mWritableDB.beginTransaction();
+        for (BookBean book : books) {
+            boolean r = insertBookHistory(book);
+            if (!r) {
+                mWritableDB.endTransaction();
+                return false;
+            }
+        }
+        mWritableDB.setTransactionSuccessful();
+        mWritableDB.endTransaction();
+        return true;
+    }
+
+    @Override
+    public boolean deleteBookHistory(String where, Long equalTo) {
+        int r = mWritableDB.delete(TABLE_NAME_HISTORY, where + "=?", new String[]{String.valueOf(equalTo)});
+        return r != 0;
+    }
+
+    @Override
+    public boolean deleteBooksHistory(String where, Long equalTo) {
+        mWritableDB.execSQL(DELETE_BOOK_HISTORY_TABLE);
+        mWritableDB.execSQL(RESET_BOOK_HISTORY_SEQUENCE);
+        return true;
+    }
+
+    @Override
+    public BookBean queryBookHistory(String where, Long equalTo) {
+        Cursor cursor = mReadableDB.rawQuery("SELECT * FROM " + TABLE_NAME_HISTORY + " WHERE " + where + " =?",
+                new String[]{String.valueOf(equalTo)});
+        if (cursor.getCount() <= 0) {
+            cursor.close();
+            return null;
+        }
+        BookBean bookBean = createBookBean(cursor);
+        cursor.close();
+        return bookBean;
+    }
+
+    @Override
+    public List<BookBean> queryBooksHistory(String where, Long equalTo) {
+        List<BookBean> list = new ArrayList<>();
+        Cursor cursor = mReadableDB.rawQuery("SELECT * FROM " + TABLE_NAME_HISTORY + " WHERE " + where + " =?",
+                new String[]{String.valueOf(equalTo)});
+        if (cursor.getCount() <= 0) {
+            cursor.close();
+            return list;
+        }
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            list.add(createBookBean(cursor));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return list;
+    }
+
+    @Override
+    public boolean updateBookHistory(BookBean book) {
+        ContentValues values = createContentValues(book);
+        long r = mWritableDB.replace(TABLE_NAME_HISTORY, null, values);
+        return r != -1;
+    }
+
+    @Override
+    public boolean updateBooksHistory(List<BookBean> books) {
+        mWritableDB.beginTransaction();
+        for (BookBean book : books) {
+            ContentValues values = createContentValues(book);
+            long r = mWritableDB.replace(TABLE_NAME_HISTORY, null, values);
+            if (r == -1) {
+                mWritableDB.endTransaction();
+                return false;
+            }
+        }
+        mWritableDB.setTransactionSuccessful();
+        mWritableDB.endTransaction();
+        return true;
     }
 
     private ContentValues createContentValues(CookerBean cookerBean) {

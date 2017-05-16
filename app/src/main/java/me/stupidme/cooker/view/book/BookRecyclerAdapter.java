@@ -4,12 +4,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
+import java.util.Calendar;
 import java.util.List;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
+import me.stupidme.cooker.util.ImageUtil;
 
 /**
  * Created by StupidL on 2017/3/5.
@@ -31,15 +36,37 @@ public class BookRecyclerAdapter extends RecyclerView.Adapter<BookRecyclerAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.id.setText("ID: " + mDataSet.get(position).getCookerId());
-        holder.cookerId.setText(mDataSet.get(position).getCookerId() + "");
-        holder.name.setText("Name: " + mDataSet.get(position).getCookerName());
-        holder.place.setText("Place: " + mDataSet.get(position).getCookerLocation());
-        holder.count.setText("Count: " + mDataSet.get(position).getPeopleCount());
-        holder.weight.setText("Weight: " + mDataSet.get(position).getRiceWeight());
-        holder.taste.setText("Taste: " + mDataSet.get(position).getTaste());
-        holder.status.setText("Status: " + mDataSet.get(position).getCookerStatus());
-        holder.time.setText("Time: " + mDataSet.get(position).getTime());
+        BookBean bookBean = mDataSet.get(position);
+        String bookId = bookBean.getBookId().toString().toUpperCase().substring(1, 6);
+        String cookerId = bookBean.getCookerId().toString().toUpperCase();
+        String name = bookBean.getCookerName().toUpperCase();
+        String location = bookBean.getCookerLocation().toUpperCase();
+        String count = String.valueOf(bookBean.getPeopleCount()).toUpperCase();
+        String weight = String.valueOf(bookBean.getRiceWeight()).toUpperCase();
+        String taste = bookBean.getTaste().toUpperCase();
+        String status = bookBean.getCookerStatus().toUpperCase();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(bookBean.getTime());
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        String time = String.valueOf(hour) + ":" + (minute < 10 ? "0" + minute : minute);
+
+        holder.id.setText(bookId);
+        holder.cookerId.setText(cookerId);
+        holder.name.setText(name);
+        holder.place.setText(location);
+        holder.count.setText(count);
+        holder.weight.setText(weight);
+        holder.taste.setText(taste);
+        holder.status.setText(status);
+        holder.time.setText(time);
+
+        Glide.with(holder.itemView.getContext())
+                .load(ImageUtil.nextImageResId())
+                .placeholder(ImageUtil.placeHolder())
+                .into(holder.image);
     }
 
     @Override
@@ -62,6 +89,7 @@ public class BookRecyclerAdapter extends RecyclerView.Adapter<BookRecyclerAdapte
         TextView taste;
         TextView status;
         TextView time;
+        ImageView image;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -74,6 +102,7 @@ public class BookRecyclerAdapter extends RecyclerView.Adapter<BookRecyclerAdapte
             taste = (TextView) itemView.findViewById(R.id.book_taste);
             status = (TextView) itemView.findViewById(R.id.book_status);
             time = (TextView) itemView.findViewById(R.id.book_time);
+            image = (ImageView) itemView.findViewById(R.id.book_image);
         }
     }
 }

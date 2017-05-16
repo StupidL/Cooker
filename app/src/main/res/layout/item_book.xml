@@ -5,12 +5,12 @@
     style="@style/BookCardView"
     app:cardCornerRadius="3dp">
 
-    <TableLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TableRow style="@style/BookCardTableRow">
+        <LinearLayout style="@style/BookCardTableRow">
 
             <TextView
                 android:id="@+id/book_id"
@@ -26,20 +26,22 @@
                 android:id="@+id/book_time"
                 style="@style/BookCardTextStyle"
                 android:text="Time" />
-        </TableRow>
+        </LinearLayout>
 
-        <TableRow
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <ImageView
-                android:layout_width="match_parent"
+                android:id="@+id/book_image"
+                android:layout_width="0dp"
                 android:layout_height="200dp"
                 android:layout_weight="1"
-                android:background="@color/blue_grey_600" />
-        </TableRow>
+                android:scaleType="fitXY"
+                android:src="@drawable/bg4" />
+        </LinearLayout>
 
-        <TableRow style="@style/BookCardTableRow">
+        <LinearLayout style="@style/BookCardTableRow">
 
             <TextView
                 android:id="@+id/book_name"
@@ -56,9 +58,9 @@
                 style="@style/BookCardTextStyle"
                 android:text="Place" />
 
-        </TableRow>
+        </LinearLayout>
 
-        <TableRow style="@style/BookCardTableRow">
+        <LinearLayout style="@style/BookCardTableRow">
 
             <TextView
                 android:id="@+id/book_people_count"
@@ -75,9 +77,9 @@
                 style="@style/BookCardTextStyle"
                 android:text="Taste" />
 
-        </TableRow>
+        </LinearLayout>
 
-    </TableLayout>
+    </LinearLayout>
 
 
 </android.support.v7.widget.CardView>

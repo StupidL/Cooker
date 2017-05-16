@@ -4,12 +4,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.CookerBean;
+import me.stupidme.cooker.util.ImageUtil;
 
 /**
  * Created by StupidL on 2017/3/5.
@@ -34,7 +38,12 @@ public class CookerRecyclerAdapter extends RecyclerView.Adapter<CookerRecyclerAd
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.name.setText(mDataSet.get(position).getCookerName());
         holder.location.setText(mDataSet.get(position).getCookerLocation());
-        holder.status.setText(mDataSet.get(position).getCookerStatus());
+        holder.status.setText(mDataSet.get(position).getCookerStatus().toUpperCase());
+
+        Glide.with(holder.itemView.getContext())
+                .load(ImageUtil.nextImageResId())
+                .placeholder(ImageUtil.placeHolder())
+                .into(holder.image);
     }
 
     @Override
@@ -48,14 +57,14 @@ public class CookerRecyclerAdapter extends RecyclerView.Adapter<CookerRecyclerAd
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        View view;
+        ImageView image;
         TextView name;
         TextView location;
         TextView status;
 
         ViewHolder(View itemView) {
             super(itemView);
-            view = itemView.findViewById(R.id.view);
+            image = (ImageView) itemView.findViewById(R.id.cooker_image);
             name = (TextView) itemView.findViewById(R.id.cooker_name);
             location = (TextView) itemView.findViewById(R.id.cooker_location);
             status = (TextView) itemView.findViewById(R.id.cooker_status);

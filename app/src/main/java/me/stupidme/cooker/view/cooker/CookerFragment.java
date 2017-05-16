@@ -26,6 +26,7 @@ import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.presenter.CookerMockPresenterImpl;
 import me.stupidme.cooker.presenter.CookerPresenter;
+import me.stupidme.cooker.presenter.CookerPresenterImpl;
 import me.stupidme.cooker.util.ToastUtil;
 import me.stupidme.cooker.view.custom.SpaceItemDecoration;
 
@@ -76,7 +77,7 @@ public class CookerFragment extends Fragment implements CookerView, CookerDialog
 
         mDataSet = new ArrayList<>();
         mAdapter = new CookerRecyclerAdapter(mDataSet);
-//        mPresenter = new CookerPresenter(this);
+//        mPresenter = new CookerPresenterImpl(this);
         mPresenter = new CookerMockPresenterImpl(this);
         mProgressDialog = new ProgressDialog(getActivity());
         mProgressDialog.setTitle(getString(R.string.fragment_cooker_dialog_titile));
