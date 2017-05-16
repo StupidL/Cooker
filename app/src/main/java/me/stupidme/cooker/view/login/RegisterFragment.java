@@ -22,6 +22,7 @@ import me.stupidme.cooker.model.UserBean;
 import me.stupidme.cooker.presenter.UserRegisterMockPresenterImpl;
 import me.stupidme.cooker.presenter.UserRegisterPresenter;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
+import me.stupidme.cooker.view.cooker.CookerActivity;
 
 /**
  * Created by StupidL on 2017/3/14.
@@ -142,8 +143,9 @@ public class RegisterFragment extends Fragment implements RegisterView {
         SharedPreferenceUtil.putAccountUserPassword(user.getPassword());
         SharedPreferenceUtil.putAccountUserId(user.getUserId());
 
-        Intent intent = new Intent(getActivity(), LoginActivity.class);
-        intent.setAction(Constants.ACTION_REGISTER_SUCCESS);
+//        Intent intent = new Intent(getActivity(), LoginActivity.class);
+        Intent intent = new Intent(getActivity(), CookerActivity.class);
+//        intent.setAction(Constants.ACTION_REGISTER_SUCCESS);
         startActivity(intent);
         getActivity().finish();
     }

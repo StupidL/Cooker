@@ -19,4 +19,6 @@
     <color name="lime_900">#827717</color>
     <color name="deep_orange_A200">#FF6E40</color>
     <color name="green_500">#4CAF50</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>

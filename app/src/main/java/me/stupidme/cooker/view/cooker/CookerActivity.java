@@ -18,7 +18,7 @@ import android.widget.TextView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
-import me.stupidme.cooker.view.AboutActivity;
+import me.stupidme.cooker.view.about.AboutActivity;
 import me.stupidme.cooker.view.book.BookActivity;
 import me.stupidme.cooker.view.feedback.FeedbackHelper;
 import me.stupidme.cooker.view.login.Constants;
@@ -75,7 +75,11 @@ public class CookerActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+//            super.onBackPressed();
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            startActivity(intent);
         }
     }
 
@@ -127,4 +131,5 @@ public class CookerActivity extends AppCompatActivity
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
     }
+
 }

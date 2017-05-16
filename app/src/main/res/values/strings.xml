@@ -209,4 +209,8 @@
     <string name="fragment_cooker_dialog_tips">This may take a few seconds. Please wait...</string>
     <string name="fragment_book_dialog_title">Tips</string>
 
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
 </resources>
