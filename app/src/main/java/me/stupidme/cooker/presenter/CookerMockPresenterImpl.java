@@ -10,8 +10,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.mock.MockCookerService;
 import me.stupidme.cooker.model.CookerBean;
-import me.stupidme.cooker.model.db.RealmCookerManager;
-import me.stupidme.cooker.model.db.RealmDbManagerImpl;
+import me.stupidme.cooker.model.db.DbManager;
+import me.stupidme.cooker.model.db.DbManagerImpl;
 import me.stupidme.cooker.model.http.CookerRetrofit;
 import me.stupidme.cooker.model.http.HttpResult;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
@@ -27,23 +27,19 @@ public class CookerMockPresenterImpl implements CookerPresenter {
 
     private CookerView mView;
 
-    private RealmCookerManager mRealmManager;
+    private DbManager mDbManager;
 
     private MockCookerService mMockService;
 
     public CookerMockPresenterImpl(CookerView view) {
         mView = view;
-        mRealmManager = RealmDbManagerImpl.getInstance();
+        mDbManager = DbManagerImpl.getInstance();
         mMockService = CookerRetrofit.getInstance().getMockService();
     }
 
     @Override
-    public void dispose() {
-
-    }
-
-    @Override
     public void deleteCooker(long cookerId) {
+        mView.showDialog(true);
         mMockService.deleteCooker(SharedPreferenceUtil.getAccountUserId(0L), cookerId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -55,24 +51,40 @@ public class CookerMockPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mRealmManager.deleteCookers(RealmCookerManager.KEY_COOKER_ID, cookerId);
+                        if (value == null || value.getData() == null
+                                || value.getData().size() <= 0 || value.getResultCode() != 200) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_DELETE_COOKER_FAILED, null);
+                            return;
+                        }
+                        boolean success = mDbManager.deleteCooker(DbManager.KEY_COOKER_ID, cookerId);
+                        if (!success) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_DELETE_DB_COOKER_FAILED, null);
+                            return;
+                        }
                         mView.removeCooker(value.getData().get(0));
+                        Log.i(TAG, "onNext: " + value.toString());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
+                        mView.showDialog(false);
+                        mView.showMessage(MESSAGE_DELETE_COOKER_ERROR, e.toString());
+                        Log.i(TAG, "onError: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-
+                        mView.showDialog(false);
+                        Log.i(TAG, "onComplete: ");
                     }
                 });
     }
 
     @Override
     public void deleteCookers() {
+        mView.showDialog(true);
         mMockService.deleteCookers(SharedPreferenceUtil.getAccountUserId(0L))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -84,25 +96,46 @@ public class CookerMockPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mRealmManager.deleteCookers(RealmCookerManager.KEY_USER_ID, SharedPreferenceUtil.getAccountUserId(0L));
-                        mView.removeCookers(value.getData());
+                        if (value == null || value.getData() == null
+                                || value.getData().size() <= 0 || value.getResultCode() != 200) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_DELETE_COOKER_FAILED, null);
+                            return;
+                        }
+                        boolean success = mDbManager.deleteCookers(DbManager.KEY_USER_ID,
+                                SharedPreferenceUtil.getAccountUserId(0L));
+                        if (!success) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_DELETE_DB_COOKER_FAILED, null);
+                            return;
+                        }
+                        for (CookerBean cookerBean : value.getData())
+                            mView.removeCooker(cookerBean.getCookerId());
+                        Log.i(TAG, "onNext: " + value.toString());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
+                        mView.showDialog(false);
+                        mView.showMessage(MESSAGE_DELETE_COOKER_ERROR, e.toString());
+                        Log.i(TAG, "onError: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-
+                        mView.showDialog(false);
+                        Log.i(TAG, "onComplete: ");
                     }
                 });
     }
 
     @Override
     public void insertCooker(CookerBean bean) {
-        mMockService.insertCooker(SharedPreferenceUtil.getAccountUserId(0L), bean)
+        mView.showDialog(true);
+        Long userId = SharedPreferenceUtil.getAccountUserId(0L);
+        bean.setUserId(userId);
+        Log.v(TAG, "CookerBean: " + bean.toString());
+        mMockService.insertCooker(userId, bean)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
@@ -113,44 +146,51 @@ public class CookerMockPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mRealmManager.insertCookers(value.getData());
+                        if (value == null || value.getData() == null
+                                || value.getData().size() <= 0 || value.getResultCode() != 200) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_INSERT_COOKER_FAILED, null);
+                            return;
+                        }
+                        boolean success = mDbManager.insertCooker(value.getData().get(0));
+                        if (!success) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_INSERT_DB_COOKER_FAILED, null);
+                            return;
+                        }
                         mView.insertCooker(value.getData().get(0));
-                        Log.v(TAG, "value resultCode: " + value.getResultCode());
-                        Log.v(TAG, "value resultMessage: " + value.getResultMessage());
-
-                        Log.v(TAG, "cooker: " + value.getData().get(0).toString());
+                        Log.i(TAG, "onNext: " + value.toString());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
+                        mView.showDialog(false);
+                        mView.showMessage(MESSAGE_INSERT_COOKER_ERROR, e.toString());
+                        Log.i(TAG, "onError: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-
+                        mView.showDialog(false);
+                        Log.i(TAG, "onComplete: ");
                     }
                 });
     }
 
     @Override
-    public void insertCookers(List<CookerBean> cookers) {
-
-    }
-
-    @Override
     public void queryCookerFromDB(long cookerId) {
-        mView.insertCooker(mRealmManager.queryCookers(RealmCookerManager.KEY_COOKER_ID, cookerId).get(0));
+        mView.insertCooker(mDbManager.queryCookers(DbManager.KEY_COOKER_ID, cookerId).get(0));
     }
 
     @Override
     public void queryCookersFromDB() {
-        mView.insertCookers(mRealmManager.queryCookers(RealmCookerManager.KEY_USER_ID,
+        mView.insertCookers(mDbManager.queryCookers(DbManager.KEY_USER_ID,
                 SharedPreferenceUtil.getAccountUserId(0L)));
     }
 
     @Override
     public void updateCooker(int position, CookerBean bean) {
+        mView.showDialog(true);
         mMockService.updateCooker(SharedPreferenceUtil.getAccountUserId(0L), bean.getCookerId(), bean)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -162,25 +202,39 @@ public class CookerMockPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mRealmManager.updateCooker(value.getData().get(0));
-                        mView.updateCooker(position, value.getData().get(0));
+                        if (value == null || value.getData() == null
+                                || value.getData().size() <= 0 || value.getResultCode() != 200) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_UPDATE_COOKER_FAILED, null);
+                            return;
+                        }
+                        boolean success = mDbManager.updateCooker(value.getData().get(0));
+                        if (!success) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_UPDATE_DB_COOKER_FAILED, null);
+                            return;
+                        }
+                        mView.updateCooker(position, bean);
+                        Log.i(TAG, "onNext: " + value.toString());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
+                        mView.showDialog(false);
+                        mView.showMessage(MESSAGE_UPDATE_COOKER_ERROR, e.toString());
+                        Log.i(TAG, "onError: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-
+                        mView.showDialog(false);
+                        Log.i(TAG, "onComplete: ");
                     }
                 });
     }
 
     @Override
     public void queryCookerFromServer(int position, long cookerId) {
-        Log.v(TAG, "queryCookerFromServer...");
         mView.showRefreshing(true);
         mMockService.queryCooker(SharedPreferenceUtil.getAccountUserId(0L), cookerId)
                 .subscribeOn(Schedulers.io())
@@ -193,28 +247,43 @@ public class CookerMockPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mRealmManager.updateCooker(value.getData().get(0));
-                        mView.insertCooker(value.getData().get(0));
-                        mView.showRefreshing(false);
+                        if (value == null || value.getData() == null || value.getResultCode() != 200) {
+                            mView.showRefreshing(false);
+                            mView.showMessage(MESSAGE_QUERY_SERVER_COOKER_FAILED, null);
+                            return;
+                        }
+                        if (value.getData().size() <= 0) {
+                            mView.showRefreshing(false);
+                            mView.showMessage(MESSAGE_QUERY_SERVER_COOKER_SUCCESS, null);
+                            return;
+                        }
+                        boolean success = mDbManager.updateCooker(value.getData().get(0));
+                        if (!success) {
+                            mView.showRefreshing(false);
+                            mView.showMessage(MESSAGE_UPDATE_DB_COOKER_FAILED, null);
+                            return;
+                        }
+                        mView.updateCooker(position, value.getData().get(0));
+                        Log.i(TAG, "onNext: " + value.toString());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
                         mView.showRefreshing(false);
+                        mView.showMessage(MESSAGE_QUERY_SERVER_COOKER_ERROR, e.toString());
+                        Log.i(TAG, "onError: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
                         mView.showRefreshing(false);
+                        Log.i(TAG, "onComplete: ");
                     }
                 });
     }
 
     @Override
     public void queryCookersFromServer() {
-        Log.v(TAG, "queryCookersFromServer...");
-        Log.v(TAG, "userId form sp: " + SharedPreferenceUtil.getAccountUserId(0L));
         mView.showRefreshing(true);
         mMockService.queryCookers(SharedPreferenceUtil.getAccountUserId(0L))
                 .subscribeOn(Schedulers.io())
@@ -227,23 +296,37 @@ public class CookerMockPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        Log.v(TAG, "value resultCode: " + value.getResultCode());
-                        Log.v(TAG, "value resultMessage: " + value.getResultMessage());
-                        Log.v(TAG, "value data size: " + value.getData().size());
-                        mRealmManager.updateCookers(value.getData());
+                        if (value == null || value.getData() == null || value.getResultCode() != 200) {
+                            mView.showRefreshing(false);
+                            mView.showMessage(MESSAGE_QUERY_SERVER_COOKER_FAILED, null);
+                            return;
+                        }
+                        if (value.getData().size() == 0) {
+                            mView.showRefreshing(false);
+                            mView.showMessage(MESSAGE_QUERY_SERVER_COOKER_SUCCESS, null);
+                            return;
+                        }
+                        boolean success = mDbManager.updateCookers(value.getData());
+                        if (!success) {
+                            mView.showRefreshing(false);
+                            mView.showMessage(MESSAGE_UPDATE_DB_COOKER_FAILED, null);
+                            return;
+                        }
                         mView.insertCookers(value.getData());
-                        mView.showRefreshing(false);
+                        Log.i(TAG, "onNext: " + value.toString());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
                         mView.showRefreshing(false);
+                        mView.showMessage(MESSAGE_QUERY_SERVER_COOKER_ERROR, e.toString());
+                        Log.i(TAG, "onError: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-
+                        mView.showRefreshing(false);
+                        Log.i(TAG, "onComplete: ");
                     }
                 });
     }

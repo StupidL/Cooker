@@ -4,6 +4,7 @@ package me.stupidme.cooker.view.book;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
@@ -78,15 +79,19 @@ public class BookHistoryFragment extends BookBaseFragment {
                         mDataSet.remove(position);
                         mAdapter.notifyItemRemoved(position);
 
-                        Snackbar.make(viewHolder.itemView,
-                                getString(R.string.snackbar_text_cooker_fragment),
-                                1000)
-                                .setAction("DELETE", v -> {
-                                    mPresenter.deleteBook(bean);
-                                }).show();
-
-                        mDataSet.add(position, bean);
-                        mAdapter.notifyItemInserted(position);
+                        new AlertDialog.Builder(viewHolder.itemView.getContext())
+                                .setMessage(getString(R.string.snackbar_text_cooker_fragment))
+                                .setTitle(getString(R.string.tips_title))
+                                .setNegativeButton("CANCEL", (dialog12, which) -> {
+                                    dialog12.dismiss();
+                                    mDataSet.add(position, bean);
+                                    mAdapter.notifyItemInserted(position);
+                                })
+                                .setPositiveButton("DELETE", (dialog1, which) -> {
+                                    dialog1.dismiss();
+                                    mPresenter.deleteBookHistory(bean);
+                                })
+                                .show();
                     }
                 };
         ItemTouchHelper helper = new ItemTouchHelper(callback);

@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by StupidL on 2017/3/21.
  */
 
-public class CookerDbHelper extends SQLiteOpenHelper {
+public class DbHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "cooker_app.db";
 
@@ -35,7 +35,20 @@ public class CookerDbHelper extends SQLiteOpenHelper {
             + "time INTEGER NOT NULL"
             + ")";
 
-    CookerDbHelper(Context context) {
+    private static final String CREATE_TABLE_HISTORY = "CREATE TABLE book_history("
+            + "userId INTEGER NOT NULL, "
+            + "bookId INTEGER UNIQUE NOT NULL, "
+            + "cookerId INTEGER NOT NULL, "
+            + "cookerName VARCHAR(20) NOT NULL, "
+            + "cookerLocation VARCHAR(20) NOT NULL, "
+            + "cookerStatus VARCHAR(10) NOT NULL, "
+            + "riceWeight INTEGER NOT NULL, "
+            + "peopleCount INTEGER NOT NULL, "
+            + "taste VARCHAR(10) NOT NULL, "
+            + "time INTEGER NOT NULL"
+            + ")";
+
+    DbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
@@ -43,6 +56,7 @@ public class CookerDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_COOKER);
         db.execSQL(CREATE_TABLE_BOOK);
+        db.execSQL(CREATE_TABLE_HISTORY);
     }
 
     @Override

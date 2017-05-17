@@ -2,22 +2,24 @@ package me.stupidme.cooker.presenter;
 
 import android.util.Log;
 
-import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.model.BookBean;
-import me.stupidme.cooker.model.BookDbModelImpl;
-import me.stupidme.cooker.model.BookDbModel;
+import me.stupidme.cooker.model.CookerBean;
+import me.stupidme.cooker.model.db.DbManager;
+import me.stupidme.cooker.model.db.DbManagerImpl;
 import me.stupidme.cooker.model.http.CookerRetrofit;
 import me.stupidme.cooker.model.http.CookerService;
 import me.stupidme.cooker.model.http.HttpResult;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
+import me.stupidme.cooker.view.book.BookDialog;
 import me.stupidme.cooker.view.book.BookView;
 
 /**
@@ -30,90 +32,213 @@ public class BookPresenterImpl implements BookPresenter {
 
     private BookView mView;
 
-    private BookDbModel mModel;
+    private DbManager mDbManager;
 
     private CookerService mService;
 
-    private CompositeDisposable mCompositeDisposable;
-
     public BookPresenterImpl(BookView view) {
         mView = view;
-        mModel = BookDbModelImpl.getInstance();
+        mDbManager = DbManagerImpl.getInstance();
         mService = CookerRetrofit.getInstance().getCookerService();
-        mCompositeDisposable = new CompositeDisposable();
     }
 
     @Override
     public void insertBook(BookBean book) {
-
+        mView.showDialog(true);
         mService.insertBook(SharedPreferenceUtil.getAccountUserId(0L), book)
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.insertBook(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<BookBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        mCompositeDisposable.add(d);
 
-                        Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
                     @Override
                     public void onNext(HttpResult<List<BookBean>> value) {
+                        if (value == null || value.getData() == null || value.getResultCode() != 200) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_INSERT_BOOK_FAILED, null);
+                            return;
+                        }
+                        if (value.getData().size() <= 0) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_INSERT_BOOK_SUCCESS_BUT_EMPTY, null);
+                            return;
+                        }
+                        boolean success = mDbManager.insertBook(value.getData().get(0));
+                        if (!success) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_INSERT_BOOK_DB_FAILED, null);
+                            return;
+                        }
+                        boolean success2 = mDbManager.insertBookHistory(value.getData().get(0));
+                        if (!success2) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_INSERT_BOOK_HISTORY_FAILED, null);
+                            return;
+                        }
                         mView.insertBook(value.getData().get(0));
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
-                        mView.setRefreshing(false);
+                        mView.showDialog(false);
+                        mView.showMessage(MESSAGE_INSERT_BOOK_ERROR, e.toString());
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-                        mView.setRefreshing(false);
+                        mView.showDialog(false);
                         Log.i(TAG, "onComplete: ");
                     }
                 });
     }
 
     @Override
-    public void insertBooks(List<BookBean> books) {
-
-    }
-
-    @Override
     public void insertBook(Map<String, String> map) {
+        mView.showDialog(true);
 
+        String cookerName = map.get(BookDialog.KEY_COOKER_NAME);
+        int peopleCount = Integer.parseInt(map.get(BookDialog.KEY_PEOPLE_COUNT));
+        int riceWeight = Integer.parseInt(map.get(BookDialog.KEY_RICE_WEIGHT));
+        String taste = map.get(BookDialog.KEY_TASTE);
+        String time = map.get(BookDialog.KEY_BOOK_TIME);
+        String[] times = time.split(":");
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
+        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH));
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(times[0]));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(times[1]));
+        long t = calendar.getTimeInMillis();
+        CookerBean cookerBean = mDbManager.queryCooker(DbManager.KEY_COOKER_NAME, cookerName);
+        if (cookerBean == null) {
+            mView.showDialog(false);
+            mView.showMessage(MESSAGE_INSERT_BOOK_FAILED, null);
+            return;
+        }
+        BookBean bookBean = new BookBean();
+        bookBean.setUserId(SharedPreferenceUtil.getAccountUserId(0L));
+        bookBean.setBookId(new Random().nextLong());
+        bookBean.setCookerId(cookerBean.getCookerId());
+        bookBean.setCookerName(cookerBean.getCookerName());
+        bookBean.setCookerLocation(cookerBean.getCookerLocation());
+        bookBean.setCookerStatus(cookerBean.getCookerStatus());
+        bookBean.setPeopleCount(peopleCount);
+        bookBean.setRiceWeight(riceWeight);
+        bookBean.setTaste(taste);
+        bookBean.setTime(t);
+
+        mService.insertBook(SharedPreferenceUtil.getAccountUserId(0L), bookBean)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<HttpResult<List<BookBean>>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(HttpResult<List<BookBean>> value) {
+                        if (value == null || value.getData() == null || value.getResultCode() != 200) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_INSERT_BOOK_FAILED, null);
+                            return;
+                        }
+                        if (value.getData().size() <= 0) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_INSERT_BOOK_SUCCESS_BUT_EMPTY, null);
+                            return;
+                        }
+                        BookBean bookBean1 = value.getData().get(0);
+                        boolean success = mDbManager.insertBook(bookBean1);
+                        if (!success) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_INSERT_BOOK_DB_FAILED, null);
+                            return;
+                        }
+                        bookBean1.setCookerStatus("Booking");
+                        boolean success2 = mDbManager.insertBookHistory(bookBean1);
+                        if (!success2) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_INSERT_BOOK_HISTORY_FAILED, null);
+                            return;
+                        }
+
+                        CookerBean cookerBean1 = new CookerBean();
+                        cookerBean1.setCookerId(bookBean1.getCookerId());
+                        cookerBean1.setCookerName(bookBean1.getCookerName());
+                        cookerBean1.setCookerLocation(bookBean1.getCookerLocation());
+                        cookerBean1.setCookerStatus("Booking");
+                        boolean success3 = mDbManager.updateCooker(cookerBean1);
+                        if (!success3) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_UPDATE_COOKER_FAILED, null);
+                            return;
+                        }
+
+                        mView.insertBook(value.getData().get(0));
+                        Log.i(TAG, "onNext: " + value.toString());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showDialog(false);
+                        mView.showMessage(MESSAGE_INSERT_BOOK_ERROR, e.toString());
+                        Log.i(TAG, "onError: " + e.toString());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        mView.showDialog(false);
+                        Log.i(TAG, "onComplete: ");
+                    }
+                });
     }
 
     @Override
     public void deleteBook(BookBean book) {
-
+        mView.showDialog(true);
         mService.deleteBook(SharedPreferenceUtil.getAccountUserId(0L), book.getBookId())
                 .subscribeOn(Schedulers.io())
-                .doOnNext(bean -> mModel.deleteBook(bean))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<BookBean>() {
+                .subscribe(new Observer<HttpResult<List<BookBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        mCompositeDisposable.add(d);
 
-                        Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
                     @Override
-                    public void onNext(BookBean value) {
+                    public void onNext(HttpResult<List<BookBean>> value) {
+                        if (value == null || value.getData() == null || value.getResultCode() != 200) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_DELETE_BOOK_FAILED, null);
+                            return;
+                        }
+                        if (value.getData().size() <= 0) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_DELETE_BOOK_SUCCESS_BUT_EMPTY, null);
+                            return;
+                        }
+                        BookBean bookBean = value.getData().get(0);
+                        boolean success = mDbManager.deleteBook(DbManager.KEY_BOOK_ID, bookBean.getBookId());
+                        if (!success) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_DELETE_BOOK_FAILED, null);
+                            return;
+                        }
+
                         mView.removeBook(book);
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
-                        mView.setRefreshing(false);
+                        mView.showDialog(false);
+                        mView.showMessage(MESSAGE_DELETE_BOOK_ERROR, e.toString());
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
@@ -126,63 +251,64 @@ public class BookPresenterImpl implements BookPresenter {
     }
 
     @Override
-    public void deleteBooks(List<BookBean> books) {
-
+    public void deleteBookHistory(BookBean book) {
+        boolean success = mDbManager.deleteBookHistory(DbManager.KEY_BOOK_ID, book.getBookId());
+        if (!success) {
+            mView.showMessage(0, "Db delete history failed!");
+            return;
+        }
+        mView.removeBook(book);
     }
 
     @Override
     public void queryBookFromDB(long bookId) {
-        mView.insertBook(mModel.queryBook(bookId));
+        mView.insertBook(mDbManager.queryBook(DbManager.KEY_BOOK_ID, bookId));
     }
 
     @Override
     public void queryBooksFromDB() {
-
-//        mView.insertBooks(mModel.queryBooks());
-
-        List<BookBean> list = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            BookBean bookBean = new BookBean();
-            bookBean.setCookerId(Long.decode(i + ""));
-            bookBean.setCookerName(i + "");
-            bookBean.setCookerLocation(i + "");
-            bookBean.setPeopleCount(i);
-            bookBean.setRiceWeight(500 + i);
-            bookBean.setTaste(i % 2 == 0 ? "soft" : "hard");
-            bookBean.setCookerStatus(i % 2 == 0 ? "free" : "booking");
-            bookBean.setTime(1433387772);
-            list.add(bookBean);
-        }
-        Log.v(getClass().getCanonicalName(), "List Size: " + list.size());
-        mView.insertBooks(list);
-
+        mView.insertBooks(mDbManager.queryBooks(DbManager.KEY_USER_ID,
+                SharedPreferenceUtil.getAccountUserId(0L)));
     }
 
     @Override
     public void queryBookFromServer(long bookId) {
-
+        mView.setRefreshing(true);
         mService.queryBook(SharedPreferenceUtil.getAccountUserId(0L), bookId)
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.updateBook(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<BookBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        mCompositeDisposable.add(d);
 
-                        Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
                     @Override
                     public void onNext(HttpResult<List<BookBean>> value) {
+                        if (value == null || value.getData() == null || value.getResultCode() != 200) {
+                            mView.setRefreshing(false);
+                            mView.showMessage(MESSAGE_QUERY_BOOK_FAILED, null);
+                            return;
+                        }
+                        if (value.getData().size() <= 0) {
+                            mView.setRefreshing(false);
+                            mView.showMessage(MESSAGE_QUERY_BOOK_SUCCESS_BUT_EMPTY, null);
+                            return;
+                        }
+                        boolean success = mDbManager.updateBook(value.getData().get(0));
+                        if (!success) {
+                            mView.setRefreshing(false);
+                            mView.showMessage(MESSAGE_UPDATE_BOOK_DB_FAILED, null);
+                            return;
+                        }
                         mView.insertBooks(value.getData());
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
                         mView.setRefreshing(false);
+                        mView.showMessage(MESSAGE_QUERY_BOOK_ERROR, e.toString());
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
@@ -197,29 +323,41 @@ public class BookPresenterImpl implements BookPresenter {
     @Override
     public void queryBooksFromServer() {
         mView.setRefreshing(true);
-
         mService.queryBooks(SharedPreferenceUtil.getAccountUserId(0L))
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.updateBooks(listHttpResult.getData()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<BookBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        mCompositeDisposable.add(d);
 
-                        Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
                     @Override
                     public void onNext(HttpResult<List<BookBean>> value) {
+                        if (value == null || value.getData() == null || value.getResultCode() != 200) {
+                            mView.setRefreshing(false);
+                            mView.showMessage(MESSAGE_QUERY_BOOK_FAILED, null);
+                            return;
+                        }
+                        if (value.getData().size() <= 0) {
+                            mView.setRefreshing(false);
+                            mView.showMessage(MESSAGE_QUERY_BOOK_SUCCESS_BUT_EMPTY, null);
+                            return;
+                        }
+                        boolean success = mDbManager.updateBooks(value.getData());
+                        if (!success) {
+                            mView.setRefreshing(false);
+                            mView.showMessage(MESSAGE_UPDATE_BOOK_DB_FAILED, null);
+                            return;
+                        }
                         mView.insertBooks(value.getData());
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
                         mView.setRefreshing(false);
+                        mView.showMessage(MESSAGE_QUERY_BOOK_ERROR, e.toString());
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
@@ -233,11 +371,7 @@ public class BookPresenterImpl implements BookPresenter {
 
     @Override
     public List<String> queryCookerNamesFromDB() {
-        return null;
+        return mDbManager.queryCookerNamesAll(DbManager.KEY_USER_ID, SharedPreferenceUtil.getAccountUserId(0L));
     }
 
-    @Override
-    public void dispose() {
-        mCompositeDisposable.clear();
-    }
 }

@@ -47,9 +47,8 @@ public class UserLoginPresenterImpl implements UserLoginPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<UserBean>> value) {
-
                         List<UserBean> userBeanList = value.getData();
-                        if (userBeanList.size() <= 0) {
+                        if (userBeanList == null || userBeanList.size() <= 0 || value.getResultCode() != 200) {
                             mView.showProgress(false);
                             mView.showMessage(MESSAGE_WHAT_LOGIN_FAILED, null);
                             return;
@@ -93,13 +92,13 @@ public class UserLoginPresenterImpl implements UserLoginPresenter {
 
                         @Override
                         public void onNext(HttpResult<List<UserBean>> value) {
-                            if (value.getResultCode() == 200) {
-                                mView.showMessage(MESSAGE_WHAT_LOGIN_AUTO_SUCCESS, null);
-                                mView.loginSuccess();
-                            } else {
+                            if (value == null || value.getData().size() <= 0 || value.getResultCode() != 200) {
                                 mView.showProgress(false);
                                 mView.showMessage(MESSAGE_WHAT_LOGIN_AUTO_FAILED, null);
+                                return;
                             }
+                            mView.showMessage(MESSAGE_WHAT_LOGIN_AUTO_SUCCESS, null);
+                            mView.loginSuccess();
                         }
 
                         @Override

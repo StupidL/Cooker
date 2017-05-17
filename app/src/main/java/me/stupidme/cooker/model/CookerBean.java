@@ -1,20 +1,16 @@
 package me.stupidme.cooker.model;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-
 /**
  * 该类用来承载电饭锅设备信息。
  * Created by StupidL on 2017/3/5.
  */
 
-public class CookerBean extends RealmObject {
+public class CookerBean {
 
     /**
      * 该电饭锅的设备ID，唯一的。
      * 该ID值在服务器增加该设备成功的时候会返回，在此之前，设备无ID。若服务器添加失败，则该设备创建失败。
      */
-    @PrimaryKey
     private Long cookerId;
 
     /**

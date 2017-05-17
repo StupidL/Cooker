@@ -1,4 +1,4 @@
-package me.stupidme.cooker.view.cooker;
+package me.stupidme.cooker.view.avatar;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,11 +22,13 @@ import me.stupidme.cooker.view.custom.ChoosePicDialog;
  * Created by StupidL 2017/4/8.
  */
 
-public class UserActivity extends BaseActivity {
+public class AvatarActivity extends BaseActivity {
 
     private String mImageUrl;
 
     private CircleImageView mCircleImage;
+
+    private ChoosePicDialog mDialog;
 
     @Override
     protected int getContentViewId() {
@@ -73,7 +75,7 @@ public class UserActivity extends BaseActivity {
         ChoosePicDialog.ChoosePicListener mListener = new ChoosePicDialog.ChoosePicListener() {
             @Override
             public void chooseFromAlbum() {
-                PermissionUtil.attemptSelectImages(UserActivity.this);
+                PermissionUtil.attemptSelectImages(AvatarActivity.this);
             }
 
             @Override
@@ -81,8 +83,8 @@ public class UserActivity extends BaseActivity {
 
             }
         };
-        mCircleImage.setOnClickListener(v ->
-                new ChoosePicDialog(this, mListener).show());
+        mDialog = new ChoosePicDialog(this, mListener);
+        mCircleImage.setOnClickListener(v -> mDialog.show());
 
     }
 

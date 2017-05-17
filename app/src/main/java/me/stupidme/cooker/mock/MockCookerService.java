@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import io.reactivex.Observable;
 import me.stupidme.cooker.model.BookBean;
@@ -25,7 +26,7 @@ import retrofit2.mock.BehaviorDelegate;
 
 public class MockCookerService implements CookerService {
 
-    private IServerDbManager mServerDbManager = RealmServerManager.getInstance();
+    private ServerDbManager mServerDbManager = ServerDbManagerImpl.getInstance();
 
     private BehaviorDelegate<CookerService> mDelegate;
 
@@ -39,7 +40,7 @@ public class MockCookerService implements CookerService {
                                                         @Field("password") String password) {
         HttpResult<List<UserBean>> result = new HttpResult<>();
         List<UserBean> list = new ArrayList<>();
-        UserBean userBean = mServerDbManager.queryUser(userId);
+        UserBean userBean = mServerDbManager.queryUser(ServerDbManager.KEY_TABLE_USER_ID, userId);
         if (userBean == null) {
             result.setResultCode(404);
             result.setResultMessage("Not a valid account.");
@@ -69,6 +70,7 @@ public class MockCookerService implements CookerService {
     public Observable<HttpResult<List<UserBean>>> register(@Body UserBean user) {
         HttpResult<List<UserBean>> result = new HttpResult<>();
         List<UserBean> list = new ArrayList<>();
+        user.setUserId(new Random().nextLong());
         UserBean bean = mServerDbManager.insertUser(user);
         if (bean == null) {
             result.setResultCode(400);
@@ -132,8 +134,8 @@ public class MockCookerService implements CookerService {
             return mDelegate.returningResponse(result).queryCookers(userId);
         }
         if (cookerBeanList.size() == 0) {
-            result.setResultCode(400);
-            result.setResultMessage("Query Cookers failed. result size is 0.");
+            result.setResultCode(200);
+            result.setResultMessage("Query Cookers success. result size is 0.");
             result.setData(list);
             return mDelegate.returningResponse(result).queryCookers(userId);
         }
@@ -211,7 +213,13 @@ public class MockCookerService implements CookerService {
                                                                  @Path("cookerId") long cookerId) {
         HttpResult<List<CookerBean>> result = new HttpResult<>();
         List<CookerBean> list = new ArrayList<>();
-        CookerBean cookerBean = mServerDbManager.deleteCooker(cookerId);
+        CookerBean cookerBean = mServerDbManager.deleteCooker(userId, cookerId);
+        if (cookerBean == null) {
+            result.setResultCode(400);
+            result.setResultMessage("Delete Cooker failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).deleteCooker(userId, cookerId);
+        }
         list.add(cookerBean);
         result.setResultCode(200);
         result.setResultMessage("Delete Cooker success.");
@@ -223,7 +231,14 @@ public class MockCookerService implements CookerService {
     public Observable<HttpResult<List<CookerBean>>> deleteCookers(@Path("userId") long userId) {
         HttpResult<List<CookerBean>> result = new HttpResult<>();
         List<CookerBean> list = new ArrayList<>();
-        list.addAll(mServerDbManager.deleteCookers(userId));
+        List<CookerBean> cookerBeanList = mServerDbManager.deleteCookers(userId);
+        if (cookerBeanList == null || cookerBeanList.size() <= 0) {
+            result.setResultCode(400);
+            result.setResultMessage("Delete Cooker failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).deleteCookers(userId);
+        }
+        list.addAll(cookerBeanList);
         result.setResultCode(200);
         result.setResultMessage("Delete Cookers success.");
         result.setData(list);
@@ -235,7 +250,14 @@ public class MockCookerService implements CookerService {
                                                             @Path("bookId") long bookId) {
         HttpResult<List<BookBean>> result = new HttpResult<>();
         List<BookBean> list = new ArrayList<>();
-        list.add(mServerDbManager.queryBook(bookId));
+        BookBean bookBean = mServerDbManager.queryBook(userId, bookId);
+        if (bookBean == null) {
+            result.setResultCode(400);
+            result.setResultMessage("Query Book failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).queryBook(userId, bookId);
+        }
+        list.add(bookBean);
         result.setResultCode(200);
         result.setResultMessage("Query Book success.");
         result.setData(list);
@@ -246,7 +268,14 @@ public class MockCookerService implements CookerService {
     public Observable<HttpResult<List<BookBean>>> queryBooks(@Path("userId") long userId) {
         HttpResult<List<BookBean>> result = new HttpResult<>();
         List<BookBean> list = new ArrayList<>();
-        list.addAll(mServerDbManager.queryBooks(userId));
+        List<BookBean> bookBeanList = mServerDbManager.queryBooks(userId);
+        if (bookBeanList == null || bookBeanList.size() <= 0) {
+            result.setResultCode(400);
+            result.setResultMessage("Query Book failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).queryBooks(userId);
+        }
+        list.addAll(bookBeanList);
         result.setResultCode(200);
         result.setResultMessage("Query Books success.");
         result.setData(list);
@@ -258,6 +287,13 @@ public class MockCookerService implements CookerService {
                                                              @Body BookBean bean) {
         HttpResult<List<BookBean>> result = new HttpResult<>();
         List<BookBean> list = new ArrayList<>();
+        BookBean bookBean = mServerDbManager.updateBook(bean);
+        if (bookBean == null) {
+            result.setResultCode(400);
+            result.setResultMessage("Update Book failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).updateBook(userId, bean);
+        }
         list.add(mServerDbManager.updateBook(bean));
         result.setResultCode(200);
         result.setResultMessage("Update Book success.");
@@ -270,14 +306,27 @@ public class MockCookerService implements CookerService {
                                                              @Body BookBean book) {
         HttpResult<List<BookBean>> result = new HttpResult<>();
         List<BookBean> list = new ArrayList<>();
-        list.add(mServerDbManager.insertBook(book));
+        BookBean bookBean = mServerDbManager.insertBook(book);
+        if (bookBean == null) {
+            result.setResultCode(400);
+            result.setResultMessage("Insert Book failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).insertBook(userId, book);
+        }
         CookerBean cookerBean = new CookerBean();
         cookerBean.setUserId(book.getUserId());
         cookerBean.setCookerId(book.getCookerId());
         cookerBean.setCookerName(book.getCookerName());
         cookerBean.setCookerLocation(book.getCookerLocation());
         cookerBean.setCookerStatus("Booking");
-        mServerDbManager.updateCooker(cookerBean);
+        CookerBean cookerBean1 = mServerDbManager.updateCooker(cookerBean);
+        if (cookerBean1 == null) {
+            result.setResultCode(400);
+            result.setResultMessage("Update Cooker after insert Book failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).insertBook(userId, book);
+        }
+        list.add(bookBean);
         result.setResultCode(200);
         result.setResultMessage("Insert Book success.");
         result.setData(list);
@@ -285,10 +334,17 @@ public class MockCookerService implements CookerService {
     }
 
     @Override
-    public Observable<BookBean> deleteBook(@Path("userId") long userId, @Path("bookId") long bookId) {
+    public Observable<HttpResult<List<BookBean>>> deleteBook(@Path("userId") long userId, @Path("bookId") long bookId) {
         HttpResult<List<BookBean>> result = new HttpResult<>();
         List<BookBean> list = new ArrayList<>();
-        list.add(mServerDbManager.deleteBook(bookId));
+        BookBean bookBean = mServerDbManager.deleteBook(userId, bookId);
+        if (bookBean == null) {
+            result.setResultCode(400);
+            result.setResultMessage("Delete Book failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).deleteBook(userId, bookId);
+        }
+        list.add(bookBean);
         result.setResultCode(200);
         result.setResultMessage("Delete Book success.");
         result.setData(list);
@@ -296,12 +352,19 @@ public class MockCookerService implements CookerService {
     }
 
     @Override
-    public Observable<BookBean> deleteBooks(@Path("userId") long userId) {
+    public Observable<HttpResult<List<BookBean>>> deleteBooks(@Path("userId") long userId) {
         HttpResult<List<BookBean>> result = new HttpResult<>();
         List<BookBean> list = new ArrayList<>();
-        list.addAll(mServerDbManager.deleteBooks(userId));
+        List<BookBean> bookBeanList = mServerDbManager.deleteBooks(userId);
+        if (bookBeanList == null || bookBeanList.size() <= 0) {
+            result.setResultCode(400);
+            result.setResultMessage("Delete Book failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).deleteBooks(userId);
+        }
+        list.addAll(bookBeanList);
         result.setResultCode(200);
-        result.setResultMessage("Insert Book success.");
+        result.setResultMessage("Delete Book success.");
         result.setData(list);
         return mDelegate.returningResponse(result).deleteBooks(userId);
     }

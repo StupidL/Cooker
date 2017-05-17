@@ -13,7 +13,7 @@ public class ServerDbHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "cooker_server.db";
     private static final int DB_VERSION = 1;
 
-    private static final String CREATE_TABLE_USER = "CREATE TABLE cooker_user("
+    private static final String CREATE_TABLE_USER = "CREATE TABLE user_server("
             + "userId INTEGER UNIQUE NOT NULL, "
             + "userName VARCHAR NOT NULL, "
             + "userPassword VARCHAR NOT NULL"

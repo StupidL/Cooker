@@ -16,12 +16,8 @@
         <activity
             android:name=".view.login.LoginActivity"
             android:label="Login"
-            android:theme="@style/AppTheme.NoActionBar" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:theme="@style/AppTheme.NoActionBar">
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".view.login.RegisterActivity"
@@ -30,15 +26,13 @@
         <activity
             android:name=".view.cooker.CookerActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".view.book.BookActivity"
             android:label="@string/title_activity_book"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.AboutActivity"
+            android:name=".view.about.AboutActivity"
             android:label="@string/title_activity_about"
             android:theme="@style/AppTheme.NoActionBar" />
 
@@ -60,11 +54,22 @@
             android:name=".view.feedback.FeedbackActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.cooker.UserActivity"
+            android:name=".view.avatar.AvatarActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.search.SearchActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.splash.SplashActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_splash"
+            android:theme="@style/AppTheme.NoActionBar.SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

@@ -2,17 +2,15 @@ package me.stupidme.cooker.presenter;
 
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.model.CookerBean;
-import me.stupidme.cooker.model.CookerDbModelImpl;
-import me.stupidme.cooker.model.CookerDbModel;
+import me.stupidme.cooker.model.db.DbManager;
+import me.stupidme.cooker.model.db.DbManagerImpl;
 import me.stupidme.cooker.model.http.CookerRetrofit;
 import me.stupidme.cooker.model.http.CookerService;
 import me.stupidme.cooker.model.http.HttpResult;
@@ -29,53 +27,56 @@ public class CookerPresenterImpl implements CookerPresenter {
 
     private CookerView mView;
 
-    private CookerDbModel mModel;
+    private DbManager mDbManager;
 
     private CookerService mService;
 
-    private CompositeDisposable mCompositeDisposable;
-
     public CookerPresenterImpl(CookerView view) {
         mView = view;
-        mModel = CookerDbModelImpl.getInstance();
+        mDbManager = DbManagerImpl.getInstance();
         mService = CookerRetrofit.getInstance().getCookerService();
-        mCompositeDisposable = new CompositeDisposable();
     }
 
     @Override
     public void deleteCooker(long cookerId) {
-
-        Log.v(TAG, "++++++CookerPresenter deleteCooker()++++++");
-        Log.v(TAG, "args: CookerBean id = " + cookerId);
-
+        mView.showDialog(true);
         mService.deleteCooker(SharedPreferenceUtil.getAccountUserId(0L), cookerId)
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.deleteCooker(cookerId))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        mCompositeDisposable.add(d);
 
-                        Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
+                        if (value == null || value.getData() == null
+                                || value.getData().size() <= 0 || value.getResultCode() != 200) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_DELETE_COOKER_FAILED, null);
+                            return;
+                        }
+                        boolean success = mDbManager.deleteCooker(DbManager.KEY_COOKER_ID, cookerId);
+                        if (!success) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_DELETE_DB_COOKER_FAILED, null);
+                            return;
+                        }
                         mView.removeCooker(value.getData().get(0));
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
-                        mView.showRefreshing(false);
+                        mView.showDialog(false);
+                        mView.showMessage(MESSAGE_DELETE_COOKER_ERROR, e.toString());
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-                        mView.showRefreshing(false);
+                        mView.showDialog(false);
                         Log.i(TAG, "onComplete: ");
                     }
                 });
@@ -83,36 +84,46 @@ public class CookerPresenterImpl implements CookerPresenter {
 
     @Override
     public void deleteCookers() {
-
+        mView.showDialog(true);
         mService.deleteCookers(SharedPreferenceUtil.getAccountUserId(0L))
-                .observeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.deleteCookers())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        mCompositeDisposable.add(d);
 
-                        Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
+                        if (value == null || value.getData() == null
+                                || value.getData().size() <= 0 || value.getResultCode() != 200) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_DELETE_COOKER_FAILED, null);
+                            return;
+                        }
+                        boolean success = mDbManager.deleteCookers(DbManager.KEY_USER_ID,
+                                SharedPreferenceUtil.getAccountUserId(0L));
+                        if (!success) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_DELETE_DB_COOKER_FAILED, null);
+                            return;
+                        }
                         for (CookerBean cookerBean : value.getData())
-                            mView.removeCooker(cookerBean);
+                            mView.removeCooker(cookerBean.getCookerId());
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
-                        mView.showRefreshing(false);
+                        mView.showDialog(false);
+                        mView.showMessage(MESSAGE_DELETE_COOKER_ERROR, e.toString());
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-                        mView.showRefreshing(false);
+                        mView.showDialog(false);
                         Log.i(TAG, "onComplete: ");
                     }
                 });
@@ -120,104 +131,102 @@ public class CookerPresenterImpl implements CookerPresenter {
 
     @Override
     public void insertCooker(CookerBean bean) {
-
-        Log.v(TAG, "++++++CookerPresenter insertCooker()++++++");
-        Log.v(TAG, "args: CookerBean = " + bean.toString());
-
-        mService.insertCooker(SharedPreferenceUtil.getAccountUserId(0L), bean)
+        mView.showDialog(true);
+        Long userId = SharedPreferenceUtil.getAccountUserId(0L);
+        bean.setUserId(userId);
+        mService.insertCooker(userId, bean)
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.insertCooker(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        mCompositeDisposable.add(d);
 
-                        Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
+                        if (value == null || value.getData() == null
+                                || value.getData().size() <= 0 || value.getResultCode() != 200) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_INSERT_COOKER_FAILED, null);
+                            return;
+                        }
+                        boolean success = mDbManager.insertCooker(value.getData().get(0));
+                        if (!success) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_INSERT_DB_COOKER_FAILED, null);
+                            return;
+                        }
                         mView.insertCooker(value.getData().get(0));
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
-                        mView.showRefreshing(false);
+                        mView.showDialog(false);
+                        mView.showMessage(MESSAGE_INSERT_COOKER_ERROR, e.toString());
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-                        mView.showRefreshing(false);
+                        mView.showDialog(false);
                         Log.i(TAG, "onComplete: ");
                     }
                 });
     }
 
     @Override
-    public void insertCookers(List<CookerBean> cookers) {
-
-    }
-
-    @Override
     public void queryCookerFromDB(long cookerId) {
-        mView.insertCooker(mModel.queryCooker(cookerId));
+        mView.insertCooker(mDbManager.queryCooker(DbManager.KEY_COOKER_ID, cookerId));
     }
 
     @Override
     public void queryCookersFromDB() {
-
-//        mView.insertCookersFromDB(mModel.queryCookers());
-
-        //just a test
-        List<CookerBean> list = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            CookerBean cooker = new CookerBean();
-            cooker.setCookerName("Cooker" + i);
-            cooker.setCookerLocation("Place" + i);
-            cooker.setCookerStatus(i % 2 == 0 ? "free" : "booking");
-            list.add(cooker);
-        }
-        mView.insertCookersFromDB(list);
+        mView.insertCookers(mDbManager.queryCookers(DbManager.KEY_USER_ID,
+                SharedPreferenceUtil.getAccountUserId(0L)));
     }
 
     @Override
     public void updateCooker(int position, CookerBean bean) {
-
-        Log.v(TAG, "++++++CookerPresenter updateCooker()++++++");
-        Log.v(TAG, "args: CookerBean = " + bean.toString());
-
+        mView.showDialog(true);
         mService.updateCooker(SharedPreferenceUtil.getAccountUserId(0L), bean.getCookerId(), bean)
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.updateCooker(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        mCompositeDisposable.add(d);
 
-                        Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
+                        if (value == null || value.getData() == null
+                                || value.getData().size() <= 0 || value.getResultCode() != 200) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_UPDATE_COOKER_FAILED, null);
+                            return;
+                        }
+                        boolean success = mDbManager.updateCooker(value.getData().get(0));
+                        if (!success) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_UPDATE_DB_COOKER_FAILED, null);
+                            return;
+                        }
                         mView.updateCooker(position, bean);
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
-                        mView.showRefreshing(false);
+                        mView.showDialog(false);
+                        mView.showMessage(MESSAGE_UPDATE_COOKER_ERROR, e.toString());
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-                        mView.showRefreshing(false);
+                        mView.showDialog(false);
                         Log.i(TAG, "onComplete: ");
                     }
                 });
@@ -225,29 +234,38 @@ public class CookerPresenterImpl implements CookerPresenter {
 
     @Override
     public void queryCookerFromServer(int position, long cookerId) {
-
+        mView.showRefreshing(true);
         mService.queryCooker(SharedPreferenceUtil.getAccountUserId(0L), cookerId)
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.updateCooker(listHttpResult.getData().get(0)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        mCompositeDisposable.add(d);
 
-                        Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
+                        if (value == null || value.getData() == null
+                                || value.getData().size() <= 0 || value.getResultCode() != 200) {
+                            mView.showRefreshing(false);
+                            mView.showMessage(MESSAGE_QUERY_SERVER_COOKER_FAILED, null);
+                            return;
+                        }
+                        boolean success = mDbManager.updateCooker(value.getData().get(0));
+                        if (!success) {
+                            mView.showRefreshing(false);
+                            mView.showMessage(MESSAGE_UPDATE_DB_COOKER_FAILED, null);
+                            return;
+                        }
                         mView.updateCooker(position, value.getData().get(0));
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
                         mView.showRefreshing(false);
+                        mView.showMessage(MESSAGE_QUERY_SERVER_COOKER_ERROR, e.toString());
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
@@ -261,33 +279,38 @@ public class CookerPresenterImpl implements CookerPresenter {
 
     @Override
     public void queryCookersFromServer() {
-
-        Log.v(TAG, "++++++CookerPresenter queryCookersFromServer()++++++");
-
         mView.showRefreshing(true);
-
         mService.queryCookers(SharedPreferenceUtil.getAccountUserId(0L))
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> mModel.updateCookers(listHttpResult.getData()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        mCompositeDisposable.add(d);
 
-                        Log.i(TAG, "onSubscribe: " + d.toString());
                     }
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        mView.updateCookersFromServer(value.getData());
+                        if (value == null || value.getData() == null
+                                || value.getData().size() <= 0 || value.getResultCode() != 200) {
+                            mView.showRefreshing(false);
+                            mView.showMessage(MESSAGE_QUERY_SERVER_COOKER_FAILED, null);
+                            return;
+                        }
+                        boolean success = mDbManager.updateCookers(value.getData());
+                        if (!success) {
+                            mView.showRefreshing(false);
+                            mView.showMessage(MESSAGE_UPDATE_DB_COOKER_FAILED, null);
+                            return;
+                        }
+                        mView.insertCookers(value.getData());
                         Log.i(TAG, "onNext: " + value.toString());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showMessage(e.toString());
                         mView.showRefreshing(false);
+                        mView.showMessage(MESSAGE_QUERY_SERVER_COOKER_ERROR, e.toString());
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
@@ -299,8 +322,4 @@ public class CookerPresenterImpl implements CookerPresenter {
                 });
     }
 
-    @Override
-    public void dispose() {
-        mCompositeDisposable.clear();
-    }
 }

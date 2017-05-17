@@ -11,67 +11,68 @@ import me.stupidme.cooker.model.CookerBean;
 public interface CookerView {
 
     /**
-     * 控制刷新控件的显示
+     * Control refresh view show or dismiss
      *
-     * @param show true则显示，false则不显示
+     * @param show show if true.
      */
     void showRefreshing(boolean show);
 
     /**
-     * 界面上移除一个设备信息
+     * Remove a specified cooker shown in activity or fragment.
      *
-     * @param cooker 要移除的设备信息
+     * @param cooker cooker
      */
     void removeCooker(CookerBean cooker);
 
     /**
-     * 批量删除设备信息
+     * Remove a cooker shown in activity or fragment by cookerId.
      *
-     * @param cookers 设备集合
+     * @param cookerId id of cooker
+     */
+    void removeCooker(Long cookerId);
+
+    /**
+     * Remove cookers listed in activity or fragment.
+     *
+     * @param cookers cookers
      */
     void removeCookers(List<CookerBean> cookers);
 
     /**
-     * 插入一个设备信息
+     * Insert a single cooker to a activity or fragment.
      *
-     * @param cooker 要插入的设备信息
+     * @param cooker cooker
      */
     void insertCooker(CookerBean cooker);
 
     /**
-     * 批量插入设备信息
+     * Insert cookers to a activity or fragment.
      *
-     * @param cookers 设备集合
+     * @param cookers cookers
      */
     void insertCookers(List<CookerBean> cookers);
 
     /**
-     * 界面上批量插入设备信息，在从数据库获取数据的时候调用
+     * Update a specified cooker.
      *
-     * @param list 设备信息列表
-     */
-    void insertCookersFromDB(List<CookerBean> list);
-
-    /**
-     * 界面上更新某个设备信息
-     *
-     * @param position 设备在列表中的位置
-     * @param cooker   要更新的设备
+     * @param position position in adapter
+     * @param cooker   updated cooker
      */
     void updateCooker(int position, CookerBean cooker);
 
     /**
-     * 界面上批量更新设备信息
+     * Toast a message in activity or fragment.
      *
-     * @param list 设备信息列表
+     * @param what    message type
+     * @param message message content
      */
-    void updateCookersFromServer(List<CookerBean> list);
+    void showMessage(int what, CharSequence message);
 
     /**
-     * 弹出提示信息
+     * Show a tips dialog
      *
-     * @param message 要展示的信息
+     * @param show show dialog if true
      */
-    void showMessage(String message);
+    void showDialog(boolean show);
 
 }

@@ -8,9 +8,11 @@
     <TextView
         android:id="@+id/empty_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:alpha="0.8"
+        android:drawablePadding="16dp"
+        android:drawableTop="@drawable/empty"
         android:gravity="center"
         android:text="@string/fragment_book_now_empty_text"
         android:textSize="21sp" />
