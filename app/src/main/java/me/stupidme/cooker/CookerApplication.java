@@ -3,6 +3,7 @@ package me.stupidme.cooker;
 import android.app.Application;
 
 import me.stupidme.cooker.mock.ServerDbManagerImpl;
+import me.stupidme.cooker.model.UserAvatarManager;
 import me.stupidme.cooker.model.db.DbManagerImpl;
 import me.stupidme.cooker.model.http.CookerRetrofit;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
@@ -20,5 +21,6 @@ public class CookerApplication extends Application {
         CookerRetrofit.init(getApplicationContext());
         SharedPreferenceUtil.init(getApplicationContext());
         ServerDbManagerImpl.init(this);
+        UserAvatarManager.init(this);
     }
 }

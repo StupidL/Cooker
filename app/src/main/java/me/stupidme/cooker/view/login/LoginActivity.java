@@ -31,19 +31,18 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void processIntentActions(Intent intent) {
-        switch (intent.getAction()) {
-            case Constants.ACTION_REGISTER_SUCCESS:
-                mFragment = LoginFragment.newInstance(true);
-                break;
+        if (intent == null)
+            return;
 
-            case Constants.ACTION_EXIT_ACCOUNT:
-                mFragment = LoginFragment.newInstance(false);
-                break;
-
-            default:
-                mFragment = LoginFragment.newInstance(true);
-                break;
+        String action = intent.getAction();
+        if (Constants.ACTION_REGISTER_SUCCESS.equals(action)) {
+            mFragment = LoginFragment.newInstance(true);
+        } else if (Constants.ACTION_EXIT_ACCOUNT.equals(action)) {
+            mFragment = LoginFragment.newInstance(false);
+        } else {
+            mFragment = LoginFragment.newInstance(true);
         }
+
     }
 
     @Override
