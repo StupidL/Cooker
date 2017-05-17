@@ -54,7 +54,7 @@
             android:name=".view.feedback.FeedbackActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.cooker.UserActivity"
+            android:name=".view.avatar.AvatarActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.search.SearchActivity"

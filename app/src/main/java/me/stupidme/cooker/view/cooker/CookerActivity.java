@@ -19,6 +19,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
 import me.stupidme.cooker.view.about.AboutActivity;
+import me.stupidme.cooker.view.avatar.AvatarActivity;
 import me.stupidme.cooker.view.book.BookActivity;
 import me.stupidme.cooker.view.feedback.FeedbackHelper;
 import me.stupidme.cooker.view.login.Constants;
@@ -55,7 +56,7 @@ public class CookerActivity extends AppCompatActivity
         View view = LayoutInflater.from(this).inflate(R.layout.nav_header_main, navigationView);
         mCircleImageView = (CircleImageView) view.findViewById(R.id.user_head);
         mCircleImageView.setOnClickListener(v -> {
-            startActivity(new Intent(CookerActivity.this, UserActivity.class));
+            startActivity(new Intent(CookerActivity.this, AvatarActivity.class));
             drawer.closeDrawer(GravityCompat.START);
         });
         TextView name = (TextView) view.findViewById(R.id.user_name);

@@ -7,9 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
+
 import me.stupidme.cooker.R;
 
 public class SearchFragment extends Fragment {
+
+    private FloatingSearchView mSearchView;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -33,9 +37,22 @@ public class SearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_search, container, false);
+        View view = inflater.inflate(R.layout.fragment_search, container, false);
+        mSearchView = (FloatingSearchView) view.findViewById(R.id.floating_search_view);
+        return view;
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle bundle) {
+        mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+            @Override
+            public void onSearchTextChanged(String oldQuery, String newQuery) {
+
+            }
+        });
+
+        mSearchView.setOnHomeActionClickListener(() -> getActivity().finish());
+    }
 
     @Override
     public void onAttach(Context context) {
