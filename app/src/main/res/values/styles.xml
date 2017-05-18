@@ -95,4 +95,13 @@
         <item name="android:gravity">center_vertical|start</item>
     </style>
 
+    <style name="BookDetailTextView">
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">center_vertical|start</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:lines">1</item>
+        <item name="android:editable">false</item>
+    </style>
 </resources>

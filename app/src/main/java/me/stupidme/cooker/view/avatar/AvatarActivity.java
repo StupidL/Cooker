@@ -1,25 +1,35 @@
 package me.stupidme.cooker.view.avatar;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.stupidme.cooker.R;
@@ -44,11 +54,13 @@ public class AvatarActivity extends BaseActivity {
 
     private CircleImageView mCircleImage;
 
+    private TextView mUserName;
+
     private ChoosePicDialog mDialog;
 
     private Bitmap mAvatar;
 
-    private AlertDialog mAlertDialog;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected int getContentViewId() {
@@ -88,17 +100,18 @@ public class AvatarActivity extends BaseActivity {
         }
 
         mCircleImage = (CircleImageView) findViewById(R.id.user_head_big);
-        String path = UserAvatarManager.getInstance().getAvatarPath(SharedPreferenceUtil.getAccountUserId(0L));
-        Bitmap bitmap = BitmapFactory.decodeFile(path);
-        if (bitmap == null) {
-            mCircleImage.setImageResource(R.drawable.head_male2);
-            return;
-        }
-        mCircleImage.setImageBitmap(bitmap);
+        Long userId = SharedPreferenceUtil.getAccountUserId(0L);
+        String path = UserAvatarManager.getInstance().getAvatarPath(userId);
+//        Glide.with(this)
+//                .load(path)
+//                .placeholder(R.drawable.head_male2)
+//                .into(mCircleImage);
+//
+        mCircleImage.setImageBitmap(BitmapFactory.decodeFile(path));
 
-        TextView mTextView = (TextView) findViewById(R.id.user_name);
-        mTextView.setClickable(false);
-        mTextView.setFocusable(false);
+        mUserName = (TextView) findViewById(R.id.user_name);
+        mUserName.setText(SharedPreferenceUtil.getAccountUserName("Cooker"));
+        Log.v("Avatar", "username: " + SharedPreferenceUtil.getAccountUserName("Cooker"));
 
         ChoosePicDialog.ChoosePicListener mListener = new ChoosePicDialog.ChoosePicListener() {
             @Override
@@ -116,13 +129,17 @@ public class AvatarActivity extends BaseActivity {
             }
         };
         mDialog = new ChoosePicDialog(this, mListener);
-        mCircleImage.setOnClickListener(v -> mDialog.show());
+        mCircleImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.v("AvatarActivity", "Clicked...");
+                mDialog.show();
+            }
+        });
 
-        mAlertDialog = new AlertDialog.Builder(this)
-                .setTitle("Save Avatar")
-                .setMessage("Please wait a few seconds...")
-                .create();
-
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle("Saving avatar");
+        mProgressDialog.setMessage("Please wait a few seconds!");
     }
 
     @Override
@@ -133,7 +150,10 @@ public class AvatarActivity extends BaseActivity {
                 mImageUrl = ResourceUtil.getPath(this, data.getData());
                 mAvatar = BitmapUtil.decodeSampledBitmap(mImageUrl,
                         mCircleImage.getWidth(), mCircleImage.getHeight());
-                mCircleImage.setImageBitmap(mAvatar);
+//                mCircleImage.setImageBitmap(mAvatar);
+                Glide.with(this)
+                        .load(new File(mImageUrl))
+                        .into(mCircleImage);
                 Toast.makeText(this, getString(R.string.select_image_success), Toast.LENGTH_SHORT).show();
             }
         }
@@ -145,10 +165,25 @@ public class AvatarActivity extends BaseActivity {
         }
 
         if (requestCode == REQUEST_CROP && data != null) {
-            mAvatar = data.getExtras().getParcelable("data");
-            mCircleImage.setImageBitmap(Bitmap.createBitmap(mAvatar,
-                    0, 0,
-                    mCircleImage.getWidth(), mCircleImage.getHeight()));
+
+            Uri uri = data.getData();
+            if (uri != null) {
+                try {
+                    mAvatar = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                    if (mAvatar != null)
+                        mCircleImage.setImageBitmap(mAvatar);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+
+            Bundle bundle = data.getExtras();
+            if (bundle == null)
+                return;
+            mAvatar = bundle.getParcelable("data");
+            mCircleImage.setImageBitmap(mAvatar);
+
         }
     }
 
@@ -220,19 +255,21 @@ public class AvatarActivity extends BaseActivity {
         intent.putExtra("aspectX", 1);
         intent.putExtra("aspectY", 1);
         // outputX outputY 是裁剪图片宽高
-        intent.putExtra("outputX", 150);
-        intent.putExtra("outputY", 150);
+        intent.putExtra("outputX", 100);
+        intent.putExtra("outputY", 100);
         intent.putExtra("return-data", true);
         startActivityForResult(intent, REQUEST_CROP);
     }
 
     private void showTipsDialog() {
-        if (!mAlertDialog.isShowing())
-            mAlertDialog.show();
+        if (!mProgressDialog.isShowing())
+            mProgressDialog.show();
     }
 
     private void dismissTipsDialog() {
-        if (mAlertDialog.isShowing())
-            mAlertDialog.dismiss();
+        if (mProgressDialog == null)
+            return;
+        if (mProgressDialog.isShowing())
+            mProgressDialog.dismiss();
     }
 }

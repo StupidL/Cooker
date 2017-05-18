@@ -112,4 +112,14 @@ public class SharedPreferenceUtil {
     public static String getAvatarImageUrl(String defaultValue) {
         return mSharedPreference.getString(KEY_AVATAR_IMAGE_URL, defaultValue);
     }
+
+    public static void putSyncFrequency(String freq) {
+        SharedPreferences.Editor editor = mSharedPreference.edit();
+        editor.putString(KEY_PREF_DATASYNC_FREQ, freq);
+        editor.apply();
+    }
+
+    public static String getSyncFrequency(String defaultValue) {
+        return mSharedPreference.getString(KEY_PREF_DATASYNC_FREQ, defaultValue);
+    }
 }

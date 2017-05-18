@@ -18,28 +18,29 @@ import me.stupidme.cooker.util.SharedPreferenceUtil;
 import me.stupidme.cooker.view.status.StatusView;
 
 /**
- * Created by StupidL on 2017/4/5.
+ * Created by stupidl on 17-5-18.
  */
 
-public class StatusPresenterImpl implements StatusPresenter {
+public class StatusMockPresenterImpl implements StatusPresenter {
+
 
     private StatusView mView;
 
     private DbManager mDbManager;
 
-    private CookerService mService;
+    private CookerService mMockService;
 
-    public StatusPresenterImpl(StatusView view) {
+    public StatusMockPresenterImpl(StatusView view) {
         mView = view;
         mDbManager = DbManagerImpl.getInstance();
-        mService = CookerRetrofit.getInstance().getCookerService();
+        mMockService = CookerRetrofit.getInstance().getCookerService();
     }
 
     @Override
     public void cancelBook(long bookId) {
         mView.showDialog(true);
         Long userId = SharedPreferenceUtil.getAccountUserId(0L);
-        mService.deleteBook(userId, bookId)
+        mMockService.deleteBook(userId, bookId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<BookBean>>>() {
@@ -74,7 +75,7 @@ public class StatusPresenterImpl implements StatusPresenter {
                             mView.onCancelFailed();
                             return;
                         }
-                        mService.updateCooker(userId, cookerBean.getCookerId(), cookerBean)
+                        mMockService.updateCooker(userId, cookerBean.getCookerId(), cookerBean)
                                 .subscribeOn(Schedulers.io())
                                 .subscribe();
                         mView.onCancelSuccess();
@@ -104,5 +105,4 @@ public class StatusPresenterImpl implements StatusPresenter {
                 .forEach(data::add);
         mView.acceptData(data);
     }
-
 }

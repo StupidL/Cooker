@@ -1,5 +1,7 @@
 package me.stupidme.cooker.view.status;
 
+import java.util.List;
+
 import me.stupidme.cooker.model.BookBean;
 
 /**
@@ -8,10 +10,13 @@ import me.stupidme.cooker.model.BookBean;
 
 public interface StatusView {
 
-//    void updateBook(BookBean book);
+    void showDialog(boolean show);
 
     void removeBook(long bookId);
 
-    void showMessage(CharSequence msg);
+    void onCancelFailed();
 
+    void onCancelSuccess();
+
+    void acceptData(List<BookBean> list);
 }

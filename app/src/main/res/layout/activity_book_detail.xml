@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="16dp"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="5dp">
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/detail_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:src="@drawable/bg4" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/detail_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:rotation="90"
+            app:fabSize="normal"
+            app:layout_anchor="@id/detail_image_view"
+            app:layout_anchorGravity="bottom|end"
+            app:srcCompat="@drawable/ic_add_white_48dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="208dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/detail_book_id"
+                    style="@style/BookDetailTextView"
+                    android:text="BookId" />
+
+                <TextView
+                    android:id="@+id/detail_cooker_id"
+                    style="@style/BookDetailTextView"
+                    android:text="CookerId" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/detail_cooker_name"
+                    style="@style/BookDetailTextView"
+                    android:text="Cooker Name" />
+
+                <TextView
+                    android:id="@+id/detail_cooker_location"
+                    style="@style/BookDetailTextView"
+                    android:text="CookerLocation" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/detail_cooker_status"
+                    style="@style/BookDetailTextView"
+                    android:text="Cooker Status" />
+
+                <TextView
+                    android:id="@+id/detail_rice_weight"
+                    style="@style/BookDetailTextView"
+                    android:text="Rice Weight" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/detail_people_count"
+                    style="@style/BookDetailTextView"
+                    android:text="People Count" />
+
+                <TextView
+                    android:id="@+id/detail_taste"
+                    style="@style/BookDetailTextView"
+                    android:text="Taste" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/detail_time"
+                    style="@style/BookDetailTextView"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/ic_access_time_red_500_24dp"
+                    android:drawablePadding="16dp"
+                    android:text="18:00" />
+
+                <TextView
+                    android:id="@+id/detail_holder"
+                    style="@style/BookDetailTextView"
+                    android:text="" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </android.support.design.widget.CoordinatorLayout>
+
+
+</android.support.v7.widget.CardView>

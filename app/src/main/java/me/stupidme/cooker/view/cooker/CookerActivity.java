@@ -38,6 +38,7 @@ public class CookerActivity extends AppCompatActivity
     private static final int REQUEST_CODE_USER = 0x07;
 
     CircleImageView mCircleImageView;
+    private TextView mUserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +63,8 @@ public class CookerActivity extends AppCompatActivity
             startActivity(new Intent(CookerActivity.this, AvatarActivity.class));
             drawer.closeDrawer(GravityCompat.START);
         });
-        TextView name = (TextView) view.findViewById(R.id.user_name);
-        name.setText(SharedPreferenceUtil.getAccountUserName("Cooker"));
+        mUserName = (TextView) view.findViewById(R.id.user_name);
+        mUserName.setText(SharedPreferenceUtil.getAccountUserName("Cooker"));
 
         CookerFragment cookerFragment = CookerFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
@@ -84,6 +85,7 @@ public class CookerActivity extends AppCompatActivity
             return;
         }
         mCircleImageView.setImageBitmap(bitmap);
+        mUserName.setText(SharedPreferenceUtil.getAccountUserName("Cooker"));
     }
 
     @Override

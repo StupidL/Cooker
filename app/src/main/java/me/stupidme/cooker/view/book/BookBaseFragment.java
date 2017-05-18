@@ -1,6 +1,7 @@
 package me.stupidme.cooker.view.book;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -24,6 +25,7 @@ import me.stupidme.cooker.presenter.BookMockPresenterImpl;
 import me.stupidme.cooker.presenter.BookPresenter;
 import me.stupidme.cooker.util.ToastUtil;
 import me.stupidme.cooker.view.custom.SpaceItemDecoration;
+import me.stupidme.cooker.view.detail.BookDetailActivity;
 
 /**
  * Created by StupidL on 2017/3/8.
@@ -74,6 +76,23 @@ public abstract class BookBaseFragment extends Fragment implements BookView {
         mPresenter = new BookMockPresenterImpl(this);
         mProgressDialog = new ProgressDialog(getActivity());
         mProgressDialog.setTitle(getActivity().getString(R.string.fragment_book_dialog_title));
+
+        mAdapter.setOnItemClickListener(new BookRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(int position, BookBean bookBean) {
+                Intent intent = new Intent(getActivity(), BookDetailActivity.class);
+                intent.putExtra("userId", bookBean.getUserId());
+                intent.putExtra("bookId", bookBean.getBookId());
+                intent.putExtra("cookerId", bookBean.getBookId());
+                intent.putExtra("cookerName", bookBean.getCookerName());
+                intent.putExtra("cookerLocation", bookBean.getCookerLocation());
+                intent.putExtra("cookerStatus", bookBean.getCookerStatus());
+                intent.putExtra("peopleCount", bookBean.getPeopleCount());
+                intent.putExtra("riceWeight", bookBean.getRiceWeight());
+                intent.putExtra("taste", bookBean.getTaste());
+                intent.putExtra("time", bookBean.getTime());
+            }
+        });
     }
 
     @Override

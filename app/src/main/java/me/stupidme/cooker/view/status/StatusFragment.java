@@ -1,6 +1,7 @@
 package me.stupidme.cooker.view.status;
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -16,8 +17,10 @@ import java.util.List;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
+import me.stupidme.cooker.presenter.StatusMockPresenterImpl;
 import me.stupidme.cooker.presenter.StatusPresenter;
 import me.stupidme.cooker.presenter.StatusPresenterImpl;
+import me.stupidme.cooker.util.ToastUtil;
 import me.stupidme.cooker.view.custom.SpaceItemDecoration;
 import me.stupidme.cooker.view.base.BaseFragment;
 import me.stupidme.cooker.view.cooker.CookerActivity;
@@ -31,6 +34,8 @@ public class StatusFragment extends BaseFragment implements StatusView {
     private List<BookBean> mDataSet;
 
     private StatusPresenter mPresenter;
+
+    private ProgressDialog mDialog;
 
     public StatusFragment() {
         // Required empty public constructor
@@ -49,8 +54,13 @@ public class StatusFragment extends BaseFragment implements StatusView {
 
         mDataSet = new ArrayList<>();
         mAdapter = new StatusRecyclerAdapter(mDataSet);
-        mPresenter = new StatusPresenterImpl(this);
+//        mPresenter = new StatusPresenterImpl(this);
+        mPresenter = new StatusMockPresenterImpl(this);
         mAdapter.setPresenter(mPresenter);
+
+        mDialog = new ProgressDialog(getActivity());
+        mDialog.setTitle("Cancel a book");
+        mDialog.setMessage("Please wait a few seconds...");
 
     }
 
@@ -64,7 +74,11 @@ public class StatusFragment extends BaseFragment implements StatusView {
         Button home = (Button) view.findViewById(R.id.status_home);
         Button exit = (Button) view.findViewById(R.id.status_exit);
 
-        home.setOnClickListener(v -> startActivity(new Intent(getActivity(), CookerActivity.class)));
+        home.setOnClickListener(v -> {
+            startActivity(new Intent(getActivity(), CookerActivity.class));
+            getActivity().finish();
+        });
+
         exit.setOnClickListener(v -> getActivity().finish());
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.status_recycler_view);
@@ -81,24 +95,21 @@ public class StatusFragment extends BaseFragment implements StatusView {
 
     }
 
-//
-//    @Override
-//    public void updateBook(BookBean book) {
-//        int position = -1;
-//        if (mDataSet.size() > 0) {
-//            for (BookBean b : mDataSet) {
-//                if (b.getBookId() == book.getBookId()) {
-//                    position = mDataSet.indexOf(b);
-//                }
-//            }
-//        }
-//
-//        if (position != -1) {
-//            mDataSet.remove(position);
-//            mDataSet.add(position, book);
-//            mAdapter.notifyItemChanged(position);
-//        }
-//    }
+    @Override
+    public void onViewCreated(View view, Bundle bundle) {
+        mPresenter.loadBooks();
+    }
+
+    @Override
+    public void showDialog(boolean show) {
+        if (show) {
+            if (!mDialog.isShowing())
+                mDialog.show();
+        } else {
+            if (mDialog.isShowing())
+                mDialog.dismiss();
+        }
+    }
 
     @Override
     public void removeBook(long bookId) {
@@ -117,7 +128,20 @@ public class StatusFragment extends BaseFragment implements StatusView {
     }
 
     @Override
-    public void showMessage(CharSequence msg) {
-        showToast(msg);
+    public void onCancelFailed() {
+        ToastUtil.showToastShort(getActivity(), "Cancel Success!");
     }
+
+    @Override
+    public void onCancelSuccess() {
+        ToastUtil.showToastShort(getActivity(), "Cancel failed!");
+    }
+
+    @Override
+    public void acceptData(List<BookBean> list) {
+        mDataSet.clear();
+        mDataSet.addAll(list);
+        mAdapter.notifyDataSetChanged();
+    }
+
 }

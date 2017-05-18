@@ -8,6 +8,5 @@ public interface StatusPresenter {
 
     void cancelBook(long bookId);
 
-//    void updateBook(long bookId);
-
+    void loadBooks();
 }

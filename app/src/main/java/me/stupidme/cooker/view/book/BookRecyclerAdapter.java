@@ -24,6 +24,8 @@ public class BookRecyclerAdapter extends RecyclerView.Adapter<BookRecyclerAdapte
 
     private List<BookBean> mDataSet;
 
+    private OnItemClickListener mListener;
+
     public BookRecyclerAdapter(List<BookBean> list) {
         mDataSet = list;
     }
@@ -67,6 +69,14 @@ public class BookRecyclerAdapter extends RecyclerView.Adapter<BookRecyclerAdapte
                 .load(ImageUtil.nextImageResId())
                 .placeholder(ImageUtil.placeHolder())
                 .into(holder.image);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mListener != null)
+                    mListener.onClick(holder.getAdapterPosition(), bookBean);
+            }
+        });
     }
 
     @Override
@@ -76,6 +86,10 @@ public class BookRecyclerAdapter extends RecyclerView.Adapter<BookRecyclerAdapte
 
     public List<BookBean> getDataSet() {
         return mDataSet;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -104,5 +118,10 @@ public class BookRecyclerAdapter extends RecyclerView.Adapter<BookRecyclerAdapte
             time = (TextView) itemView.findViewById(R.id.book_time);
             image = (ImageView) itemView.findViewById(R.id.book_image);
         }
+    }
+
+    public interface OnItemClickListener {
+
+        void onClick(int position, BookBean bookBean);
     }
 }

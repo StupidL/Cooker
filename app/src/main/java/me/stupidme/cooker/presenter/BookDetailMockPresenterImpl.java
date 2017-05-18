@@ -1,45 +1,42 @@
 package me.stupidme.cooker.presenter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import me.stupidme.cooker.mock.MockCookerService;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.model.db.DbManager;
 import me.stupidme.cooker.model.db.DbManagerImpl;
 import me.stupidme.cooker.model.http.CookerRetrofit;
-import me.stupidme.cooker.model.http.CookerService;
 import me.stupidme.cooker.model.http.HttpResult;
-import me.stupidme.cooker.util.SharedPreferenceUtil;
-import me.stupidme.cooker.view.status.StatusView;
+import me.stupidme.cooker.view.detail.BookDetailView;
 
 /**
- * Created by StupidL on 2017/4/5.
+ * Created by stupidl on 17-5-17.
  */
 
-public class StatusPresenterImpl implements StatusPresenter {
+public class BookDetailMockPresenterImpl implements BookDetailPresenter {
 
-    private StatusView mView;
+    private BookDetailView mView;
+
+    private MockCookerService mMockService;
 
     private DbManager mDbManager;
 
-    private CookerService mService;
-
-    public StatusPresenterImpl(StatusView view) {
+    public BookDetailMockPresenterImpl(BookDetailView view) {
         mView = view;
+        mMockService = CookerRetrofit.getInstance().getMockService();
         mDbManager = DbManagerImpl.getInstance();
-        mService = CookerRetrofit.getInstance().getCookerService();
     }
 
     @Override
-    public void cancelBook(long bookId) {
+    public void cancel(Long userId, Long bookId) {
         mView.showDialog(true);
-        Long userId = SharedPreferenceUtil.getAccountUserId(0L);
-        mService.deleteBook(userId, bookId)
+        mMockService.deleteBook(userId, bookId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<HttpResult<List<BookBean>>>() {
@@ -74,11 +71,10 @@ public class StatusPresenterImpl implements StatusPresenter {
                             mView.onCancelFailed();
                             return;
                         }
-                        mService.updateCooker(userId, cookerBean.getCookerId(), cookerBean)
+                        mMockService.updateCooker(userId, cookerBean.getCookerId(), cookerBean)
                                 .subscribeOn(Schedulers.io())
                                 .subscribe();
                         mView.onCancelSuccess();
-                        mView.removeBook(bookId);
                     }
 
                     @Override
@@ -92,17 +88,6 @@ public class StatusPresenterImpl implements StatusPresenter {
                         mView.showDialog(false);
                     }
                 });
-    }
-
-    @Override
-    public void loadBooks() {
-        List<BookBean> list = mDbManager.queryBooks(DbManager.KEY_USER_ID,
-                SharedPreferenceUtil.getAccountUserId(0L));
-        List<BookBean> data = new ArrayList<>();
-        list.parallelStream()
-                .filter(b -> "booking".toUpperCase().equals(b.getCookerStatus().toUpperCase()))
-                .forEach(data::add);
-        mView.acceptData(data);
     }
 
 }
