@@ -51,10 +51,13 @@ public class CookerPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        if (value == null || value.getData() == null
-                                || value.getData().size() <= 0 || value.getResultCode() != 200) {
+                        if (value == null || value.getData() == null || value.getResultCode() != 200) {
                             mView.showDialog(false);
                             mView.showMessage(MESSAGE_DELETE_COOKER_FAILED, null);
+                            return;
+                        }
+                        if (value.getData().size() <= 0) {
+                            mView.showDialog(false);
                             return;
                         }
                         boolean success = mDbManager.deleteCooker(DbManager.KEY_COOKER_ID, cookerId);

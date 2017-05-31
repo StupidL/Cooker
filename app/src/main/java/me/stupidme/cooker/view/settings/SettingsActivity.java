@@ -15,7 +15,7 @@ import java.util.List;
 import me.stupidme.cooker.R;
 
 
-public class SettingsActivity extends AppCompatPreferenceActivity {
+public class SettingsActivity extends SettingsBaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

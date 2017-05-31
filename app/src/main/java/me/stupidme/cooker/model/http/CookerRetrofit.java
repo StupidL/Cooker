@@ -2,11 +2,6 @@ package me.stupidme.cooker.model.http;
 
 import android.content.Context;
 
-import com.franmontiel.persistentcookiejar.ClearableCookieJar;
-import com.franmontiel.persistentcookiejar.PersistentCookieJar;
-import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
-import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
-
 import java.lang.ref.WeakReference;
 
 import me.stupidme.cooker.mock.MockCookerService;
@@ -19,45 +14,43 @@ import retrofit2.mock.MockRetrofit;
 import retrofit2.mock.NetworkBehavior;
 
 /**
- * Created by StupidL on 2017/3/8.
+ * A class to manage retrofit service.
  */
 
 public class CookerRetrofit {
 
     /**
-     * Application Context, 持久化Cookie用到SharedPreference，需要Context
+     * Application Context, used in shared preference.
      */
     private static WeakReference<Context> mContextRef;
 
     /**
-     * 单例,线程安全
+     * Single instance.
      */
-    private static CookerRetrofit sInstance;
+    private volatile static CookerRetrofit sInstance;
 
     /**
-     * 对外提供获取Retrofit对象的接口
+     * Retrofit instance to create {@link #mService}.
      */
     private Retrofit mRetrofit;
 
     /**
-     * 对外提供获取CookerService对象的接口
+     * A interface to request data from server.
      */
     private CookerService mService;
 
     /**
-     * 对外提供OkHttpClient对象的接口
+     * A client instance of {@link OkHttpClient}.
      */
     private OkHttpClient mClient;
 
     /**
-     * Cookie本地持久化存储
+     * A mock server for test.
      */
-    private ClearableCookieJar mCookieJar;
-
     private MockCookerService mMockService;
 
     /**
-     * 静态方法，用来获取Application Context，并且本类持有该Context的弱引用
+     * A weak reference of context.
      *
      * @param context application context
      */
@@ -65,15 +58,10 @@ public class CookerRetrofit {
         mContextRef = new WeakReference<>(context);
     }
 
-    /**
-     * 私有构造器
-     */
     private CookerRetrofit() {
         Context context = mContextRef.get();
         if (context != null) {
-            mCookieJar = new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(context));
             mClient = new OkHttpClient.Builder()
-                    .cookieJar(mCookieJar)
                     .build();
 
             NetworkBehavior behavior = NetworkBehavior.create();
@@ -96,9 +84,9 @@ public class CookerRetrofit {
     }
 
     /**
-     * 获取单例对象
+     * DCL singleton pattern.
      *
-     * @return 单例
+     * @return instance of {@link CookerRetrofit}
      */
     public static CookerRetrofit getInstance() {
         if (sInstance == null) {
@@ -110,40 +98,16 @@ public class CookerRetrofit {
         return sInstance;
     }
 
-    /**
-     * 获取Retrofit对象
-     *
-     * @return mRetrofit成员
-     */
     public Retrofit getRetrofit() {
         return mRetrofit;
     }
 
-    /**
-     * 获取Service对象
-     *
-     * @return mService成员
-     */
     public CookerService getCookerService() {
         return mService;
     }
 
-    /**
-     * 获取OkHttpClient对象
-     *
-     * @return mClient成员
-     */
     public OkHttpClient getOkHttpClient() {
         return mClient;
-    }
-
-    /**
-     * 获取PersistentCookieJar对象
-     *
-     * @return mCookieJar成员
-     */
-    public ClearableCookieJar getCookieJar() {
-        return mCookieJar;
     }
 
     public MockCookerService getMockService() {

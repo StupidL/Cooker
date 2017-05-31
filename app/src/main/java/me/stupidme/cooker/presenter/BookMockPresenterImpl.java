@@ -246,7 +246,7 @@ public class BookMockPresenterImpl implements BookPresenter {
 
                     @Override
                     public void onComplete() {
-                        mView.setRefreshing(false);
+                        mView.showDialog(false);
                         Log.i(TAG, "onComplete: ");
                     }
                 });

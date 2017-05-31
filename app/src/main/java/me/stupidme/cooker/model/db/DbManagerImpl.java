@@ -187,6 +187,7 @@ public class DbManagerImpl implements DbManager {
             cursor.close();
             return null;
         }
+        cursor.moveToFirst();
         BookBean bookBean = createBookBean(cursor);
         cursor.close();
         return bookBean;
@@ -299,6 +300,7 @@ public class DbManagerImpl implements DbManager {
             cursor.close();
             return null;
         }
+        cursor.moveToFirst();
         BookBean bookBean = createBookBean(cursor);
         cursor.close();
         return bookBean;

@@ -23,44 +23,29 @@ import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.presenter.BookMockPresenterImpl;
 import me.stupidme.cooker.presenter.BookPresenter;
+import me.stupidme.cooker.presenter.BookPresenterImpl;
 import me.stupidme.cooker.util.ToastUtil;
 import me.stupidme.cooker.view.custom.SpaceItemDecoration;
 import me.stupidme.cooker.view.detail.BookDetailActivity;
 
 /**
- * Created by StupidL on 2017/3/8.
+ * A base fragment to show books.
+ * This class is <code>abstract</code> and sub class must override {@link #setItemTouchHelperCallback}
+ * to custom item behavior on recycler view.
  */
 
 public abstract class BookBaseFragment extends Fragment implements BookView {
 
-    /**
-     * RecyclerView控件，用来展示各个预约信息
-     */
     protected RecyclerView mRecyclerView;
 
-    /**
-     * 预约信息集合
-     */
     protected List<BookBean> mDataSet;
 
-    /**
-     * RecyclerView适配器
-     */
     protected BookRecyclerAdapter mAdapter;
 
-    /**
-     * Presenter，负责网络数据请求和数据库操作
-     */
     protected BookPresenter mPresenter;
 
-    /**
-     * 下拉刷新控件
-     */
     protected SwipeRefreshLayout mSwipeLayout;
 
-    /**
-     * 添加预约悬浮按钮
-     */
     protected FloatingActionButton mFab;
 
     protected TextView mEmptyView;
@@ -72,26 +57,25 @@ public abstract class BookBaseFragment extends Fragment implements BookView {
         super.onCreate(savedInstanceState);
         mDataSet = new ArrayList<>();
         mAdapter = new BookRecyclerAdapter(mDataSet);
-//        mPresenter = new BookPresenter(this);
+//        mPresenter = new BookPresenterImpl(this);
         mPresenter = new BookMockPresenterImpl(this);
         mProgressDialog = new ProgressDialog(getActivity());
         mProgressDialog.setTitle(getActivity().getString(R.string.fragment_book_dialog_title));
+        mProgressDialog.setMessage(getString(R.string.fragment_cooker_dialog_tips));
 
-        mAdapter.setOnItemClickListener(new BookRecyclerAdapter.OnItemClickListener() {
-            @Override
-            public void onClick(int position, BookBean bookBean) {
-                Intent intent = new Intent(getActivity(), BookDetailActivity.class);
-                intent.putExtra("userId", bookBean.getUserId());
-                intent.putExtra("bookId", bookBean.getBookId());
-                intent.putExtra("cookerId", bookBean.getBookId());
-                intent.putExtra("cookerName", bookBean.getCookerName());
-                intent.putExtra("cookerLocation", bookBean.getCookerLocation());
-                intent.putExtra("cookerStatus", bookBean.getCookerStatus());
-                intent.putExtra("peopleCount", bookBean.getPeopleCount());
-                intent.putExtra("riceWeight", bookBean.getRiceWeight());
-                intent.putExtra("taste", bookBean.getTaste());
-                intent.putExtra("time", bookBean.getTime());
-            }
+        mAdapter.setOnItemClickListener((position, bookBean) -> {
+            Intent intent = new Intent(getActivity(), BookDetailActivity.class);
+            intent.putExtra("userId", bookBean.getUserId());
+            intent.putExtra("bookId", bookBean.getBookId());
+            intent.putExtra("cookerId", bookBean.getCookerId());
+            intent.putExtra("cookerName", bookBean.getCookerName());
+            intent.putExtra("cookerLocation", bookBean.getCookerLocation());
+            intent.putExtra("cookerStatus", bookBean.getCookerStatus());
+            intent.putExtra("peopleCount", bookBean.getPeopleCount());
+            intent.putExtra("riceWeight", bookBean.getRiceWeight());
+            intent.putExtra("taste", bookBean.getTaste());
+            intent.putExtra("time", bookBean.getTime());
+            startActivity(intent);
         });
     }
 
@@ -113,10 +97,16 @@ public abstract class BookBaseFragment extends Fragment implements BookView {
         return view;
     }
 
+//    @Override
+//    public void onViewCreated(View view, Bundle bundle) {
+//        mPresenter.queryBooksFromDB();
+//        Log.v(getClass().getCanonicalName(), "onViewCreated()");
+//    }
+
     @Override
-    public void onViewCreated(View view, Bundle bundle) {
+    public void onResume() {
+        super.onResume();
         mPresenter.queryBooksFromDB();
-        Log.v(getClass().getCanonicalName(), "onViewCreated()");
     }
 
     @Override
@@ -127,13 +117,10 @@ public abstract class BookBaseFragment extends Fragment implements BookView {
     }
 
     /**
-     * 为RecyclerView设置Item回调，子类必须实现该抽象方法，以达到各自想要的效果
+     * abstract method that sub class must override to determine item's behavior on recycler view.
      */
     protected abstract void setItemTouchHelperCallback();
 
-    /**
-     * 初始化RecyclerView
-     */
     protected void initRecyclerView() {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
@@ -144,8 +131,6 @@ public abstract class BookBaseFragment extends Fragment implements BookView {
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         setItemTouchHelperCallback();
-
-        Log.v(getClass().getCanonicalName(), "initRecyclerView()");
     }
 
     @Override
@@ -162,6 +147,8 @@ public abstract class BookBaseFragment extends Fragment implements BookView {
     @Override
     public void showDialog(boolean show) {
         if (show) {
+            mProgressDialog.setTitle(getString(R.string.fragment_book_dialog_title));
+            mProgressDialog.setMessage(getString(R.string.fragment_cooker_dialog_tips));
             mProgressDialog.show();
             return;
         }

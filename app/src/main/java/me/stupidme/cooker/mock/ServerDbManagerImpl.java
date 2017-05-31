@@ -229,6 +229,7 @@ public class ServerDbManagerImpl implements ServerDbManager {
             cursor.close();
             return null;
         }
+        cursor.moveToFirst();
         BookBean bookBean = createBookBean(cursor);
         cursor.close();
         return bookBean;
@@ -328,7 +329,6 @@ public class ServerDbManagerImpl implements ServerDbManager {
 
     private BookBean createBookBean(Cursor cursor) {
         BookBean book = new BookBean();
-        cursor.moveToFirst();
         book.setUserId(cursor.getLong(cursor.getColumnIndex(KEY_USER_ID_SERVER)));
         book.setBookId(cursor.getLong(cursor.getColumnIndex(KEY_BOOK_ID_SERVER)));
         book.setCookerId(cursor.getLong(cursor.getColumnIndex(KEY_COOKER_ID_SERVER)));

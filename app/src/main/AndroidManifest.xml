@@ -70,7 +70,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.detail.BookDetailActivity"></activity>
+        <activity
+            android:name=".view.detail.BookDetailActivity"
+            android:label="Detail"
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
     </application>
 
 </manifest>

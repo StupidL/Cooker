@@ -3,6 +3,7 @@ package me.stupidme.cooker.view.detail;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,7 +23,6 @@ import me.stupidme.cooker.view.base.BaseActivity;
 public class BookDetailActivity extends BaseActivity implements BookDetailView {
 
     private BookBean mBookBean;
-    private String mTime;
     private BookDetailPresenter mPresenter;
     private ProgressDialog mDialog;
 
@@ -50,16 +50,19 @@ public class BookDetailActivity extends BaseActivity implements BookDetailView {
         mBookBean.setRiceWeight(intent.getIntExtra("riceWeight", 0));
         mBookBean.setTaste(intent.getStringExtra("taste"));
         mBookBean.setTime(intent.getLongExtra("time", 0L));
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(mBookBean.getTime());
-        String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
-        String minute = String.valueOf(calendar.get(Calendar.MINUTE));
-        mTime = hour + ":" + minute;
     }
 
     @Override
     protected void initView() {
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Detail");
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        toolbar.setNavigationOnClickListener(v -> finish());
+
         TextView bookId = (TextView) findViewById(R.id.detail_book_id);
         TextView cookerId = (TextView) findViewById(R.id.detail_cooker_id);
         TextView cookerName = (TextView) findViewById(R.id.detail_cooker_name);
@@ -70,25 +73,38 @@ public class BookDetailActivity extends BaseActivity implements BookDetailView {
         TextView taste = (TextView) findViewById(R.id.detail_taste);
         TextView time = (TextView) findViewById(R.id.detail_time);
 
-        bookId.setText(String.valueOf(mBookBean.getBookId()));
-        cookerId.setText(String.valueOf(mBookBean.getCookerId()));
-        cookerName.setText(mBookBean.getCookerName());
-        cookerLocation.setText(mBookBean.getCookerLocation());
-        cookerStatus.setText(mBookBean.getCookerStatus());
-        peopleCount.setText(String.valueOf(mBookBean.getPeopleCount()));
-        riceWeight.setText(String.valueOf(mBookBean.getRiceWeight()));
-        taste.setText(mBookBean.getTaste());
-        time.setText(mTime);
+        String bookIdStr = "BOOK ID:" + mBookBean.getBookId().toString().substring(0, 10);
+        String cookerIdStr = "COOKER ID:" + mBookBean.getCookerId().toString().substring(0, 10);
+        String cookerNameStr = "NAME:" + mBookBean.getCookerName();
+        String cookerLocStr = "LOCATION:" + mBookBean.getCookerLocation();
+        String cookerStatusStr = "STATUS:" + mBookBean.getCookerStatus();
+        String countStr = "COUNT:" + mBookBean.getPeopleCount();
+        String weightStr = "WEIGHT:" + mBookBean.getRiceWeight();
+        String tasteStr = "TASTE:" + mBookBean.getTaste();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(mBookBean.getTime());
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        String timeStr = String.valueOf(hour) + ":" + (minute < 10 ? "0" + minute : minute);
+        bookId.setText(bookIdStr);
+        cookerId.setText(cookerIdStr);
+        cookerName.setText(cookerNameStr);
+        cookerLocation.setText(cookerLocStr);
+        cookerStatus.setText(cookerStatusStr);
+        peopleCount.setText(countStr);
+        riceWeight.setText(weightStr);
+        taste.setText(tasteStr);
+        time.setText(timeStr);
 
         mPresenter = new BookDetailMockPresenterImpl(this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.detail_fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mPresenter.cancel(mBookBean.getUserId(), mBookBean.getBookId());
-            }
-        });
+        fab.setOnClickListener(view -> mPresenter.cancel(mBookBean.getUserId(), mBookBean.getBookId()));
+
+        if (!"BOOKING".equals(mBookBean.getCookerStatus().toUpperCase())) {
+            fab.setVisibility(View.GONE);
+        } else
+            fab.setVisibility(View.VISIBLE);
 
         ImageView imageView = (ImageView) findViewById(R.id.detail_image_view);
         Glide.with(this)
@@ -104,6 +120,7 @@ public class BookDetailActivity extends BaseActivity implements BookDetailView {
     @Override
     public void onCancelSuccess() {
         ToastUtil.showToastShort(this, "Cancel book success!");
+        finish();
     }
 
     @Override

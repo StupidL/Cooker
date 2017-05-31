@@ -8,7 +8,8 @@ import me.stupidme.cooker.R;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
 
 /**
- * Created by StupidL on 2017/4/16.
+ * A fragment to manage notifications, controlling sounds and
+ * determine show or not when a notification arrives.
  */
 
 public class NotificationFragment extends BasePreferenceFragment {
