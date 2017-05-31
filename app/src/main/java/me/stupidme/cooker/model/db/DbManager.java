@@ -208,6 +208,15 @@ public interface DbManager {
     List<BookBean> queryBooks(String where, Long equalTo);
 
     /**
+     * Query book records
+     *
+     * @param where   field in local db
+     * @param equalTo value of field
+     * @return collection of book if query success, or null or empty collection if failed
+     */
+    List<BookBean> queryBooks(String where, String equalTo);
+
+    /**
      * Update a book record.
      *
      * @param book book

@@ -73,8 +73,8 @@ public class BookDetailActivity extends BaseActivity implements BookDetailView {
         TextView taste = (TextView) findViewById(R.id.detail_taste);
         TextView time = (TextView) findViewById(R.id.detail_time);
 
-        String bookIdStr = "BOOK ID:" + mBookBean.getBookId().toString().substring(0, 10);
-        String cookerIdStr = "COOKER ID:" + mBookBean.getCookerId().toString().substring(0, 10);
+        String bookIdStr = "BOOK ID:" + mBookBean.getBookId().toString().substring(0, 6);
+        String cookerIdStr = "COOKER ID:" + mBookBean.getCookerId().toString().substring(0, 6);
         String cookerNameStr = "NAME:" + mBookBean.getCookerName();
         String cookerLocStr = "LOCATION:" + mBookBean.getCookerLocation();
         String cookerStatusStr = "STATUS:" + mBookBean.getCookerStatus();

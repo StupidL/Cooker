@@ -11,67 +11,6 @@ import me.stupidme.cooker.model.CookerBean;
 public interface CookerPresenter {
 
     /**
-     * error occurs when request sever to delete a cooker.
-     */
-    int MESSAGE_DELETE_COOKER_ERROR = 0x10;
-
-    /**
-     * failed to delete a cooker from activity or fragment, but network has response.
-     */
-    int MESSAGE_DELETE_COOKER_FAILED = 0x11;
-
-    /**
-     * failed to delete a cooker from db, but network has response.
-     */
-    int MESSAGE_DELETE_DB_COOKER_FAILED = 0x12;
-
-
-    /**
-     * error occurs when request sever to insert a cooker.
-     */
-    int MESSAGE_INSERT_COOKER_ERROR = 0x20;
-
-    /**
-     * failed to insert a cooker from activity or fragment, but network has response.
-     */
-    int MESSAGE_INSERT_COOKER_FAILED = 0x21;
-
-    /**
-     * failed to insert a cooker from db, but network has response.
-     */
-    int MESSAGE_INSERT_DB_COOKER_FAILED = 0x22;
-
-    /**
-     * error occurs when request sever to update a cooker.
-     */
-    int MESSAGE_UPDATE_COOKER_ERROR = 0x30;
-
-    /**
-     * failed to update a cooker for activity or fragment, but network has response.
-     */
-    int MESSAGE_UPDATE_COOKER_FAILED = 0x31;
-
-    /**
-     * failed to update a cooker for db, but network has response.
-     */
-    int MESSAGE_UPDATE_DB_COOKER_FAILED = 0x32;
-
-    /**
-     * failed to query cooker(s) from server.
-     */
-    int MESSAGE_QUERY_SERVER_COOKER_FAILED = 0x40;
-
-    /**
-     * error occurs when request server to query cooker(s).
-     */
-    int MESSAGE_QUERY_SERVER_COOKER_ERROR = 0x41;
-
-    /**
-     * success to query a cooker from server, but the result may be empty.
-     */
-    int MESSAGE_QUERY_SERVER_COOKER_SUCCESS = 0x42;
-
-    /**
      * Delete a cooker for user both in db and server.
      *
      * @param cookerId id of cooker

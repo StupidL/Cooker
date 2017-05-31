@@ -39,8 +39,8 @@ public class BookRecyclerAdapter extends RecyclerView.Adapter<BookRecyclerAdapte
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         BookBean bookBean = mDataSet.get(position);
-        String bookId = bookBean.getBookId().toString().toUpperCase().substring(1, 10);
-        String cookerId = bookBean.getCookerId().toString().toUpperCase().substring(1, 10);
+        String bookId = bookBean.getBookId().toString().toUpperCase().substring(1, 6);
+        String cookerId = bookBean.getCookerId().toString().toUpperCase().substring(1, 6);
         String name = bookBean.getCookerName().toUpperCase();
         String location = bookBean.getCookerLocation().toUpperCase();
         String count = String.valueOf(bookBean.getPeopleCount()).toUpperCase();

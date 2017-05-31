@@ -212,6 +212,24 @@ public class DbManagerImpl implements DbManager {
     }
 
     @Override
+    public List<BookBean> queryBooks(String where, String equalTo) {
+        List<BookBean> list = new ArrayList<>();
+        Cursor cursor = mReadableDB.rawQuery("SELECT * FROM " + TABLE_NAME_BOOK + " WHERE " + where + " =?",
+                new String[]{String.valueOf(equalTo)});
+        if (cursor.getCount() <= 0) {
+            cursor.close();
+            return list;
+        }
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            list.add(createBookBean(cursor));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return list;
+    }
+
+    @Override
     public boolean deleteBook(String where, Long equalTo) {
         int r = mWritableDB.delete(TABLE_NAME_BOOK, where + "=?", new String[]{String.valueOf(equalTo)});
         return r != 0;

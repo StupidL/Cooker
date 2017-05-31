@@ -22,6 +22,21 @@ import me.stupidme.cooker.util.SharedPreferenceUtil;
 import me.stupidme.cooker.view.book.BookDialog;
 import me.stupidme.cooker.view.book.BookView;
 
+import static me.stupidme.cooker.MessageConstants.MESSAGE_DELETE_BOOK_ERROR;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_DELETE_BOOK_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_DELETE_BOOK_SUCCESS_BUT_EMPTY;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_INSERT_BOOK_DB_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_INSERT_BOOK_ERROR;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_INSERT_BOOK_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_INSERT_BOOK_HISTORY_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_INSERT_BOOK_SUCCESS_BUT_EMPTY;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_QUERY_BOOK_ERROR;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_QUERY_BOOK_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_QUERY_BOOK_SUCCESS_BUT_EMPTY;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_UPDATE_BOOK_DB_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_UPDATE_LOCAL_COOKER_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_UPDATE_SERVER_COOKER_FAILED;
+
 /**
  * Created by StupidL on 2017/3/8.
  */
@@ -66,16 +81,24 @@ public class BookPresenterImpl implements BookPresenter {
                             mView.showMessage(MESSAGE_INSERT_BOOK_SUCCESS_BUT_EMPTY, null);
                             return;
                         }
-                        boolean success = mDbManager.insertBook(value.getData().get(0));
+                        BookBean bookBean = value.getData().get(0);
+                        bookBean.setCookerStatus("Booking");
+                        boolean success = mDbManager.insertBook(bookBean);
                         if (!success) {
                             mView.showDialog(false);
                             mView.showMessage(MESSAGE_INSERT_BOOK_DB_FAILED, null);
                             return;
                         }
-                        boolean success2 = mDbManager.insertBookHistory(value.getData().get(0));
+                        boolean success2 = mDbManager.insertBookHistory(bookBean);
                         if (!success2) {
                             mView.showDialog(false);
                             mView.showMessage(MESSAGE_INSERT_BOOK_HISTORY_FAILED, null);
+                            return;
+                        }
+                        boolean success3 = setCookerStatusBooking(bookBean);
+                        if (!success3) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_UPDATE_LOCAL_COOKER_FAILED, null);
                             return;
                         }
                         mView.insertBook(value.getData().get(0));
@@ -95,6 +118,16 @@ public class BookPresenterImpl implements BookPresenter {
                         Log.i(TAG, "onComplete: ");
                     }
                 });
+    }
+
+    private boolean setCookerStatusBooking(BookBean bookBean) {
+        CookerBean cookerBean = new CookerBean();
+        cookerBean.setUserId(bookBean.getUserId());
+        cookerBean.setCookerId(bookBean.getCookerId());
+        cookerBean.setCookerName(bookBean.getCookerName());
+        cookerBean.setCookerLocation(bookBean.getCookerLocation());
+        cookerBean.setCookerStatus("Booking");
+        return mDbManager.updateCooker(cookerBean);
     }
 
     @Override
@@ -154,29 +187,24 @@ public class BookPresenterImpl implements BookPresenter {
                             return;
                         }
                         BookBean bookBean1 = value.getData().get(0);
+                        bookBean1.setCookerStatus("Booking");
                         boolean success = mDbManager.insertBook(bookBean1);
                         if (!success) {
                             mView.showDialog(false);
                             mView.showMessage(MESSAGE_INSERT_BOOK_DB_FAILED, null);
                             return;
                         }
-                        bookBean1.setCookerStatus("Booking");
+
                         boolean success2 = mDbManager.insertBookHistory(bookBean1);
                         if (!success2) {
                             mView.showDialog(false);
                             mView.showMessage(MESSAGE_INSERT_BOOK_HISTORY_FAILED, null);
                             return;
                         }
-
-                        CookerBean cookerBean1 = new CookerBean();
-                        cookerBean1.setCookerId(bookBean1.getCookerId());
-                        cookerBean1.setCookerName(bookBean1.getCookerName());
-                        cookerBean1.setCookerLocation(bookBean1.getCookerLocation());
-                        cookerBean1.setCookerStatus("Booking");
-                        boolean success3 = mDbManager.updateCooker(cookerBean1);
+                        boolean success3 = setCookerStatusBooking(bookBean1);
                         if (!success3) {
                             mView.showDialog(false);
-                            mView.showMessage(MESSAGE_UPDATE_COOKER_FAILED, null);
+                            mView.showMessage(MESSAGE_UPDATE_SERVER_COOKER_FAILED, null);
                             return;
                         }
 
@@ -230,7 +258,12 @@ public class BookPresenterImpl implements BookPresenter {
                             mView.showMessage(MESSAGE_DELETE_BOOK_FAILED, null);
                             return;
                         }
-
+//                        boolean success2 = updateCookerStatus(bookBean);
+//                        if (!success2) {
+//                            mView.showDialog(false);
+//                            mView.showMessage(MESSAGE_UPDATE_LOCAL_COOKER_FAILED, null);
+//                            return;
+//                        }
                         mView.removeBook(book);
                         Log.i(TAG, "onNext: " + value.toString());
                     }
@@ -244,10 +277,33 @@ public class BookPresenterImpl implements BookPresenter {
 
                     @Override
                     public void onComplete() {
-                        mView.setRefreshing(false);
+                        mView.showDialog(false);
                         Log.i(TAG, "onComplete: ");
                     }
                 });
+    }
+
+    private boolean updateCookerStatus(BookBean bookBean) {
+        List<BookBean> list = mDbManager.queryBooks(DbManager.KEY_COOKER_NAME, bookBean.getCookerName());
+        if (list == null || list.size() <= 0) {
+            return setCookerStatusFree(bookBean);
+        }
+        int count = 0;
+        for (BookBean b : list) {
+            if ("Booking".toUpperCase().equals(b.getCookerStatus().toUpperCase()))
+                count++;
+        }
+        return count != 0 || setCookerStatusFree(bookBean);
+    }
+
+    private boolean setCookerStatusFree(BookBean bookBean) {
+        CookerBean cookerBean = new CookerBean();
+        cookerBean.setUserId(bookBean.getUserId());
+        cookerBean.setCookerId(bookBean.getCookerId());
+        cookerBean.setCookerName(bookBean.getCookerName());
+        cookerBean.setCookerLocation(bookBean.getCookerLocation());
+        cookerBean.setCookerStatus("Free");
+        return mDbManager.updateCooker(cookerBean);
     }
 
     @Override

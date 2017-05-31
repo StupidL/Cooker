@@ -23,10 +23,25 @@ import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.presenter.BookMockPresenterImpl;
 import me.stupidme.cooker.presenter.BookPresenter;
-import me.stupidme.cooker.presenter.BookPresenterImpl;
 import me.stupidme.cooker.util.ToastUtil;
 import me.stupidme.cooker.view.custom.SpaceItemDecoration;
 import me.stupidme.cooker.view.detail.BookDetailActivity;
+
+import static me.stupidme.cooker.MessageConstants.MESSAGE_DELETE_BOOK_DB_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_DELETE_BOOK_ERROR;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_DELETE_BOOK_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_DELETE_BOOK_SUCCESS;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_DELETE_BOOK_SUCCESS_BUT_EMPTY;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_INSERT_BOOK_DB_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_INSERT_BOOK_ERROR;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_INSERT_BOOK_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_INSERT_BOOK_SUCCESS;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_INSERT_BOOK_SUCCESS_BUT_EMPTY;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_QUERY_BOOK_ERROR;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_QUERY_BOOK_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_QUERY_BOOK_SUCCESS_BUT_EMPTY;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_UPDATE_BOOK_DB_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_UPDATE_SERVER_COOKER_FAILED;
 
 /**
  * A base fragment to show books.
@@ -198,38 +213,38 @@ public abstract class BookBaseFragment extends Fragment implements BookView {
     @Override
     public void showMessage(int what, CharSequence message) {
         switch (what) {
-            case BookPresenter.MESSAGE_DELETE_BOOK_ERROR:
-            case BookPresenter.MESSAGE_INSERT_BOOK_ERROR:
-            case BookPresenter.MESSAGE_QUERY_BOOK_ERROR:
+            case MESSAGE_DELETE_BOOK_ERROR:
+            case MESSAGE_INSERT_BOOK_ERROR:
+            case MESSAGE_QUERY_BOOK_ERROR:
                 showToastShort(message);
                 break;
 
-            case BookPresenter.MESSAGE_DELETE_BOOK_SUCCESS:
-            case BookPresenter.MESSAGE_DELETE_BOOK_SUCCESS_BUT_EMPTY:
-            case BookPresenter.MESSAGE_INSERT_BOOK_SUCCESS:
-            case BookPresenter.MESSAGE_INSERT_BOOK_SUCCESS_BUT_EMPTY:
-            case BookPresenter.MESSAGE_QUERY_BOOK_SUCCESS_BUT_EMPTY:
+            case MESSAGE_DELETE_BOOK_SUCCESS:
+            case MESSAGE_DELETE_BOOK_SUCCESS_BUT_EMPTY:
+            case MESSAGE_INSERT_BOOK_SUCCESS:
+            case MESSAGE_INSERT_BOOK_SUCCESS_BUT_EMPTY:
+            case MESSAGE_QUERY_BOOK_SUCCESS_BUT_EMPTY:
                 break;
 
-            case BookPresenter.MESSAGE_INSERT_BOOK_DB_FAILED:
+            case MESSAGE_INSERT_BOOK_DB_FAILED:
                 showToastShort("Insert Book DB failed.");
                 break;
-            case BookPresenter.MESSAGE_INSERT_BOOK_FAILED:
+            case MESSAGE_INSERT_BOOK_FAILED:
                 showToastShort("Insert Book failed.");
                 break;
-            case BookPresenter.MESSAGE_QUERY_BOOK_FAILED:
+            case MESSAGE_QUERY_BOOK_FAILED:
                 showToastShort("Query Book failed.");
                 break;
-            case BookPresenter.MESSAGE_UPDATE_BOOK_DB_FAILED:
+            case MESSAGE_UPDATE_BOOK_DB_FAILED:
                 showToastShort("Update Book DB failed.");
                 break;
-            case BookPresenter.MESSAGE_UPDATE_COOKER_FAILED:
+            case MESSAGE_UPDATE_SERVER_COOKER_FAILED:
                 showToastShort("Update Book failed.");
                 break;
-            case BookPresenter.MESSAGE_DELETE_BOOK_DB_FAILED:
+            case MESSAGE_DELETE_BOOK_DB_FAILED:
                 showToastShort("Delete Book DB failed.");
                 break;
-            case BookPresenter.MESSAGE_DELETE_BOOK_FAILED:
+            case MESSAGE_DELETE_BOOK_FAILED:
                 showToastShort("Delete Book failed.");
                 break;
         }

@@ -26,9 +26,22 @@ import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.presenter.CookerMockPresenterImpl;
 import me.stupidme.cooker.presenter.CookerPresenter;
-import me.stupidme.cooker.presenter.CookerPresenterImpl;
 import me.stupidme.cooker.util.ToastUtil;
 import me.stupidme.cooker.view.custom.SpaceItemDecoration;
+
+import static me.stupidme.cooker.MessageConstants.MESSAGE_DELETE_SERVER_COOKER_ERROR;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_DELETE_SERVER_COOKER_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_DELETE_LOCAL_COOKER_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_INSERT_SERVER_COOKER_ERROR;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_INSERT_SERVER_COOKER_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_INSERT_LOCAL_COOKER_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_QUERY_SERVER_COOKER_ERROR;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_QUERY_SERVER_COOKER_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_QUERY_SERVER_COOKER_SUCCESS;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_UPDATE_SERVER_COOKER_ERROR;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_UPDATE_SERVER_COOKER_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_UPDATE_LOCAL_COOKER_FAILED;
+
 
 /**
  * Created by StupidL on 2017/3/5
@@ -81,6 +94,7 @@ public class CookerFragment extends Fragment implements CookerView, CookerDialog
         mPresenter = new CookerMockPresenterImpl(this);
         mProgressDialog = new ProgressDialog(getActivity());
         mProgressDialog.setTitle(getString(R.string.fragment_cooker_dialog_titile));
+        mProgressDialog.setMessage(getString(R.string.fragment_cooker_dialog_tips));
 
     }
 
@@ -278,40 +292,40 @@ public class CookerFragment extends Fragment implements CookerView, CookerDialog
     @Override
     public void showMessage(int what, CharSequence message) {
         switch (what) {
-            case CookerPresenter.MESSAGE_DELETE_COOKER_ERROR:
+            case MESSAGE_DELETE_SERVER_COOKER_ERROR:
                 showToastShort(message);
                 break;
-            case CookerPresenter.MESSAGE_DELETE_COOKER_FAILED:
+            case MESSAGE_DELETE_SERVER_COOKER_FAILED:
                 showToastShort("Delete cooker failed.");
                 break;
-            case CookerPresenter.MESSAGE_DELETE_DB_COOKER_FAILED:
+            case MESSAGE_DELETE_LOCAL_COOKER_FAILED:
                 showToastShort("Delete cooker from db failed.");
                 break;
-            case CookerPresenter.MESSAGE_INSERT_COOKER_ERROR:
+            case MESSAGE_INSERT_SERVER_COOKER_ERROR:
                 showToastShort(message);
                 break;
-            case CookerPresenter.MESSAGE_INSERT_COOKER_FAILED:
+            case MESSAGE_INSERT_SERVER_COOKER_FAILED:
                 showToastShort("Insert cooker failed.");
                 break;
-            case CookerPresenter.MESSAGE_INSERT_DB_COOKER_FAILED:
+            case MESSAGE_INSERT_LOCAL_COOKER_FAILED:
                 showToastShort("Insert cooker to db failed.");
                 break;
-            case CookerPresenter.MESSAGE_QUERY_SERVER_COOKER_ERROR:
+            case MESSAGE_QUERY_SERVER_COOKER_ERROR:
                 showToastShort(message);
                 break;
-            case CookerPresenter.MESSAGE_QUERY_SERVER_COOKER_FAILED:
+            case MESSAGE_QUERY_SERVER_COOKER_FAILED:
                 showToastShort("Query cooker from server failed.");
                 break;
-            case CookerPresenter.MESSAGE_UPDATE_COOKER_ERROR:
+            case MESSAGE_UPDATE_SERVER_COOKER_ERROR:
                 showToastShort(message);
                 break;
-            case CookerPresenter.MESSAGE_UPDATE_COOKER_FAILED:
+            case MESSAGE_UPDATE_SERVER_COOKER_FAILED:
                 showToastShort("Update cooker failed.");
                 break;
-            case CookerPresenter.MESSAGE_UPDATE_DB_COOKER_FAILED:
+            case MESSAGE_UPDATE_LOCAL_COOKER_FAILED:
                 showToastShort("Update cooker to db failed.");
                 break;
-            case CookerPresenter.MESSAGE_QUERY_SERVER_COOKER_SUCCESS:
+            case MESSAGE_QUERY_SERVER_COOKER_SUCCESS:
                 showToastShort("Query cooker success. But no data in server.");
                 break;
         }
@@ -320,7 +334,6 @@ public class CookerFragment extends Fragment implements CookerView, CookerDialog
     @Override
     public void showDialog(boolean show) {
         if (show) {
-            mProgressDialog.setMessage(getString(R.string.fragment_cooker_dialog_tips));
             mProgressDialog.show();
         } else
             mProgressDialog.dismiss();

@@ -17,6 +17,22 @@ import me.stupidme.cooker.model.http.HttpResult;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
 import me.stupidme.cooker.view.cooker.CookerView;
 
+import static me.stupidme.cooker.MessageConstants.MESSAGE_DELETE_SERVER_COOKER_ERROR;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_DELETE_SERVER_COOKER_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_DELETE_LOCAL_COOKER_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_DELETE_SERVER_COOKER_SUCCESS_RETURN_EMPTY;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_INSERT_SERVER_COOKER_ERROR;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_INSERT_SERVER_COOKER_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_INSERT_LOCAL_COOKER_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_INSERT_SERVER_COOKER_SUCCESS_RETURN_EMPTY;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_QUERY_SERVER_COOKER_ERROR;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_QUERY_SERVER_COOKER_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_QUERY_SERVER_COOKER_SUCCESS_RETURN_EMPTY;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_UPDATE_SERVER_COOKER_ERROR;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_UPDATE_SERVER_COOKER_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_UPDATE_LOCAL_COOKER_FAILED;
+import static me.stupidme.cooker.MessageConstants.MESSAGE_UPDATE_SERVER_COOKER_SUCCESS_RETURN_EMPTY;
+
 /**
  * Created by StupidL on 2017/3/7.
  */
@@ -53,17 +69,18 @@ public class CookerPresenterImpl implements CookerPresenter {
                     public void onNext(HttpResult<List<CookerBean>> value) {
                         if (value == null || value.getData() == null || value.getResultCode() != 200) {
                             mView.showDialog(false);
-                            mView.showMessage(MESSAGE_DELETE_COOKER_FAILED, null);
+                            mView.showMessage(MESSAGE_DELETE_SERVER_COOKER_FAILED, null);
                             return;
                         }
                         if (value.getData().size() <= 0) {
                             mView.showDialog(false);
+                            mView.showMessage(MESSAGE_DELETE_SERVER_COOKER_SUCCESS_RETURN_EMPTY, null);
                             return;
                         }
                         boolean success = mDbManager.deleteCooker(DbManager.KEY_COOKER_ID, cookerId);
                         if (!success) {
                             mView.showDialog(false);
-                            mView.showMessage(MESSAGE_DELETE_DB_COOKER_FAILED, null);
+                            mView.showMessage(MESSAGE_DELETE_LOCAL_COOKER_FAILED, null);
                             return;
                         }
                         mView.removeCooker(value.getData().get(0));
@@ -73,7 +90,7 @@ public class CookerPresenterImpl implements CookerPresenter {
                     @Override
                     public void onError(Throwable e) {
                         mView.showDialog(false);
-                        mView.showMessage(MESSAGE_DELETE_COOKER_ERROR, e.toString());
+                        mView.showMessage(MESSAGE_DELETE_SERVER_COOKER_ERROR, e.toString());
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
@@ -99,17 +116,21 @@ public class CookerPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        if (value == null || value.getData() == null
-                                || value.getData().size() <= 0 || value.getResultCode() != 200) {
+                        if (value == null || value.getData() == null || value.getResultCode() != 200) {
                             mView.showDialog(false);
-                            mView.showMessage(MESSAGE_DELETE_COOKER_FAILED, null);
+                            mView.showMessage(MESSAGE_DELETE_SERVER_COOKER_FAILED, null);
+                            return;
+                        }
+                        if (value.getData().size() <= 0) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_DELETE_SERVER_COOKER_SUCCESS_RETURN_EMPTY, null);
                             return;
                         }
                         boolean success = mDbManager.deleteCookers(DbManager.KEY_USER_ID,
                                 SharedPreferenceUtil.getAccountUserId(0L));
                         if (!success) {
                             mView.showDialog(false);
-                            mView.showMessage(MESSAGE_DELETE_DB_COOKER_FAILED, null);
+                            mView.showMessage(MESSAGE_DELETE_LOCAL_COOKER_FAILED, null);
                             return;
                         }
                         for (CookerBean cookerBean : value.getData())
@@ -120,7 +141,7 @@ public class CookerPresenterImpl implements CookerPresenter {
                     @Override
                     public void onError(Throwable e) {
                         mView.showDialog(false);
-                        mView.showMessage(MESSAGE_DELETE_COOKER_ERROR, e.toString());
+                        mView.showMessage(MESSAGE_DELETE_SERVER_COOKER_ERROR, e.toString());
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
@@ -148,16 +169,20 @@ public class CookerPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        if (value == null || value.getData() == null
-                                || value.getData().size() <= 0 || value.getResultCode() != 200) {
+                        if (value == null || value.getData() == null || value.getResultCode() != 200) {
                             mView.showDialog(false);
-                            mView.showMessage(MESSAGE_INSERT_COOKER_FAILED, null);
+                            mView.showMessage(MESSAGE_INSERT_SERVER_COOKER_FAILED, null);
+                            return;
+                        }
+                        if (value.getData().size() <= 0) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_INSERT_SERVER_COOKER_SUCCESS_RETURN_EMPTY, null);
                             return;
                         }
                         boolean success = mDbManager.insertCooker(value.getData().get(0));
                         if (!success) {
                             mView.showDialog(false);
-                            mView.showMessage(MESSAGE_INSERT_DB_COOKER_FAILED, null);
+                            mView.showMessage(MESSAGE_INSERT_LOCAL_COOKER_FAILED, null);
                             return;
                         }
                         mView.insertCooker(value.getData().get(0));
@@ -167,7 +192,7 @@ public class CookerPresenterImpl implements CookerPresenter {
                     @Override
                     public void onError(Throwable e) {
                         mView.showDialog(false);
-                        mView.showMessage(MESSAGE_INSERT_COOKER_ERROR, e.toString());
+                        mView.showMessage(MESSAGE_INSERT_SERVER_COOKER_ERROR, e.toString());
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
@@ -204,16 +229,20 @@ public class CookerPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        if (value == null || value.getData() == null
-                                || value.getData().size() <= 0 || value.getResultCode() != 200) {
+                        if (value == null || value.getData() == null || value.getResultCode() != 200) {
                             mView.showDialog(false);
-                            mView.showMessage(MESSAGE_UPDATE_COOKER_FAILED, null);
+                            mView.showMessage(MESSAGE_UPDATE_SERVER_COOKER_FAILED, null);
+                            return;
+                        }
+                        if (value.getData().size() <= 0) {
+                            mView.showDialog(false);
+                            mView.showMessage(MESSAGE_UPDATE_SERVER_COOKER_SUCCESS_RETURN_EMPTY, null);
                             return;
                         }
                         boolean success = mDbManager.updateCooker(value.getData().get(0));
                         if (!success) {
                             mView.showDialog(false);
-                            mView.showMessage(MESSAGE_UPDATE_DB_COOKER_FAILED, null);
+                            mView.showMessage(MESSAGE_UPDATE_LOCAL_COOKER_FAILED, null);
                             return;
                         }
                         mView.updateCooker(position, bean);
@@ -223,7 +252,7 @@ public class CookerPresenterImpl implements CookerPresenter {
                     @Override
                     public void onError(Throwable e) {
                         mView.showDialog(false);
-                        mView.showMessage(MESSAGE_UPDATE_COOKER_ERROR, e.toString());
+                        mView.showMessage(MESSAGE_UPDATE_SERVER_COOKER_ERROR, e.toString());
                         Log.i(TAG, "onError: " + e.toString());
                     }
 
@@ -249,16 +278,20 @@ public class CookerPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        if (value == null || value.getData() == null
-                                || value.getData().size() <= 0 || value.getResultCode() != 200) {
+                        if (value == null || value.getData() == null || value.getResultCode() != 200) {
                             mView.showRefreshing(false);
                             mView.showMessage(MESSAGE_QUERY_SERVER_COOKER_FAILED, null);
+                            return;
+                        }
+                        if (value.getData().size() <= 0) {
+                            mView.showRefreshing(false);
+                            mView.showMessage(MESSAGE_QUERY_SERVER_COOKER_SUCCESS_RETURN_EMPTY, null);
                             return;
                         }
                         boolean success = mDbManager.updateCooker(value.getData().get(0));
                         if (!success) {
                             mView.showRefreshing(false);
-                            mView.showMessage(MESSAGE_UPDATE_DB_COOKER_FAILED, null);
+                            mView.showMessage(MESSAGE_UPDATE_LOCAL_COOKER_FAILED, null);
                             return;
                         }
                         mView.updateCooker(position, value.getData().get(0));
@@ -294,16 +327,20 @@ public class CookerPresenterImpl implements CookerPresenter {
 
                     @Override
                     public void onNext(HttpResult<List<CookerBean>> value) {
-                        if (value == null || value.getData() == null
-                                || value.getData().size() <= 0 || value.getResultCode() != 200) {
+                        if (value == null || value.getData() == null || value.getResultCode() != 200) {
                             mView.showRefreshing(false);
                             mView.showMessage(MESSAGE_QUERY_SERVER_COOKER_FAILED, null);
+                            return;
+                        }
+                        if (value.getData().size() <= 0) {
+                            mView.showRefreshing(false);
+                            mView.showMessage(MESSAGE_QUERY_SERVER_COOKER_SUCCESS_RETURN_EMPTY, null);
                             return;
                         }
                         boolean success = mDbManager.updateCookers(value.getData());
                         if (!success) {
                             mView.showRefreshing(false);
-                            mView.showMessage(MESSAGE_UPDATE_DB_COOKER_FAILED, null);
+                            mView.showMessage(MESSAGE_UPDATE_LOCAL_COOKER_FAILED, null);
                             return;
                         }
                         mView.insertCookers(value.getData());

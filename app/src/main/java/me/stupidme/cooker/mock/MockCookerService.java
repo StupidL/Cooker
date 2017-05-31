@@ -127,15 +127,9 @@ public class MockCookerService implements CookerService {
         HttpResult<List<CookerBean>> result = new HttpResult<>();
         List<CookerBean> list = new ArrayList<>();
         List<CookerBean> cookerBeanList = mServerDbManager.queryCookers(userId);
-        if (cookerBeanList == null) {
-            result.setResultCode(400);
-            result.setResultMessage("Query Cookers failed. result is null.");
-            result.setData(list);
-            return mDelegate.returningResponse(result).queryCookers(userId);
-        }
-        if (cookerBeanList.size() == 0) {
+        if (cookerBeanList == null || cookerBeanList.size() == 0) {
             result.setResultCode(200);
-            result.setResultMessage("Query Cookers success. result size is 0.");
+            result.setResultMessage("Query Cookers success but no data.");
             result.setData(list);
             return mDelegate.returningResponse(result).queryCookers(userId);
         }
@@ -252,8 +246,8 @@ public class MockCookerService implements CookerService {
         List<BookBean> list = new ArrayList<>();
         BookBean bookBean = mServerDbManager.queryBook(userId, bookId);
         if (bookBean == null) {
-            result.setResultCode(400);
-            result.setResultMessage("Query Book failed.");
+            result.setResultCode(200);
+            result.setResultMessage("Query Book success but no data.");
             result.setData(list);
             return mDelegate.returningResponse(result).queryBook(userId, bookId);
         }
@@ -270,8 +264,8 @@ public class MockCookerService implements CookerService {
         List<BookBean> list = new ArrayList<>();
         List<BookBean> bookBeanList = mServerDbManager.queryBooks(userId);
         if (bookBeanList == null || bookBeanList.size() <= 0) {
-            result.setResultCode(400);
-            result.setResultMessage("Query Book failed.");
+            result.setResultCode(200);
+            result.setResultMessage("Query Book success but no data.");
             result.setData(list);
             return mDelegate.returningResponse(result).queryBooks(userId);
         }
