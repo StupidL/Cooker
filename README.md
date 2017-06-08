@@ -3,8 +3,8 @@ An application to control smart rice cooker from remote.
 
 
 # Screenshots
-![](https://github.com/StupidL/Cooker/blob/master/art/cooker.png)
-![](https://github.com/StupidL/Cooker/blob/master/art/book.png)  
+![](https://github.com/StupidL/Cooker/blob/master/art/cooker2.png)
+![](https://github.com/StupidL/Cooker/blob/master/art/book2.png)  
 
 
 # License  
