@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.List;
 
@@ -39,12 +40,15 @@ public class NotificationIntentService extends IntentService {
         mDbManager = DbManagerImpl.getInstance();
 
         Long frequency = Long.valueOf(SharedPreferenceUtil.getSyncFrequency("1"));
-        mCountDownTimer = new CountDownTimer(Long.MAX_VALUE, frequency * 60 * 1000) {
+        Log.v("NotifyService", "====fre: " + frequency);
+        mCountDownTimer = new CountDownTimer(6 * 100 * 1000, frequency * 60 * 1000) {
             @Override
             public void onTick(long l) {
                 syncCookers();
                 syncBooks();
                 checkAndNotify();
+                Log.v("NotifyService", "==========onTick()....");
+                Log.v("NotifyService", l / 1000 + "");
             }
 
             @Override
@@ -57,6 +61,18 @@ public class NotificationIntentService extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         mCountDownTimer.start();
+
+//        for(;;) {
+//            Long frequency = Long.valueOf(SharedPreferenceUtil.getSyncFrequency("1"));
+//            syncCookers();
+//            syncBooks();
+//            checkAndNotify();
+//            try {
+//                Thread.sleep(frequency * 60 * 1000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     @Override

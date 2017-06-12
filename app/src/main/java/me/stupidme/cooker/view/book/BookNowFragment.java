@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -132,5 +133,17 @@ public class BookNowFragment extends BookBaseFragment implements BookDialog.Book
     @Override
     public List<String> getCookerNames() {
         return mPresenter.queryCookerNamesFromDB();
+    }
+
+    @Override
+    public void insertBooks(List<BookBean> list) {
+        Iterator<BookBean> iterator = list.iterator();
+        while (iterator.hasNext()) {
+            BookBean bean = iterator.next();
+            if (!"Booking".toUpperCase().equals(bean.getCookerStatus().toUpperCase()))
+                iterator.remove();
+        }
+        updateDataSet(list);
+        Log.v(getClass().getCanonicalName(), "insert List Size: " + list.size());
     }
 }

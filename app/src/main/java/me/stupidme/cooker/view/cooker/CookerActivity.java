@@ -74,7 +74,7 @@ public class CookerActivity extends AppCompatActivity
 
         Log.i("CookerActivity", "Activity onCreate()");
 
-        startService(new Intent(CookerActivity.this, NotificationIntentService.class));
+
     }
 
     @Override
@@ -89,6 +89,8 @@ public class CookerActivity extends AppCompatActivity
         }
         mCircleImageView.setImageBitmap(bitmap);
         mUserName.setText(SharedPreferenceUtil.getAccountUserName("Cooker"));
+
+        startService(new Intent(CookerActivity.this, NotificationIntentService.class));
     }
 
     @Override
