@@ -68,17 +68,14 @@ public class StatusPresenterImpl implements StatusPresenter {
                         cookerBean.setCookerId(bookBean.getCookerId());
                         cookerBean.setCookerName(bookBean.getCookerName());
                         cookerBean.setCookerLocation(bookBean.getCookerLocation());
-                        cookerBean.setCookerStatus("Free");
+                        cookerBean.setCookerStatus(bookBean.getCookerStatus());
                         boolean success2 = mDbManager.updateCooker(cookerBean);
                         if (!success2) {
                             mView.onCancelFailed();
                             return;
                         }
-                        mService.updateCooker(userId, cookerBean.getCookerId(), cookerBean)
-                                .subscribeOn(Schedulers.io())
-                                .subscribe();
-                        mView.onCancelSuccess();
-                        mView.removeBook(bookId);
+                        mView.onCancelSuccess(bookBean);
+                        mView.removeItem(bookBean);
                     }
 
                     @Override
@@ -104,5 +101,4 @@ public class StatusPresenterImpl implements StatusPresenter {
                 .forEach(data::add);
         mView.acceptData(data);
     }
-
 }

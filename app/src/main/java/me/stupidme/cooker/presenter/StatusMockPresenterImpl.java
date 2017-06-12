@@ -1,11 +1,13 @@
 package me.stupidme.cooker.presenter;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.CookerBean;
@@ -22,7 +24,6 @@ import me.stupidme.cooker.view.status.StatusView;
  */
 
 public class StatusMockPresenterImpl implements StatusPresenter {
-
 
     private StatusView mView;
 
@@ -69,17 +70,14 @@ public class StatusMockPresenterImpl implements StatusPresenter {
                         cookerBean.setCookerId(bookBean.getCookerId());
                         cookerBean.setCookerName(bookBean.getCookerName());
                         cookerBean.setCookerLocation(bookBean.getCookerLocation());
-                        cookerBean.setCookerStatus("Free");
+                        cookerBean.setCookerStatus(bookBean.getCookerStatus());
                         boolean success2 = mDbManager.updateCooker(cookerBean);
                         if (!success2) {
                             mView.onCancelFailed();
                             return;
                         }
-                        mMockService.updateCooker(userId, cookerBean.getCookerId(), cookerBean)
-                                .subscribeOn(Schedulers.io())
-                                .subscribe();
-                        mView.onCancelSuccess();
-                        mView.removeBook(bookId);
+                        mView.onCancelSuccess(bookBean);
+                        mView.removeItem(bookBean);
                     }
 
                     @Override
@@ -99,10 +97,14 @@ public class StatusMockPresenterImpl implements StatusPresenter {
     public void loadBooks() {
         List<BookBean> list = mDbManager.queryBooks(DbManager.KEY_USER_ID,
                 SharedPreferenceUtil.getAccountUserId(0L));
-        List<BookBean> data = new ArrayList<>();
-        list.parallelStream()
-                .filter(b -> "booking".toUpperCase().equals(b.getCookerStatus().toUpperCase()))
-                .forEach(data::add);
-        mView.acceptData(data);
+        Iterator<BookBean> iterator = list.iterator();
+        while (iterator.hasNext()){
+            BookBean bookBean = iterator.next();
+            if(!"BOOKING".equals(bookBean.getCookerStatus().toUpperCase())){
+                iterator.remove();
+            }
+        }
+        mView.acceptData(list);
     }
+
 }

@@ -199,7 +199,7 @@ public class BookDialog extends Dialog {
         mPeopleCountEditText.setText("");
         mPeopleCountEditText.setHint("5");
         mRiceWeightEditText.setText("");
-        mRiceWeightEditText.setHint("5");
+        mRiceWeightEditText.setHint("500");
         mBookTimeEditText.setText("");
         mBookTimeEditText.setHint("17:30");
     }

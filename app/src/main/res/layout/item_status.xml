@@ -14,10 +14,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <me.stupidme.cooker.view.custom.ArcView
+        <!--<me.stupidme.cooker.view.custom.ArcView-->
+        <!--android:id="@+id/status_arc_view"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="200dp" />-->
+
+        <ImageView
             android:id="@+id/status_arc_view"
             android:layout_width="match_parent"
-            android:layout_height="200dp" />
+            android:layout_height="200dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/bg4" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/status_fab"
@@ -28,7 +35,7 @@
             app:fabSize="normal"
             app:layout_anchor="@id/status_arc_view"
             app:layout_anchorGravity="bottom|end"
-            app:srcCompat="@drawable/ic_add_white_48dp" />
+            app:srcCompat="@drawable/ic_close_white_24dp" />
 
         <TableLayout
             android:layout_width="match_parent"

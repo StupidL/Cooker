@@ -20,6 +20,7 @@ import android.widget.TextView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.UserAvatarManager;
+import me.stupidme.cooker.service.NotificationIntentService;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
 import me.stupidme.cooker.view.about.AboutActivity;
 import me.stupidme.cooker.view.avatar.AvatarActivity;
@@ -72,6 +73,8 @@ public class CookerActivity extends AppCompatActivity
                 .commit();
 
         Log.i("CookerActivity", "Activity onCreate()");
+
+        startService(new Intent(CookerActivity.this, NotificationIntentService.class));
     }
 
     @Override

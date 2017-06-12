@@ -6,8 +6,6 @@ import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.CookerBean;
 
 /**
- * Created by StupidL on 2017/3/29.
- * <p>
  * This interface defines all the operation about local database.
  */
 

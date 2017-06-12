@@ -18,7 +18,7 @@
         <activity
             android:name=".view.login.LoginActivity"
             android:label="Login"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.login.RegisterActivity"
             android:label="@string/title_activity_register"
@@ -41,6 +41,8 @@
             android:enabled="true"
             android:exported="true" />
 
+        <service android:name=".service.NotificationIntentService" />
+
         <activity
             android:name=".view.status.StatusActivity"
             android:excludeFromRecents="true"
@@ -62,7 +64,6 @@
         <activity
             android:name=".view.splash.SplashActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_splash"
             android:theme="@style/AppTheme.NoActionBar.SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -73,9 +74,15 @@
         <activity
             android:name=".view.detail.BookDetailActivity"
             android:label="Detail"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar" />
 
-        </activity>
+        <receiver
+            android:name=".service.CookerNotifyReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="me.stupidme.cooker.action.NOTIFY" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

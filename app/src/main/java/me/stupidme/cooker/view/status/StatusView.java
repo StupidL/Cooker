@@ -16,7 +16,9 @@ public interface StatusView {
 
     void onCancelFailed();
 
-    void onCancelSuccess();
+    void onCancelSuccess(BookBean bookBean);
 
     void acceptData(List<BookBean> list);
+
+    void removeItem(BookBean bookBean);
 }
