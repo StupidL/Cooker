@@ -160,7 +160,9 @@ public class BookMockPresenterImpl implements BookPresenter {
         bookBean.setCookerId(cookerBean.getCookerId());
         bookBean.setCookerName(cookerBean.getCookerName());
         bookBean.setCookerLocation(cookerBean.getCookerLocation());
-        bookBean.setCookerStatus(cookerBean.getCookerStatus());
+        //===============================================
+//        bookBean.setCookerStatus(cookerBean.getCookerStatus());
+        bookBean.setCookerStatus("Booking");
         bookBean.setPeopleCount(peopleCount);
         bookBean.setRiceWeight(riceWeight);
         bookBean.setTaste(taste);
@@ -202,12 +204,12 @@ public class BookMockPresenterImpl implements BookPresenter {
                             mView.showMessage(MESSAGE_INSERT_BOOK_HISTORY_FAILED, null);
                             return;
                         }
-                        boolean success3 = setCookerStatusBooking(bookBean1);
-                        if (!success3) {
-                            mView.showDialog(false);
-                            mView.showMessage(MESSAGE_UPDATE_SERVER_COOKER_FAILED, null);
-                            return;
-                        }
+//                        boolean success3 = setCookerStatusBooking(bookBean1);
+//                        if (!success3) {
+//                            mView.showDialog(false);
+//                            mView.showMessage(MESSAGE_UPDATE_SERVER_COOKER_FAILED, null);
+//                            return;
+//                        }
 
                         mView.insertBook(value.getData().get(0));
                         Log.i(TAG, "onNext: " + value.toString());

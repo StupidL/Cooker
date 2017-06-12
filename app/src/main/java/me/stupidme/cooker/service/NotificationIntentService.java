@@ -8,6 +8,9 @@ import android.util.Log;
 
 import java.util.List;
 
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.CookerBean;
@@ -15,6 +18,7 @@ import me.stupidme.cooker.model.db.DbManager;
 import me.stupidme.cooker.model.db.DbManagerImpl;
 import me.stupidme.cooker.model.http.CookerRetrofit;
 import me.stupidme.cooker.model.http.CookerService;
+import me.stupidme.cooker.model.http.HttpResult;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
 
 /**
@@ -83,30 +87,66 @@ public class NotificationIntentService extends IntentService {
     private void syncCookers() {
         mService.queryCookers(SharedPreferenceUtil.getAccountUserId(0L))
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> {
-                    if (listHttpResult != null && listHttpResult.getResultCode() == 200) {
-                        if (listHttpResult.getData() == null || listHttpResult.getData().size() <= 0)
-                            return;
+                .observeOn(Schedulers.newThread())
+                .subscribe(new Observer<HttpResult<List<CookerBean>>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
-                        List<CookerBean> cookers = listHttpResult.getData();
-                        mDbManager.updateCookers(cookers);
                     }
-                })
-                .subscribe();
+
+                    @Override
+                    public void onNext(HttpResult<List<CookerBean>> value) {
+                        if (value != null && value.getResultCode() == 200) {
+                            if (value.getData() == null || value.getData().size() <= 0)
+                                return;
+
+                            List<CookerBean> cookers = value.getData();
+                            mDbManager.updateCookers(cookers);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     private void syncBooks() {
         mService.queryBooks(SharedPreferenceUtil.getAccountUserId(0L))
                 .subscribeOn(Schedulers.io())
-                .doOnNext(listHttpResult -> {
-                    if (listHttpResult != null && listHttpResult.getResultCode() == 200) {
-                        if (listHttpResult.getData() == null || listHttpResult.getData().size() <= 0)
-                            return;
-                        List<BookBean> books = listHttpResult.getData();
-                        mDbManager.updateBooks(books);
+                .observeOn(Schedulers.newThread())
+                .subscribe(new Observer<HttpResult<List<BookBean>>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
                     }
-                })
-                .subscribe();
+
+                    @Override
+                    public void onNext(HttpResult<List<BookBean>> value) {
+                        if (value != null && value.getResultCode() == 200) {
+                            if (value.getData() == null || value.getData().size() <= 0)
+                                return;
+                            List<BookBean> books = value.getData();
+                            mDbManager.updateBooks(books);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
 
     }
 

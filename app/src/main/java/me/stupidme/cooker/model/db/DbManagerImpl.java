@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -463,7 +464,6 @@ public class DbManagerImpl implements DbManager {
      */
     private BookBean createBookBean(Cursor cursor) {
         BookBean book = new BookBean();
-        cursor.moveToLast();
         book.setUserId(cursor.getLong(cursor.getColumnIndex(KEY_USER_ID)));
         book.setBookId(cursor.getLong(cursor.getColumnIndex(KEY_BOOK_ID)));
         book.setCookerId(cursor.getLong(cursor.getColumnIndex(KEY_COOKER_ID)));

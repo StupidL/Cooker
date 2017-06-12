@@ -137,12 +137,14 @@ public class BookNowFragment extends BookBaseFragment implements BookDialog.Book
 
     @Override
     public void insertBooks(List<BookBean> list) {
+        Log.v("Book", list.size() + "");
         Iterator<BookBean> iterator = list.iterator();
         while (iterator.hasNext()) {
             BookBean bean = iterator.next();
             if (!"Booking".toUpperCase().equals(bean.getCookerStatus().toUpperCase()))
                 iterator.remove();
         }
+        Log.v("Book", list.size() + "");
         updateDataSet(list);
         Log.v(getClass().getCanonicalName(), "insert List Size: " + list.size());
     }
