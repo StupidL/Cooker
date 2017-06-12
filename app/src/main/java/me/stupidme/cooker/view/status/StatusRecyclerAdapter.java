@@ -5,14 +5,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
+import java.util.Calendar;
 import java.util.List;
 
 import me.stupidme.cooker.R;
 import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.presenter.StatusPresenter;
-import me.stupidme.cooker.view.custom.ArcView;
+import me.stupidme.cooker.util.ImageUtil;
 
 /**
  * Created by StupidL on 2017/4/5.
@@ -37,20 +41,25 @@ public class StatusRecyclerAdapter extends RecyclerView.Adapter<StatusRecyclerAd
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         BookBean book = mDataSet.get(position);
-        holder.cookerIdText.setText(String.valueOf(book.getCookerId()));
+        holder.cookerIdText.setText(String.valueOf(book.getCookerId()).substring(0, 6));
         holder.cookerNameText.setText(book.getCookerName());
         holder.cookerLocationText.setText(book.getCookerLocation());
-        holder.bookIdText.setText(String.valueOf(book.getBookId()));
+        holder.bookIdText.setText(String.valueOf(book.getBookId()).substring(0, 6));
         holder.riceWeightText.setText(String.valueOf(book.getRiceWeight()));
         holder.peopleCountText.setText(String.valueOf(book.getPeopleCount()));
         holder.tasteText.setText(book.getTaste());
-        holder.timeText.setText(book.getTime() + "");
-        holder.arcView.setArcAngleStart(-90);
         holder.fab.setOnClickListener(v -> mPresenter.cancelBook(book.getBookId()));
 
-        //TODO set sweep angle fro arc view
-
-        holder.arcView.setArcAngleSweep(220);
+        Glide.with(holder.itemView.getContext())
+                .load(ImageUtil.nextImageResId())
+                .into(holder.imageView);
+        Long time = book.getTime();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(time);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        String timeStr = hour + ":" + (minute < 10 ? minute + "0" : minute);
+        holder.timeText.setText(timeStr);
     }
 
     @Override
@@ -64,7 +73,7 @@ public class StatusRecyclerAdapter extends RecyclerView.Adapter<StatusRecyclerAd
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private ArcView arcView;
+        private ImageView imageView;
         private FloatingActionButton fab;
         private TextView cookerIdText;
         private TextView cookerNameText;
@@ -77,7 +86,7 @@ public class StatusRecyclerAdapter extends RecyclerView.Adapter<StatusRecyclerAd
 
         public ViewHolder(View itemView) {
             super(itemView);
-            arcView = (ArcView) itemView.findViewById(R.id.status_arc_view);
+            imageView = (ImageView) itemView.findViewById(R.id.status_arc_view);
             fab = (FloatingActionButton) itemView.findViewById(R.id.status_fab);
             cookerIdText = (TextView) itemView.findViewById(R.id.status_cooker_id);
             cookerNameText = (TextView) itemView.findViewById(R.id.status_cooker_name);

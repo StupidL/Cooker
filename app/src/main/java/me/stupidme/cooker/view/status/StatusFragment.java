@@ -11,8 +11,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import me.stupidme.cooker.R;
@@ -36,6 +38,8 @@ public class StatusFragment extends BaseFragment implements StatusView {
     private StatusPresenter mPresenter;
 
     private ProgressDialog mDialog;
+
+    private TextView mEmptyView;
 
     public StatusFragment() {
         // Required empty public constructor
@@ -93,6 +97,7 @@ public class StatusFragment extends BaseFragment implements StatusView {
         SnapHelper helper = new LinearSnapHelper();
         helper.attachToRecyclerView(mRecyclerView);
 
+        mEmptyView = (TextView) view.findViewById(R.id.empty_view);
     }
 
     @Override
@@ -129,12 +134,12 @@ public class StatusFragment extends BaseFragment implements StatusView {
 
     @Override
     public void onCancelFailed() {
-        ToastUtil.showToastShort(getActivity(), "Cancel Success!");
+        ToastUtil.showToastShort(getActivity(), "Cancel Failed!");
     }
 
     @Override
-    public void onCancelSuccess() {
-        ToastUtil.showToastShort(getActivity(), "Cancel failed!");
+    public void onCancelSuccess(BookBean bookBean) {
+        ToastUtil.showToastShort(getActivity(), "Cancel success!");
     }
 
     @Override
@@ -142,6 +147,28 @@ public class StatusFragment extends BaseFragment implements StatusView {
         mDataSet.clear();
         mDataSet.addAll(list);
         mAdapter.notifyDataSetChanged();
+        showEmptyView(mDataSet.size() <= 0);
     }
 
+    @Override
+    public void removeItem(BookBean bookBean) {
+        Iterator<BookBean> iterator = mDataSet.iterator();
+        while (iterator.hasNext()) {
+            BookBean bean = iterator.next();
+            if (bean.getBookId().equals(bookBean.getBookId()))
+                iterator.remove();
+        }
+        mAdapter.notifyDataSetChanged();
+        showEmptyView(mDataSet.size() <= 0);
+    }
+
+    private void showEmptyView(boolean show) {
+        if (show) {
+            mRecyclerView.setVisibility(View.GONE);
+            mEmptyView.setVisibility(View.VISIBLE);
+        } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyView.setVisibility(View.GONE);
+        }
+    }
 }

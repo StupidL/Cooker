@@ -9,7 +9,7 @@ import me.stupidme.cooker.model.http.CookerRetrofit;
 import me.stupidme.cooker.util.SharedPreferenceUtil;
 
 /**
- * Created by StupidL on 2017/3/4.
+ * Application.
  */
 
 public class CookerApplication extends Application {
@@ -17,10 +17,15 @@ public class CookerApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        //inject application context to Database
         DbManagerImpl.init(getApplicationContext());
+        //inject application context to Retrofit
         CookerRetrofit.init(getApplicationContext());
+        //inject application context to SharedPreference
         SharedPreferenceUtil.init(getApplicationContext());
+        //inject application context to mock server database
         ServerDbManagerImpl.init(this);
+        //inject application context to avatar manager
         UserAvatarManager.init(this);
     }
 }

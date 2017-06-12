@@ -6,27 +6,38 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import java.util.Iterator;
+import java.util.List;
+
+import io.reactivex.schedulers.Schedulers;
 import me.stupidme.cooker.R;
+import me.stupidme.cooker.model.BookBean;
+import me.stupidme.cooker.model.CookerBean;
+import me.stupidme.cooker.model.db.DbManager;
+import me.stupidme.cooker.model.db.DbManagerImpl;
+import me.stupidme.cooker.model.http.CookerRetrofit;
+import me.stupidme.cooker.model.http.CookerService;
+import me.stupidme.cooker.util.SharedPreferenceUtil;
 import me.stupidme.cooker.view.status.StatusActivity;
 
 public class NotificationService extends Service {
 
     private static final String TAG = "NotificationService";
-
+    public static final String ACTION_NOTIFY = "me.stupidme.cooker.action.NOTIFY";
     private static final String STOP_SERVICE_ACTION = "me.stupidme.cooker.ACTION_STOP_SERVICE";
     Notification.Builder mBuilder;
-
     NotificationManager mManager;
-
     private static final int mNotificationId = 0xaa;
-
     private PendingIntent mStatusIntent;
-
     private PendingIntent mStopIntent;
+    private CookerService mService;
+    private DbManager mDbManager;
+    private Thread mThread;
 
     public NotificationService() {
 
@@ -34,60 +45,83 @@ public class NotificationService extends Service {
 
     @Override
     public void onCreate() {
+        mService = CookerRetrofit.getInstance().getMockService();
+        mDbManager = DbManagerImpl.getInstance();
 
         mBuilder = new Notification.Builder(this);
-
         mManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
         Intent statusIntent = new Intent(this, StatusActivity.class);
         statusIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
         mStatusIntent = PendingIntent.getActivity(this,
                 0,
                 statusIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-
         Intent stopIntent = new Intent(this, NotificationService.class);
         stopIntent.setAction(STOP_SERVICE_ACTION);
-
         mStopIntent = PendingIntent.getService(this, 1, stopIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-
-        Log.v(TAG, "onCreate()...");
     }
 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        sendSimpleNotification(
-                R.drawable.cooker,
-                "Cooker Notification",
-                "This is a message from server !"
-        );
 
-//        sendCustomBigPictureNotification(
-//                "Cooker",
-//                "No Activity..."
-//        );
-
+        if (mThread == null) {
+            mThread = new Thread(() -> {
+                syncCookers();
+                syncBooks();
+                checkAndNotify();
+            }, "NotifyThread");
+        }
+        mThread.start();
         return START_STICKY;
     }
 
+    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return null;
     }
 
-    @Override
-    public boolean onUnbind(Intent intent) {
+    private void syncCookers() {
+        mService.queryCookers(SharedPreferenceUtil.getAccountUserId(0L))
+                .subscribeOn(Schedulers.io())
+                .doOnNext(listHttpResult -> {
+                    if (listHttpResult != null && listHttpResult.getResultCode() == 200) {
+                        if (listHttpResult.getData() == null || listHttpResult.getData().size() <= 0)
+                            return;
 
-        return true;
+                        List<CookerBean> cookers = listHttpResult.getData();
+                        mDbManager.updateCookers(cookers);
+                    }
+                })
+                .subscribe();
     }
 
-    @Override
-    public void onDestroy() {
+    private void syncBooks() {
+        mService.queryBooks(SharedPreferenceUtil.getAccountUserId(0L))
+                .subscribeOn(Schedulers.io())
+                .doOnNext(listHttpResult -> {
+                    if (listHttpResult != null && listHttpResult.getResultCode() == 200) {
+                        if (listHttpResult.getData() == null || listHttpResult.getData().size() <= 0)
+                            return;
+                        List<BookBean> books = listHttpResult.getData();
+                        mDbManager.updateBooks(books);
+                    }
+                })
+                .subscribe();
 
+    }
+
+    private void checkAndNotify() {
+        List<BookBean> books = mDbManager.queryBooks(DbManager.KEY_USER_ID,
+                SharedPreferenceUtil.getAccountUserId(0L));
+        for (BookBean bookBean : books) {
+            if ("BOOKING".equals(bookBean.getCookerStatus().toUpperCase())) {
+                Intent intent = new Intent();
+                intent.setAction(ACTION_NOTIFY);
+                sendBroadcast(intent);
+            }
+        }
     }
 
     private void sendSimpleNotification(int smallIconId, CharSequence title, CharSequence text) {
@@ -102,25 +136,4 @@ public class NotificationService extends Service {
         mManager.notify(mNotificationId, notification);
     }
 
-    private void sendCustomBigPictureNotification(CharSequence title, CharSequence text) {
-        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notification_layout);
-        remoteViews.setTextViewText(R.id.remote_title, title);
-        remoteViews.setTextViewText(R.id.remote_describe, text);
-        remoteViews.setOnClickPendingIntent(R.id.remote_detail, mStatusIntent);
-        remoteViews.setOnClickPendingIntent(R.id.remote_remove, mStopIntent);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.cooker)
-                .setContentTitle("Hello")
-                .setContentText("World")
-                .setContent(remoteViews);
-
-        Notification notification = builder.build();
-
-        notification.bigContentView = remoteViews;
-
-        mManager.notify(mNotificationId, notification);
-
-        Log.v("NotificationService", "sendCustomNotification");
-    }
 }

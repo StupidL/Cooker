@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -15,15 +14,24 @@ import me.stupidme.cooker.model.CookerBean;
 import me.stupidme.cooker.model.UserBean;
 
 /**
- * Created by StupidL on 2017/5/1.
+ * This class manage server database's operations.
  */
 
 public class ServerDbManagerImpl implements ServerDbManager {
 
+    /**
+     * server database
+     */
     private SQLiteDatabase mDatabase;
 
+    /**
+     * instance
+     */
     private static volatile ServerDbManagerImpl sInstance;
 
+    /**
+     * application context weak reference
+     */
     private static WeakReference<Context> mContextRef;
 
     private ServerDbManagerImpl() {
@@ -32,10 +40,20 @@ public class ServerDbManagerImpl implements ServerDbManager {
         } else throw new RuntimeException("SQLiteServerManager construct failed. Context is null.");
     }
 
+    /**
+     * inject application context.
+     *
+     * @param context application context
+     */
     public static void init(Context context) {
         mContextRef = new WeakReference<>(context);
     }
 
+    /**
+     * get single instance.
+     *
+     * @return instance
+     */
     public static ServerDbManagerImpl getInstance() {
         if (sInstance == null) {
             synchronized (ServerDbManagerImpl.class) {
@@ -207,6 +225,7 @@ public class ServerDbManagerImpl implements ServerDbManager {
         BookBean bookBean = this.queryBook(userId, bookId);
         if (bookBean == null)
             return null;
+        mDatabase.beginTransaction();
         mDatabase.delete(TABLE_NAME_BOOK_SERVER, KEY_USER_ID_SERVER + "=? AND " + KEY_BOOK_ID_SERVER + "=?",
                 new String[]{String.valueOf(userId), String.valueOf(bookId)});
         return bookBean;
@@ -276,6 +295,12 @@ public class ServerDbManagerImpl implements ServerDbManager {
         return books;
     }
 
+    /**
+     * convert user bean to content values.
+     *
+     * @param userBean user
+     * @return content values
+     */
     private ContentValues createContentValues(UserBean userBean) {
         ContentValues values = new ContentValues(3);
         values.put(KEY_TABLE_USER_ID, userBean.getUserId());
@@ -284,6 +309,12 @@ public class ServerDbManagerImpl implements ServerDbManager {
         return values;
     }
 
+    /**
+     * convert cursor to user bean.
+     *
+     * @param cursor cursor
+     * @return user bean
+     */
     private UserBean createUserBean(Cursor cursor) {
         UserBean userBean = new UserBean();
         userBean.setUserId(cursor.getLong(cursor.getColumnIndex(KEY_TABLE_USER_ID)));
@@ -292,6 +323,12 @@ public class ServerDbManagerImpl implements ServerDbManager {
         return userBean;
     }
 
+    /**
+     * convert cooker bean to content values.
+     *
+     * @param cookerBean cooker bean
+     * @return content values
+     */
     private ContentValues createContentValues(CookerBean cookerBean) {
         ContentValues values = new ContentValues();
         values.put(KEY_USER_ID_SERVER, cookerBean.getUserId());
@@ -302,6 +339,12 @@ public class ServerDbManagerImpl implements ServerDbManager {
         return values;
     }
 
+    /**
+     * convert cursor to cooker bean.
+     *
+     * @param cursor cursor
+     * @return cooker bean
+     */
     private CookerBean createCookerBean(Cursor cursor) {
         CookerBean cookerBean = new CookerBean();
         cookerBean.setUserId(cursor.getLong(cursor.getColumnIndex(KEY_USER_ID_SERVER)));
@@ -312,6 +355,12 @@ public class ServerDbManagerImpl implements ServerDbManager {
         return cookerBean;
     }
 
+    /**
+     * convert book bean to content values.
+     *
+     * @param bookBean book bean
+     * @return content values
+     */
     private ContentValues createContentValues(BookBean bookBean) {
         ContentValues values = new ContentValues(16);
         values.put(KEY_USER_ID_SERVER, bookBean.getUserId());
@@ -327,6 +376,12 @@ public class ServerDbManagerImpl implements ServerDbManager {
         return values;
     }
 
+    /**
+     * convert cursor to book bean.
+     *
+     * @param cursor cursor
+     * @return book bean
+     */
     private BookBean createBookBean(Cursor cursor) {
         BookBean book = new BookBean();
         book.setUserId(cursor.getLong(cursor.getColumnIndex(KEY_USER_ID_SERVER)));

@@ -34,7 +34,7 @@
     <string name="title_activity_book">Book</string>
     <string name="title_activity_cooker_add">CookerAddActivity</string>
     <string name="title_activity_book_add">BookAddActivity</string>
-    <string name="title_activity_about">AboutActivity</string>
+    <string name="title_activity_about">About</string>
 
     <string name="about_group_title_usage">Usage</string>
     <string name="about_card_title_create_cooker">Create cooker</string>
@@ -212,5 +212,6 @@
     <string name="title_activity_splash">SplashActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="fragment_status_empty_text">Ooops. No book here~</string>
 
 </resources>

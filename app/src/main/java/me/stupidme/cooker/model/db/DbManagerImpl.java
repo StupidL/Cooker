@@ -13,30 +13,77 @@ import me.stupidme.cooker.model.BookBean;
 import me.stupidme.cooker.model.CookerBean;
 
 /**
- * Created by StupidL on 2017/3/29.
+ * This class implements {@link DbManager}, so this class manage all the operations including
+ * insert, delete, query, update cookers and books.
+ *
+ * @see BookBean
+ * @see CookerBean
  */
 
 public class DbManagerImpl implements DbManager {
 
+    /**
+     * sql string to delete table 'cooker'.
+     */
     private static final String DELETE_COOKER_TABLE = "DELETE FROM cooker";
+
+    /**
+     * sql string to reset table 'cooker'.
+     */
     private static final String RESET_COOKER_SEQUENCE = "UPDATE sqlite_sequence SET seq = 0 WHERE name = 'cooker'";
+
+    /**
+     * sql string to delete table 'book'.
+     */
     private static final String DELETE_BOOK_TABLE = "DELETE FROM book";
+
+    /**
+     * sql string to reset table 'book'.
+     */
     private static final String RESET_BOOK_SEQUENCE = "UPDATE sqlite_sequence SET seq = 0 WHERE name = 'book'";
+
+    /**
+     * sql string to delete table 'book_history'.
+     */
     private static final String DELETE_BOOK_HISTORY_TABLE = "DELETE FROM book_history";
+
+    /**
+     * sql string to reset table 'book_history'.
+     */
     private static final String RESET_BOOK_HISTORY_SEQUENCE = "UPDATE sqlite_sequence SET seq = 0 WHERE name = 'book_history'";
 
+    /**
+     * single instance of this class.
+     */
     private volatile static DbManagerImpl sInstance;
 
+    /**
+     * writable database of the db.
+     */
     private SQLiteDatabase mWritableDB;
 
+    /**
+     * readable database of the db.
+     */
     private SQLiteDatabase mReadableDB;
 
+    /**
+     * weak reference of application context to avoid memory leak.
+     */
     private static WeakReference<Context> mContextRef;
 
+    /**
+     * static method called in {@link me.stupidme.cooker.CookerApplication} to inject application context.
+     *
+     * @param context application context
+     */
     public static void init(Context context) {
         mContextRef = new WeakReference<>(context);
     }
 
+    /**
+     * private constructor to ensure singleton instance.
+     */
     private DbManagerImpl() {
         if (mContextRef.get() == null)
             throw new RuntimeException("DbManagerImpl construct failed. Context is null.");
@@ -45,6 +92,11 @@ public class DbManagerImpl implements DbManager {
         mReadableDB = helper.getReadableDatabase();
     }
 
+    /**
+     * static method to get the single #sInstance instance of DbManagerImpl
+     *
+     * @return instance of DbManagerImpl
+     */
     public static DbManagerImpl getInstance() {
         if (sInstance == null) {
             synchronized (DbManagerImpl.class) {
@@ -272,6 +324,7 @@ public class DbManagerImpl implements DbManager {
             list.add(cursor.getString(cursor.getColumnIndex(KEY_COOKER_NAME)));
             cursor.moveToNext();
         }
+        cursor.close();
         return list;
     }
 
@@ -365,6 +418,12 @@ public class DbManagerImpl implements DbManager {
         return true;
     }
 
+    /**
+     * convert {@link CookerBean} to {@link ContentValues}.
+     *
+     * @param cookerBean source cooker
+     * @return content values
+     */
     private ContentValues createContentValues(CookerBean cookerBean) {
         ContentValues values = new ContentValues(8);
         values.put(KEY_USER_ID, cookerBean.getUserId());
@@ -375,6 +434,12 @@ public class DbManagerImpl implements DbManager {
         return values;
     }
 
+    /**
+     * convert {@link BookBean} to {@link ContentValues}.
+     *
+     * @param bookBean source book
+     * @return content values
+     */
     private ContentValues createContentValues(BookBean bookBean) {
         ContentValues values = new ContentValues(16);
         values.put(KEY_USER_ID, bookBean.getUserId());
@@ -390,6 +455,12 @@ public class DbManagerImpl implements DbManager {
         return values;
     }
 
+    /**
+     * convert cursor to entity {@link BookBean}.
+     *
+     * @param cursor cursor
+     * @return book instance
+     */
     private BookBean createBookBean(Cursor cursor) {
         BookBean book = new BookBean();
         cursor.moveToLast();
@@ -406,6 +477,12 @@ public class DbManagerImpl implements DbManager {
         return book;
     }
 
+    /**
+     * convert cursor to entity {@link CookerBean}.
+     *
+     * @param cursor cursor
+     * @return cooker instance
+     */
     private CookerBean createCookerBean(Cursor cursor) {
         CookerBean cookerBean = new CookerBean();
         cookerBean.setUserId(cursor.getLong(cursor.getColumnIndex(KEY_USER_ID)));

@@ -21,13 +21,20 @@ import retrofit2.http.Url;
 import retrofit2.mock.BehaviorDelegate;
 
 /**
- * Created by StupidL on 2017/4/29.
+ * Mock server for {@link CookerService}.
+ * This mock server use SQLite database to manage data.
  */
 
 public class MockCookerService implements CookerService {
 
+    /**
+     * server SQLite manager
+     */
     private ServerDbManager mServerDbManager = ServerDbManagerImpl.getInstance();
 
+    /**
+     * delegate of CookerService
+     */
     private BehaviorDelegate<CookerService> mDelegate;
 
     public MockCookerService(BehaviorDelegate<CookerService> delegate) {
@@ -95,11 +102,14 @@ public class MockCookerService implements CookerService {
     }
 
     @Override
-    public Observable<HttpResult<List<UserBean>>> register(@Field("username") String name,
+    public Observable<HttpResult<List<UserBean>>> register(@Field("userId") Long userId,
+                                                           @Field("username") String name,
                                                            @Field("password") String password) {
         HttpResult<List<UserBean>> result = new HttpResult<>();
         List<UserBean> list = new ArrayList<>();
-        UserBean bean = mServerDbManager.insertUser(new UserBean(name, password));
+        UserBean user = new UserBean(name, password);
+        user.setUserId(new Random().nextLong());
+        UserBean bean = mServerDbManager.insertUser(user);
         if (bean == null) {
             result.setResultCode(400);
             result.setResultMessage("Register failed.");
@@ -334,6 +344,27 @@ public class MockCookerService implements CookerService {
         BookBean bookBean = mServerDbManager.deleteBook(userId, bookId);
         if (bookBean == null) {
             result.setResultCode(400);
+            result.setResultMessage("Delete Book failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).deleteBook(userId, bookId);
+        }
+        CookerBean cookerBean = new CookerBean();
+        cookerBean.setUserId(bookBean.getUserId());
+        cookerBean.setCookerId(bookBean.getCookerId());
+        cookerBean.setCookerName(bookBean.getCookerName());
+        cookerBean.setCookerLocation(bookBean.getCookerLocation());
+        //This may cause an error, because a cooker may be used by many books.
+        //So set status directly is not a right solution.
+        cookerBean.setCookerStatus("Free");
+        if (mServerDbManager.updateCooker(cookerBean) == null) {
+            result.setResultCode(200);
+            result.setResultMessage("Delete Book failed.");
+            result.setData(list);
+            return mDelegate.returningResponse(result).deleteBook(userId, bookId);
+        }
+        bookBean.setCookerStatus("Free");
+        if (mServerDbManager.updateBook(bookBean) == null) {
+            result.setResultCode(200);
             result.setResultMessage("Delete Book failed.");
             result.setData(list);
             return mDelegate.returningResponse(result).deleteBook(userId, bookId);
